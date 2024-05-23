@@ -92,9 +92,22 @@ public class Lexer
 
 
         /* ============================ Specials ============================ */
-        //    if at end-of-file return said token
+
+        // Check for end-of-file
         if (EOF)
             return Token.EOF(GetPosition());
+
+        // Check for new line
+        if (EOL)
+            return Token.NL(GetPosition());
+
+        // Check for whitespaces
+        if (char.IsWhiteSpace(Current))
+        {
+            while (Next == Current && char.IsWhiteSpace(Next))
+                Step();
+            return CreateToken(value.Length > 1 ? TokenKind.BigWhiteSpace : TokenKind.WhiteSpace);
+        }
 
         /* ============================= Numbers ============================ */
         //    Peek in and if it's number char advance then add it
@@ -151,6 +164,18 @@ public class Lexer
                 Reporter.ReportUnterminatedQuote(kind, span);
             
             return CreateToken(kind);
+        }
+
+        
+        /* =========================== Identifiers ========================== */
+        //    Lexes identifiers, keywords, and constant literal values,
+        //    such as false, maybe, true and null
+        if (char.IsLetter(Current) || Current == '_')
+        {
+            while (char.IsLetterOrDigit(Next) || Next == '_')
+                Step();
+
+            return CreateToken(Constants.GetIdentifierKind(value.ToString()));
         }
 
         /* ======================= Character-sequences ====================== */

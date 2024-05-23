@@ -18,7 +18,8 @@ while (true)
     var tokens   = lexer.Start();
 
     foreach (var tk in tokens)
-        Console.WriteLine(tk);
+        if (!tk.Kind.IsParserIgnorable())
+            Console.WriteLine(tk);
     Console.WriteLine();
     
     foreach (var err in reporter.Errors)

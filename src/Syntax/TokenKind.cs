@@ -6,11 +6,22 @@ public enum TokenKind
     Error,
     EOF,
 
+    __IGNORABLE_START__,
+    NewLine,
+    WhiteSpace,
+    BigWhiteSpace,
+    __IGNORABLE_END__,
+
     // Literals
     Integer,
     Float,
     Char,
     String,
+
+    // Identifiers
+    Identifier,
+    Null,
+    Boolean,
 
     // Operators
     Equal,
@@ -25,4 +36,11 @@ public enum TokenKind
     Pipe,
     Caret,
     Power,
+}
+
+
+internal static class TokenKindExtension
+{
+    public static bool IsParserIgnorable(this TokenKind kind) => TokenKind.__IGNORABLE_START__ < kind
+                                                              && TokenKind.__IGNORABLE_END__   > kind;
 }
