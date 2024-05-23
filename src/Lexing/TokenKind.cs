@@ -2,11 +2,11 @@ namespace Enuii.Syntax.Lexing;
 
 public enum TokenKind
 {
-    Unknown,
     Error,
     EOF,
 
     __IGNORABLE_START__,
+    Unknown,
     NewLine,
     WhiteSpace,
     BigWhiteSpace,

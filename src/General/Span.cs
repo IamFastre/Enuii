@@ -7,16 +7,28 @@ public class Span
     public Position End     { get; private set; }
     public bool     IsShort => Start.Index == End.Index;
 
-    public Span(Position? start = null, Position? end = null)
+    public Span()
     {
-        Start = start ?? new();
-        End   = end   ?? start ?? new();
+        Start = new();
+        End   = Start;
     }
 
     public Span(int index)
     {
         Start = new(index);
         End   = Start;
+    }
+
+    public Span(Position start, Position? end = null)
+    {
+        Start = start;
+        End   = end ?? start;
+    }
+
+    public Span(Span start, Span? end = null)
+    {
+        Start = start.Start;
+        End   = end?.End ?? start.End;
     }
 
     // Method to set end and return self for various uses

@@ -34,5 +34,8 @@ public class Reporter(IEnumerable<Error>? errors = null)
         => Report(ErrorKind.SyntaxError, $"Unterminated {kind.ToString().ToLower()} literal", span);
 
     internal void ReportUnrecognizedChar(StringBuilder value, Span span)
-        => Report(ErrorKind.SyntaxError, $"Unrecognized character: {value}", span);
+        => Report(ErrorKind.SyntaxError, $"Unrecognized character '{value}'", span);
+
+    internal void ReportInvalidToken(string? value, Span span)
+        => Report(ErrorKind.SyntaxError, $"Invalid token '{value}'", span);
 }

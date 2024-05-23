@@ -1,5 +1,6 @@
 ﻿using System.Text;
 using Enuii.Reports;
+using Enuii.Syntax.AST;
 using Enuii.Syntax.Lexing;
 
 if (Environment.OSVersion.Platform == PlatformID.Win32NT)
@@ -16,6 +17,12 @@ while (true)
     var reporter = new Reporter(); 
     var lexer    = new Lexer(line, reporter);
     var tokens   = lexer.Start();
+    var parser   = new Parser(tokens, reporter);
+    var synTree  = parser.Start();
+
+    foreach (var nd in synTree.Body)
+        Console.WriteLine(nd);
+    Console.WriteLine();
 
     foreach (var tk in tokens)
         if (!tk.Kind.IsParserIgnorable())
