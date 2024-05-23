@@ -2,6 +2,7 @@ using Enuii.Syntax.Lexing;
 
 namespace Enuii.General.Constants;
 
+// Constants need throughout the application
 public static class Constants
 {
     public const char DOT = '.';
@@ -12,6 +13,7 @@ public static class Constants
     public const string StrOpen   = "\"«“";
     public const string StrClose  = "\"»”";
 
+    // Gets closing pair of an opening quote
     public static (char, TokenKind) GetQuotePair(char q)
     {
         int i;

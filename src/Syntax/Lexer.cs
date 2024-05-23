@@ -27,15 +27,18 @@ public class Lexer
         Reporter = reporter ?? new();
     }
 
+    // Look for character beyond index
     private char Peek(int i = 1)
         => Index + i < Source.Length ? Source[Index + i] : '\0';
 
+    // Advances the index without overshoot over the length
     private void Advance()
     {
         if (Index < Source.Length)
             Index++;
     }
 
+    // Convert current index (or given index if given) to a position
     private Position GetPosition(int? index = null)
     {
         index ??= Index;
@@ -54,6 +57,7 @@ public class Lexer
         return new (line, column, (int) index);
     }
 
+    // Get the current token starting with `Current`
     public Token GetToken()
     {
         // Initiating some token properties
@@ -129,6 +133,8 @@ public class Lexer
         }
 
         /* ============================= Quotes ============================= */
+        //     Lexes strings and chars by known their closing pair
+        //     and appending everything in between to value
         if (Constants.StrOpen.Contains(Current) || Constants.CharOpen.Contains(Current))
         {
             var (close, kind) = Constants.GetQuotePair(Current);
@@ -148,7 +154,7 @@ public class Lexer
         }
 
         /* ======================= Character-sequences ====================== */
-        //    use `IsUpcoming` helper function to test
+        //    Use `IsUpcoming` helper function to test
         if (IsUpcoming("**"))
             return CreateToken(TokenKind.Power);
 

@@ -10,5 +10,5 @@ public class Error(ErrorKind kind = ErrorKind.UnknownError, string message = "Un
 
 
     public override string ToString()
-        => $"{Kind}: {Message}\n  {(Span.IsSingle ? "at" : "between")} {Span}";
+        => $"{Kind}: {Message}\n  {(Span.IsShort ? "at" : "between")} {Span}";
 }

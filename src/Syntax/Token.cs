@@ -8,6 +8,7 @@ public class Token(string? value, TokenKind kind, Span span)
     public TokenKind Kind  { get; } = kind;
     public Span      Span  { get; } = span;
 
+    // Make an EOF token with given `position`
     public static Token EOF(Position? position = null)
         => new(null, TokenKind.EOF, new(position));
 

@@ -3,9 +3,9 @@ namespace Enuii.General.Positioning;
 
 public class Span
 {
-    public Position Start  { get; private set; }
-    public Position End    { get; private set; }
-    public bool     IsSingle => Start.Index == End.Index;
+    public Position Start   { get; private set; }
+    public Position End     { get; private set; }
+    public bool     IsShort => Start.Index == End.Index;
 
     public Span(Position? start = null, Position? end = null)
     {
@@ -19,6 +19,7 @@ public class Span
         End   = Start;
     }
 
+    // Method to set end and return self for various uses
     public Span SetEnd(Position position)
     {
         End = position;
@@ -26,5 +27,5 @@ public class Span
     }
 
     public override string ToString()
-        => IsSingle ? $"{Start}" : $"{Start} => {End}";
+        => IsShort ? $"{Start}" : $"{Start} => {End}";
 }
