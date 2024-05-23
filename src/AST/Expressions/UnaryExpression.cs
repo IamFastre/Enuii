@@ -10,5 +10,5 @@ public sealed class UnaryExpression(Token @operator, Expression operand)
     public Expression Operand  { get; } = operand;
 
     public override Span     Span { get; } = new(@operator.Span!.Start, operand.Span.End);
-    public override NodeKind Kind => NodeKind.UnaryExpression;
+    public override NodeKind Kind { get; } = NodeKind.UnaryExpression;
 }

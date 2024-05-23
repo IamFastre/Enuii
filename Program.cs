@@ -1,5 +1,6 @@
 ﻿using System.Text;
 using Enuii.Reports;
+using Enuii.Semantics;
 using Enuii.Syntax.AST;
 using Enuii.Syntax.Lexing;
 
@@ -19,17 +20,8 @@ while (true)
     var tokens   = lexer.Start();
     var parser   = new Parser(tokens, reporter);
     var synTree  = parser.Start();
+    var analyzer = new Analyzer(synTree, reporter);
+    var semTree  = analyzer.Start();
 
-    foreach (var nd in synTree.Body)
-        Console.WriteLine(nd);
-    Console.WriteLine();
-
-    foreach (var tk in tokens)
-        if (!tk.Kind.IsParserIgnorable())
-            Console.WriteLine(tk);
-    Console.WriteLine();
-    
-    foreach (var err in reporter.Errors)
-        Console.WriteLine(err);
-    Console.WriteLine();
+    Console.WriteLine("Yeah just use breakpoints for now");
 }

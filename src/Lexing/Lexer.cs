@@ -19,8 +19,6 @@ public class Lexer
     private bool PEOF    => Index + 1 >= Source.Length;
     private bool PEOL    => Next == '\n';
 
-    private readonly ImmutableArray<Token>.Builder Tokens = ImmutableArray.CreateBuilder<Token>();
-
     public Lexer(string source, Reporter? reporter = null)
     {
         Source   = source.Replace("\r", "");
@@ -112,12 +110,12 @@ public class Lexer
         /* ============================= Numbers ============================ */
         //    Peek in and if it's number char advance then add it
         //    after that return the token
-        if (char.IsAsciiDigit(Current) || Current == Constants.DOT && char.IsAsciiDigit(Next))
+        if (char.IsAsciiDigit(Current) || Current == CONSTS.DOT && char.IsAsciiDigit(Next))
         {
-            bool isFloat = Current == Constants.DOT;
-            while (char.IsAsciiDigit(Next) || Next == Constants.DOT && !isFloat)
+            bool isFloat = Current == CONSTS.DOT;
+            while (char.IsAsciiDigit(Next) || Next == CONSTS.DOT && !isFloat)
             {
-                if (Next == Constants.DOT)
+                if (Next == CONSTS.DOT)
                     isFloat = true;
                 Step();
             }
@@ -133,7 +131,7 @@ public class Lexer
         }
 
         // Look for for ∞ and ∞f
-        if (Current == Constants.INF)
+        if (Current == CONSTS.INF)
         {
             bool isFloat = false;
             if ("fF".Contains(Next))
@@ -148,9 +146,9 @@ public class Lexer
         /* ============================= Quotes ============================= */
         //     Lexes strings and chars by known their closing pair
         //     and appending everything in between to value
-        if (Constants.StrOpen.Contains(Current) || Constants.CharOpen.Contains(Current))
+        if (CONSTS.StrOpen.Contains(Current) || CONSTS.CharOpen.Contains(Current))
         {
-            var (close, kind) = Constants.GetQuotePair(Current);
+            var (close, kind) = CONSTS.GetQuotePair(Current);
             while (Next != close && !(PEOF || PEOL))
             {
                 if (Next == '\\')
@@ -175,7 +173,7 @@ public class Lexer
             while (char.IsLetterOrDigit(Next) || Next == '_')
                 Step();
 
-            return CreateToken(Constants.GetIdentifierKind(value.ToString()));
+            return CreateToken(CONSTS.GetIdentifierKind(value.ToString()));
         }
 
         /* ======================= Character-sequences ====================== */
@@ -224,15 +222,16 @@ public class Lexer
 
     public Token[] Start()
     {
+        var tokens = ImmutableArray.CreateBuilder<Token>();
         while (true)
         {
             var token = GetToken();
-            Tokens.Add(token);
+            tokens.Add(token);
             if (token.Kind == TokenKind.EOF)
                 break;
             Advance();
         }
 
-        return [..Tokens];
+        return [..tokens];
     }
 }

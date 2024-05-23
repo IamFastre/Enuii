@@ -3,7 +3,7 @@ using Enuii.Syntax.Lexing;
 namespace Enuii.General.Constants;
 
 // Constants need throughout the application
-public static class Constants
+public static class CONSTS
 {
     // Symbols
     public const char DOT = '.';
@@ -21,6 +21,15 @@ public static class Constants
     public const string FALSE   = "false";
     public const string MAYBE   = "maybe";
     public const string TRUE    = "true";
+
+    // Types
+    public const string BOOLEAN   = "bool";
+    public const string INTEGER   = "int";
+    public const string FLOAT     = "float";
+    public const string NUMBER    = "number";
+    public const string CHAR      = "char";
+    public const string STRING    = "string";
+    public const string ANY       = "any";
 
     // Gets closing pair of an opening quote
     public static (char, TokenKind) GetQuotePair(char q)

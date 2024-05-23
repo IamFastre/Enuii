@@ -15,8 +15,8 @@ public enum NodeKind
 
     // Expressions
     UnaryExpression,
+    BinaryExpression,
 
     // Statements
     ExpressionStatement,
-    BinaryExpression,
 }
