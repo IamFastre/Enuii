@@ -212,7 +212,7 @@ public class Lexer
         }
 
         // If none of the above; not known
-        Reporter.ReportUnrecognizedToken(value, span);
+        Reporter.ReportUnrecognizedChar(value, span);
         return CreateToken(TokenKind.Unknown);
     }
 
