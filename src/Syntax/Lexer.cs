@@ -72,9 +72,9 @@ public class Lexer
         /* ============================= Numbers ============================ */
         //   Peek in and if it's number char advance then add it
         //   after that return the token
-        if (char.IsAsciiDigit(Current))
+        if (char.IsAsciiDigit(Current) || Current == Constants.DOT && char.IsAsciiDigit(Next))
         {
-            bool isFloat = false;
+            bool isFloat = Current == Constants.DOT;
             while (char.IsAsciiDigit(Next) || Next == Constants.DOT && !isFloat)
             {
                 if (Next == Constants.DOT)
