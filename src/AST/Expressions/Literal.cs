@@ -1,9 +1,11 @@
+using Enuii.General.Constants;
 using Enuii.General.Positioning;
 using Enuii.Syntax.Lexing;
 
 namespace Enuii.Syntax.AST;
 
-public sealed class Literal(Token token, NodeKind kind) : Expression
+public sealed class Literal(Token token, NodeKind kind)
+    : Expression
 {
     public string Value { get; } = token.Value!;
 
@@ -11,5 +13,5 @@ public sealed class Literal(Token token, NodeKind kind) : Expression
     public override NodeKind Kind => kind;
 
     public static Literal Unknown(Span span)
-        => new(new(null, TokenKind.Unknown, span), NodeKind.Unknown);
+        => new(new(Constants.UNKNOWN, TokenKind.Unknown, span), NodeKind.Unknown);
 }

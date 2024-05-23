@@ -65,9 +65,53 @@ public class Parser
     /* ====================================================================== */
 
     private Expression GetExpression()
-        => GetLiteral();
+        => GetSecondary();
 
-    private Expression GetLiteral()
+    private Expression GetSecondary(int parentPrecedence = 0)
+    {
+        Expression? left;
+        var unaryPrecedence = Current.Kind.UnaryPrecedence();
+
+        /* ============================== Unary ============================= */
+        if (unaryPrecedence == 0 || unaryPrecedence < parentPrecedence)
+            left = GetPrimary();
+        else
+        {
+            var uOp = Eat();
+            left = GetSecondary(unaryPrecedence);
+
+            if (left is null)
+            {
+                Reporter.ReportExpressionExpectedAfter(uOp.Value, uOp.Span);
+                return FabricateExpression(uOp.Span);
+            }
+
+            left = new UnaryExpression(uOp, left);
+        }
+
+        /* ============================= Binary ============================= */
+        while (true)
+        {
+            var binaryPrecedence = Current.Kind.BinaryPrecedence();
+            if (binaryPrecedence == 0 || binaryPrecedence <= parentPrecedence)
+                break;
+
+            var binOp = Eat();
+            var right = GetSecondary(binaryPrecedence);
+
+            if (right is null)
+            {
+                Reporter.ReportExpressionExpectedAfter(binOp.Value, binOp.Span);
+                return FabricateExpression(new(left!.Span, binOp.Span));
+            }
+
+            left = new BinaryExpression(left!, binOp, right);
+        }
+
+        return left;
+    }
+
+    private Expression GetPrimary()
     {
         switch (Current.Kind)
         {

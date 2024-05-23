@@ -38,4 +38,8 @@ public class Reporter(IEnumerable<Error>? errors = null)
 
     internal void ReportInvalidToken(string? value, Span span)
         => Report(ErrorKind.SyntaxError, $"Invalid token '{value}'", span);
+
+    internal void ReportExpressionExpectedAfter(string after, Span span)
+        => Report(ErrorKind.SyntaxError, $"Expected an expression after '{after}'", span);
+
 }

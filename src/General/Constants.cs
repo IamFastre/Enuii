@@ -16,10 +16,11 @@ public static class Constants
     public const string StrClose  = "\"»”";
 
     // Keywords & Consts
-    public const string NULL   = "null";
-    public const string FALSE  = "false";
-    public const string MAYBE  = "maybe";
-    public const string TRUE   = "true";
+    public const string UNKNOWN = "?";
+    public const string NULL    = "null";
+    public const string FALSE   = "false";
+    public const string MAYBE   = "maybe";
+    public const string TRUE    = "true";
 
     // Gets closing pair of an opening quote
     public static (char, TokenKind) GetQuotePair(char q)

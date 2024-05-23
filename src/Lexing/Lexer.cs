@@ -183,6 +183,12 @@ public class Lexer
         if (IsUpcoming("**"))
             return CreateToken(TokenKind.Power);
 
+        if (IsUpcoming("&&"))
+            return CreateToken(TokenKind.DoubleAmpersand);
+
+        if (IsUpcoming("||"))
+            return CreateToken(TokenKind.DoublePipe);
+
         /* ======================== Single-character ======================== */
         //    Matching every single character token
         switch (Current)

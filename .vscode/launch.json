@@ -15,17 +15,18 @@
             "console": "integratedTerminal",
             "stopAtEntry": false
         },
-        {
-            "name": "(Enuii Debug) [Integrated]",
-            "type": "coreclr",
-            "request": "launch",
-            "preLaunchTask": "build",
-            "program": "${workspaceFolder}/build/Debug/Enuii.dll",
-            "args": ["--debug"],
-            "cwd": "${workspaceFolder}",
-            "console": "integratedTerminal",
-            "stopAtEntry": false
-        },
+
+        // {
+        //     "name": "(Enuii Debug) [Integrated]",
+        //     "type": "coreclr",
+        //     "request": "launch",
+        //     "preLaunchTask": "build",
+        //     "program": "${workspaceFolder}/build/Debug/Enuii.dll",
+        //     "args": ["--debug"],
+        //     "cwd": "${workspaceFolder}",
+        //     "console": "integratedTerminal",
+        //     "stopAtEntry": false
+        // },
 
         {
             "name": "Normal [External]",
@@ -38,16 +39,17 @@
             "console": "externalTerminal",
             "stopAtEntry": false
         },
-        {
-            "name": "(Enuii Debug) [External]",
-            "type": "coreclr",
-            "request": "launch",
-            "preLaunchTask": "build",
-            "program": "${workspaceFolder}/build/Debug/Enuii.dll",
-            "args": ["--debug"],
-            "cwd": "${workspaceFolder}",
-            "console": "externalTerminal",
-            "stopAtEntry": false
-        }
+
+        // {
+        //     "name": "(Enuii Debug) [External]",
+        //     "type": "coreclr",
+        //     "request": "launch",
+        //     "preLaunchTask": "build",
+        //     "program": "${workspaceFolder}/build/Debug/Enuii.dll",
+        //     "args": ["--debug"],
+        //     "cwd": "${workspaceFolder}",
+        //     "console": "externalTerminal",
+        //     "stopAtEntry": false
+        // }
     ]
 }

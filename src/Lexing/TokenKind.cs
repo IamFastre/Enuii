@@ -23,19 +23,25 @@ public enum TokenKind
     Null,
     Boolean,
 
-    // Operators
     Equal,
+
+    // Operators
+    Tilde,
+    BangMark,
+
     Plus,
     Minus,
     Asterisk,
     ForwardSlash,
     Percent,
-    BangMark,
-    Tilde,
+    Power,
+
     Ampersand,
     Pipe,
     Caret,
-    Power,
+
+    DoubleAmpersand,
+    DoublePipe,
 }
 
 
@@ -43,4 +49,36 @@ internal static class TokenKindExtension
 {
     public static bool IsParserIgnorable(this TokenKind kind) => TokenKind.__IGNORABLE_START__ < kind
                                                               && TokenKind.__IGNORABLE_END__   > kind;
+
+    
+    public static int UnaryPrecedence(this TokenKind kind)
+    => kind switch
+    {
+        TokenKind.Plus      or
+        TokenKind.Minus     or
+        TokenKind.Tilde     or
+        TokenKind.BangMark => 6,
+
+        _ => 0,
+    };
+
+    public static int BinaryPrecedence(this TokenKind kind)
+    => kind switch
+    {
+        // Multiplicative
+        TokenKind.Asterisk or TokenKind.ForwardSlash or TokenKind.Percent or TokenKind.Power
+            => 6,
+        // Additive
+        TokenKind.Plus or TokenKind.Minus
+            => 5,
+        // Comparative => 4,
+        // ANDs
+        TokenKind.Ampersand or TokenKind.DoubleAmpersand
+            => 3,
+        // ORs
+        TokenKind.Pipe or TokenKind.Caret or TokenKind.DoublePipe
+            => 2,
+        // TokenKind.NullishCoalescing => 1,
+        _ => 0,
+    };
 }

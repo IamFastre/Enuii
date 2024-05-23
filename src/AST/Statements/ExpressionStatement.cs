@@ -2,7 +2,8 @@ using Enuii.General.Positioning;
 
 namespace Enuii.Syntax.AST;
 
-public sealed class ExpressionStatement(Expression expression) : Statement
+public sealed class ExpressionStatement(Expression expression)
+    : Statement
 {
     public Expression Expression  { get; } = expression;
 

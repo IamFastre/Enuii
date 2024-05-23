@@ -4,6 +4,7 @@ public enum NodeKind
 {
     Unknown,
 
+    // Literals
     Null,
     Boolean,
     Integer,
@@ -12,5 +13,10 @@ public enum NodeKind
     String,
     Identifier,
 
+    // Expressions
+    UnaryExpression,
+
+    // Statements
     ExpressionStatement,
+    BinaryExpression,
 }
