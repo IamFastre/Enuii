@@ -55,6 +55,12 @@ public class Lexer
         var value = new StringBuilder(Current.ToString());
         var span  = GetPosition().ToSpan();
 
+        void Step()
+        {
+            Advance();
+            value.Append(Current);
+        }
+
         // The token maker helper function
         Token CreateToken(TokenKind kind)
             => new(value.ToString(), kind, span.SetEnd(GetPosition()));
@@ -63,7 +69,7 @@ public class Lexer
         if (EOF)
             return Token.EOF(GetPosition());
 
-        // Numbers
+        /* ============================= Numbers ============================ */
         //   Peek in and if it's number char advance then add it
         //   after that return the token
         if (char.IsAsciiDigit(Current))
@@ -73,8 +79,14 @@ public class Lexer
             {
                 if (Next == Constants.DOT)
                     isFloat = true;
-                Advance();
-                value.Append(Current);
+                Step();
+            }
+
+            // if 'f' or 'F' is present after the number; it's a float
+            if ("fF".Contains(Next))
+            {
+                Step();
+                isFloat = true;
             }
 
             return CreateToken(isFloat ? TokenKind.Float : TokenKind.Int);
