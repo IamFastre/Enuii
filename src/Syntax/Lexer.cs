@@ -25,6 +25,8 @@ public class Lexer
         Reporter = reporter ?? new();
     }
 
+    private char Peek(int i = 1) => Index + i < Source.Length ? Source[Index + i] : '\0';
+
     private void Advance()
     {
         if (Index < Source.Length)
@@ -55,10 +57,26 @@ public class Lexer
         var value = new StringBuilder(Current.ToString());
         var span  = GetPosition().ToSpan();
 
-        void Step()
+        // Increment one step and append current tp value
+        void Step(int steps = 1)
         {
-            Advance();
-            value.Append(Current);
+            for (int i = 0; i < steps; i++)
+            {
+                Advance();
+                value.Append(Current);
+            }
+        }
+
+        // Check if a sequence of chars is coming
+        // if so step, if not don't
+        bool IsUpcoming(IEnumerable<char> sequence)
+        {
+            var length = sequence.Count();
+            for (int i = 0; i < length; i++)
+                if (!(sequence.ElementAt(i) == Peek(i)))
+                    return false;
+            Step(length - 1);
+            return true;
         }
 
         // The token maker helper function
@@ -102,6 +120,37 @@ public class Lexer
             }
 
             return CreateToken(isFloat ? TokenKind.Float : TokenKind.Integer);
+        }
+
+        // Character-sequence characters
+        if (IsUpcoming("**"))
+            return CreateToken(TokenKind.Power);
+
+        // Single character tokens
+        switch (Current)
+        {
+            case '=':
+                return CreateToken(TokenKind.Equal);
+            case '+':
+                return CreateToken(TokenKind.Plus);
+            case '-':
+                return CreateToken(TokenKind.Minus);
+            case '*':
+                return CreateToken(TokenKind.Asterisk);
+            case '/':
+                return CreateToken(TokenKind.ForwardSlash);
+            case '%':
+                return CreateToken(TokenKind.Percent);
+            case '!':
+                return CreateToken(TokenKind.BangMark);
+            case '~':
+                return CreateToken(TokenKind.Tilde);
+            case '&':
+                return CreateToken(TokenKind.Ampersand);
+            case '|':
+                return CreateToken(TokenKind.Pipe);
+            case '^':
+                return CreateToken(TokenKind.Caret);
         }
 
         // If none of the above; not known

@@ -6,4 +6,18 @@ public enum TokenKind
     EOF,
     Integer,
     Float,
+
+    // Operators
+    Equal,
+    Plus,
+    Minus,
+    Asterisk,
+    ForwardSlash,
+    Percent,
+    BangMark,
+    Tilde,
+    Ampersand,
+    Pipe,
+    Caret,
+    Power,
 }
