@@ -3,9 +3,14 @@ namespace Enuii.Syntax.Lexing;
 public enum TokenKind
 {
     Unknown,
+    Error,
     EOF,
+
+    // Literals
     Integer,
     Float,
+    Char,
+    String,
 
     // Operators
     Equal,

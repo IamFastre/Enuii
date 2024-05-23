@@ -12,10 +12,12 @@ public class Lexer
     public Reporter Reporter { get; }
 
     private int  Index   { get; set; } = 0;
-    private char Current => Index     >= Source.Length ? '\0' : Source[Index];
-    private char Next    => Index + 1 >= Source.Length ? '\0' : Source[Index + 1];
+    private char Current => Peek(0);
+    private char Next    => Peek(1);
     private bool EOF     => Index >= Source.Length;
     private bool EOL     => Current == '\n';
+    private bool PEOF    => Index + 1 >= Source.Length;
+    private bool PEOL    => Next == '\n';
 
     private readonly ImmutableArray<Token>.Builder Tokens = ImmutableArray.CreateBuilder<Token>();
 
@@ -25,7 +27,8 @@ public class Lexer
         Reporter = reporter ?? new();
     }
 
-    private char Peek(int i = 1) => Index + i < Source.Length ? Source[Index + i] : '\0';
+    private char Peek(int i = 1)
+        => Index + i < Source.Length ? Source[Index + i] : '\0';
 
     private void Advance()
     {
@@ -83,13 +86,15 @@ public class Lexer
         Token CreateToken(TokenKind kind)
             => new(value.ToString(), kind, span.SetEnd(GetPosition()));
 
-        // if at end-of-file return said token
+
+        /* ============================ Specials ============================ */
+        //    if at end-of-file return said token
         if (EOF)
             return Token.EOF(GetPosition());
 
         /* ============================= Numbers ============================ */
-        //   Peek in and if it's number char advance then add it
-        //   after that return the token
+        //    Peek in and if it's number char advance then add it
+        //    after that return the token
         if (char.IsAsciiDigit(Current) || Current == Constants.DOT && char.IsAsciiDigit(Next))
         {
             bool isFloat = Current == Constants.DOT;
@@ -110,6 +115,7 @@ public class Lexer
             return CreateToken(isFloat ? TokenKind.Float : TokenKind.Integer);
         }
 
+        // Look for for ∞ and ∞f
         if (Current == Constants.INF)
         {
             bool isFloat = false;
@@ -122,11 +128,32 @@ public class Lexer
             return CreateToken(isFloat ? TokenKind.Float : TokenKind.Integer);
         }
 
-        // Character-sequence characters
+        /* ============================= Quotes ============================= */
+        if (Constants.StrOpen.Contains(Current) || Constants.CharOpen.Contains(Current))
+        {
+            var (close, kind) = Constants.GetQuotePair(Current);
+            while (Next != close && !(PEOF || PEOL))
+            {
+                if (Next == '\\')
+                    Step();
+                Step();
+            }
+
+            if (Next == close)
+                Step();
+            else
+                Reporter.ReportUnterminatedQuote(kind, span);
+            
+            return CreateToken(kind);
+        }
+
+        /* ======================= Character-sequences ====================== */
+        //    use `IsUpcoming` helper function to test
         if (IsUpcoming("**"))
             return CreateToken(TokenKind.Power);
 
-        // Single character tokens
+        /* ======================== Single-character ======================== */
+        //    Matching every single character token
         switch (Current)
         {
             case '=':
@@ -154,15 +181,18 @@ public class Lexer
         }
 
         // If none of the above; not known
+        Reporter.ReportUnrecognizedToken(value, span);
         return CreateToken(TokenKind.Unknown);
     }
 
     public Token[] Start()
     {
-        while (!EOF)
+        while (true)
         {
             var token = GetToken();
             Tokens.Add(token);
+            if (token.Kind == TokenKind.EOF)
+                break;
             Advance();
         }
 

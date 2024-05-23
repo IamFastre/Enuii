@@ -12,5 +12,5 @@ public class Token(string? value, TokenKind kind, Span span)
         => new(null, TokenKind.EOF, new(position));
 
     public override string ToString()
-        => $"<{Kind}:'{Value}' @ {Span}>";
+        => $"<{Kind}:{Value} @ {Span}>";
 }
