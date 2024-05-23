@@ -4,6 +4,6 @@ public enum TokenKind
 {
     Unknown,
     EOF,
-    Int,
+    Integer,
     Float,
 }

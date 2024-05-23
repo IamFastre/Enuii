@@ -89,9 +89,20 @@ public class Lexer
                 isFloat = true;
             }
 
-            return CreateToken(isFloat ? TokenKind.Float : TokenKind.Int);
+            return CreateToken(isFloat ? TokenKind.Float : TokenKind.Integer);
         }
 
+        if (Current == Constants.INF)
+        {
+            bool isFloat = false;
+            if ("fF".Contains(Next))
+            {
+                Step();
+                isFloat = true;
+            }
+
+            return CreateToken(isFloat ? TokenKind.Float : TokenKind.Integer);
+        }
 
         // If none of the above; not known
         return CreateToken(TokenKind.Unknown);
