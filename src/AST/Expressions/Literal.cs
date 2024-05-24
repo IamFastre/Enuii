@@ -9,8 +9,8 @@ public sealed class Literal(Token token, NodeKind kind)
 {
     public string Value { get; } = token.Value!;
 
-    public override Span     Span { get; } = token.Span;
     public override NodeKind Kind { get; } = kind;
+    public override Span     Span { get; } = token.Span;
 
     public static Literal Unknown(Span span)
         => new(new(CONSTS.UNKNOWN, TokenKind.Unknown, span), NodeKind.Unknown);

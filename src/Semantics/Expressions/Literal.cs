@@ -8,6 +8,6 @@ public sealed class SemanticLiteral(string value, TypeSymbol type, Span span)
 {
     public string Value { get; } = value;
 
-    public override Span         Span { get; } = span;
     public override SemanticKind Kind { get; } = SemanticKind.Literal;
+    public override Span         Span { get; } = span;
 }

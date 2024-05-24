@@ -7,6 +7,6 @@ public sealed class ExpressionStatement(Expression expression)
 {
     public Expression Expression  { get; } = expression;
 
-    public override Span     Span => Expression.Span;
     public override NodeKind Kind { get; } = NodeKind.ExpressionStatement;
+    public override Span     Span => Expression.Span;
 }

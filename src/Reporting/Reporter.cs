@@ -43,6 +43,9 @@ public class Reporter(IEnumerable<Error>? errors = null)
     internal void ReportExpressionExpectedAfter(string after, Span span)
         => Report(ErrorKind.SyntaxError, $"Expected an expression after '{after}'", span);
 
-    internal void ReportInvalidUnaryOperator(string op, TypeSymbol type, Span span)
-        => Report(ErrorKind.TypeError, $"Cannot apply operator '{op}' on type '{type}'", span);
+    internal void ReportInvalidUnaryOperator(string op, string type, Span span)
+        => Report(ErrorKind.TypeError, $"Operator '{op}' cannot be applied on operand of type '{type}'", span);
+
+    internal void ReportInvalidBinaryOperator(string op, string left, string right, Span span)
+        => Report(ErrorKind.TypeError, $"Operator '{op}' cannot be applied to operands of type '{left}' and '{right}'", span);
 }

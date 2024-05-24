@@ -8,6 +8,6 @@ public class SemanticFailedOperation(params SemanticExpression[] expressions)
 {
     public SemanticExpression[] Expressions { get; } = expressions;
 
-    public override Span         Span { get; } = new(expressions.First().Span, expressions.Last().Span);
     public override SemanticKind Kind { get; } = SemanticKind.FailedOperation;
+    public override Span         Span { get; } = new(expressions.First().Span, expressions.Last().Span);
 }

@@ -8,6 +8,6 @@ public sealed class NameLiteral(Token token)
 {
     public string Value { get; } = token.Value!;
 
-    public override Span     Span { get; } = token.Span;
     public override NodeKind Kind { get; } = NodeKind.Identifier;
+    public override Span     Span { get; } = token.Span;
 }

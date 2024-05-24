@@ -7,6 +7,6 @@ public sealed class SemanticExpressionStatement(SemanticExpression expression)
 {
     public SemanticExpression Expression { get; } = expression;
 
-    public override Span         Span => Expression.Span;
     public override SemanticKind Kind { get; } = SemanticKind.ExpressionStatement;
+    public override Span         Span => Expression.Span;
 }

@@ -18,8 +18,8 @@ public sealed class SemanticUnaryExpression(SemanticExpression operand, UnaryOpe
     public SemanticExpression Operand       { get; } = operand;
     public UnaryOperationKind OperationKind { get; } = kind;
 
-    public override Span         Span { get; } = span;
     public override SemanticKind Kind { get; } = SemanticKind.UnaryExpression;
+    public override Span         Span { get; } = span;
 
     public static UnaryOperationKind? GetOperationKind(TokenKind kind, TypeID operand)
     {
