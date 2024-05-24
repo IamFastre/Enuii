@@ -66,6 +66,9 @@ public class Analyzer
             case NodeKind.String:
                 return BindLiteral((Literal) expr);
 
+            case NodeKind.UnaryExpression:
+                return BindUnaryExpression((UnaryExpression) expr);
+
             default:
                 throw new Exception($"Unrecognized expression kind: {expr.Kind}");
         }
@@ -75,5 +78,16 @@ public class Analyzer
     {
         var type = TypeSymbol.GetNodeType(l.Kind);
         return new(l.Value, type, l.Span);
+    }
+
+    private SemanticExpression BindUnaryExpression(UnaryExpression ue)
+    {
+        var operand = BindExpression(ue.Operand);
+        var opKind  = SemanticUnaryExpression.GetOperationKind(ue.Operator.Kind, operand.Type.ID);
+        if (opKind is not null)
+            return new SemanticUnaryExpression(operand, opKind.Value, ue.Span);
+
+        Reporter.ReportInvalidUnaryOperator(ue.Operator.Value, operand.Type, ue.Span);
+        return new SemanticFailedOperation(operand);
     }
 }

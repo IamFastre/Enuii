@@ -8,7 +8,7 @@ public enum SemanticKind
 
     // Expressions
     FailedExpression,
-    FailedExpressions,
+    FailedOperation,
     UnaryExpression,
     BinaryExpression,
 

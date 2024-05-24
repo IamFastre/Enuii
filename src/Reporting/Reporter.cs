@@ -1,5 +1,6 @@
 using System.Text;
 using Enuii.General.Positioning;
+using Enuii.Symbols.Typing;
 using Enuii.Syntax.Lexing;
 
 namespace Enuii.Reports;
@@ -42,4 +43,6 @@ public class Reporter(IEnumerable<Error>? errors = null)
     internal void ReportExpressionExpectedAfter(string after, Span span)
         => Report(ErrorKind.SyntaxError, $"Expected an expression after '{after}'", span);
 
+    internal void ReportInvalidUnaryOperator(string op, TypeSymbol type, Span span)
+        => Report(ErrorKind.TypeError, $"Cannot apply operator '{op}' on type '{type}'", span);
 }

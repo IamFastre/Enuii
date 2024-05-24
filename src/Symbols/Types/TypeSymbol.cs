@@ -3,10 +3,12 @@ using Enuii.Syntax.AST;
 
 namespace Enuii.Symbols.Typing;
 
-public class TypeSymbol(string name, TypeID kind)
+public class TypeSymbol(string name, TypeID id)
 {
     public string Name { get; } = name;
-    public TypeID Kind { get; } = kind;
+    public TypeID ID   { get; } = id;
+
+    public static readonly TypeSymbol Unknown = new(CONSTS.UNKNOWN, TypeID.Unknown);
 
     public static readonly TypeSymbol Null    = new(CONSTS.NULL, TypeID.Null);
     public static readonly TypeSymbol Boolean = new(CONSTS.BOOLEAN, TypeID.Boolean);
