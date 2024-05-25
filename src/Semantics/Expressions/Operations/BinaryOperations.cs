@@ -3,6 +3,29 @@ using Enuii.Syntax.Lexing;
 
 namespace Enuii.Semantics;
 
+public enum BinaryOperationKind
+{
+    LogicalAND,
+    LogicalOR,
+
+    BitwiseAND,
+    BitwiseOR,
+    BitwiseXOR,
+
+    Addition,
+    Subtraction,
+    Multiplication,
+    Division,
+    Power,
+    Modulo,
+
+    CharIncrementing,
+    CharDecrementing,
+
+    StringConcatenation,
+    StringMultiplication,
+}
+
 public class BinaryOperation
 {
     public TokenKind           Operator { get; }
@@ -19,6 +42,7 @@ public class BinaryOperation
     public BinaryOperation(TokenKind op, BinaryOperationKind kind, TypeSymbol operands, TypeSymbol result)
         : this(op, kind, operands, operands, result) { }
 
+    // Use this constructor if both your parents hate you
     private BinaryOperation(TokenKind op, BinaryOperationKind kind, TypeSymbol left, TypeSymbol right, TypeSymbol result)
     {
         Operator = op;
@@ -37,6 +61,7 @@ public class BinaryOperation
         throw new Exception("Cannot find such binary operation");
     }
 
+    // Big array of all possible native binary operations
     private static readonly BinaryOperation[] operations =
     [
         /* ============================ Booleany ============================ */
