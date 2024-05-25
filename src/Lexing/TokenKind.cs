@@ -19,6 +19,7 @@ public enum TokenKind
     String,
 
     // Identifiers
+    Type,
     Identifier,
     Null,
     Boolean,
@@ -42,6 +43,10 @@ public enum TokenKind
 
     DoubleAmpersand,
     DoublePipe,
+
+    // Others
+    Colon,
+    SingleArrow,
 }
 
 

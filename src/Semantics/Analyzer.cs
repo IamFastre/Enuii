@@ -16,6 +16,8 @@ public class Analyzer
         Reporter   = reporter ?? new();
     }
 
+    /* ====================================================================== */
+
     public SemanticTree Start()
     {
         var statements = ImmutableArray.CreateBuilder<SemanticStatement>();

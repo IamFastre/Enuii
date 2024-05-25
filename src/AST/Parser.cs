@@ -20,6 +20,8 @@ public class Parser
         Reporter = reporter ?? new();
     }
 
+    /* =========================== Helper Methods =========================== */
+
     private Token Eat()
     {
         var current = Current;
@@ -29,6 +31,8 @@ public class Parser
 
     private Expression FabricateExpression(Span? span = null)
         => Literal.Unknown(span ?? Current.Span);
+
+    /* ====================================================================== */
 
     public SyntaxTree Start()
     {

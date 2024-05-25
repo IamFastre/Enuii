@@ -25,6 +25,8 @@ public class Lexer
         Reporter = reporter ?? new();
     }
 
+    /* =========================== Helper Methods =========================== */
+
     // Look for character beyond index
     private char Peek(int i = 1)
         => Index + i < Source.Length ? Source[Index + i] : '\0';
@@ -40,10 +42,9 @@ public class Lexer
     private Position GetPosition(int? index = null)
     {
         index ??= Index;
-        int line = 1;
-        int column = 1;
+        int line = 1, column = 1;
+
         for (int i = 0; i < index; i++)
-        {
             if (Current == '\n')
             {
                 line++;
@@ -51,9 +52,28 @@ public class Lexer
             }
             else
                 column++;
-        }
-        return new (line, column, (int) index);
+
+        return new(line, column, (int) index);
     }
+
+    /* ====================================================================== */
+
+    public Token[] Start()
+    {
+        var tokens = ImmutableArray.CreateBuilder<Token>();
+        while (true)
+        {
+            var token = GetToken();
+            tokens.Add(token);
+            if (token.Kind == TokenKind.EOF)
+                break;
+            Advance();
+        }
+
+        return [..tokens];
+    }
+
+    /* ====================================================================== */
 
     // Get the current token starting with `Current`
     public Token GetToken()
@@ -178,6 +198,7 @@ public class Lexer
 
         /* ======================= Character-sequences ====================== */
         //    Use `IsUpcoming` helper function to test
+        // Operators:
         if (IsUpcoming("**"))
             return CreateToken(TokenKind.Power);
 
@@ -187,10 +208,15 @@ public class Lexer
         if (IsUpcoming("||"))
             return CreateToken(TokenKind.DoublePipe);
 
+        // Others:
+        if (IsUpcoming("->"))
+            return CreateToken(TokenKind.SingleArrow);
+
         /* ======================== Single-character ======================== */
         //    Matching every single character token
         switch (Current)
         {
+            // Operators:
             case '=':
                 return CreateToken(TokenKind.Equal);
             case '+':
@@ -213,25 +239,13 @@ public class Lexer
                 return CreateToken(TokenKind.Pipe);
             case '^':
                 return CreateToken(TokenKind.Caret);
+            // Others
+            case ':':
+                return CreateToken(TokenKind.Colon);
         }
 
         // If none of the above; not known
         Reporter.ReportUnrecognizedChar(value, span);
         return CreateToken(TokenKind.Unknown);
-    }
-
-    public Token[] Start()
-    {
-        var tokens = ImmutableArray.CreateBuilder<Token>();
-        while (true)
-        {
-            var token = GetToken();
-            tokens.Add(token);
-            if (token.Kind == TokenKind.EOF)
-                break;
-            Advance();
-        }
-
-        return [..tokens];
     }
 }
