@@ -227,7 +227,7 @@ public class Lexer
             return CreateToken(isFloat ? TokenKind.Float : TokenKind.Integer);
         }
 
-        // Look for for ∞ and ∞f
+        // Look for ∞ and ∞f
         if (Current == CONSTS.INF)
         {
             bool isFloat = false;
