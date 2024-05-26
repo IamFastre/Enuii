@@ -37,8 +37,11 @@ public class Reporter(IEnumerable<Error>? errors = null)
     internal void ReportUnrecognizedChar(StringBuilder value, Span span)
         => Report(ErrorKind.SyntaxError, $"Unrecognized character '{value}'", span);
 
-    internal void ReportInvalidToken(string? value, Span span)
-        => Report(ErrorKind.SyntaxError, $"Invalid token '{value}'", span);
+    internal void ReportInvalidSyntax(string value, Span span)
+        => Report(ErrorKind.SyntaxError, $"Invalid syntax {(value.Length > 0 ? $"'{value}'" : "")}", span);
+
+    internal void ReportEndOfFile(Span span)
+        => Report(ErrorKind.SyntaxError, $"Unexpected end of input", span);
 
     internal void ReportExpressionExpectedAfter(string after, Span span)
         => Report(ErrorKind.SyntaxError, $"Expected an expression after '{after}'", span);
@@ -51,4 +54,5 @@ public class Reporter(IEnumerable<Error>? errors = null)
 
     internal void ReportInvalidBinaryOperator(string op, string left, string right, Span span)
         => Report(ErrorKind.TypeError, $"Operator '{op}' cannot be applied to operands of type '{left}' and '{right}'", span);
+
 }

@@ -257,7 +257,7 @@ public class Lexer
                 Step();
             else
                 Reporter.ReportUnterminatedQuote(kind, span);
-            
+
             return CreateToken(kind);
         }
 

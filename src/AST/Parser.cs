@@ -151,7 +151,11 @@ public class Parser
                 return GetParenthesized();
 
             default:
-                Reporter.ReportInvalidToken(Current.Value, Current.Span);
+                if (EOF)
+                    Reporter.ReportEndOfFile(Current.Span);
+                else
+                    Reporter.ReportInvalidSyntax(Current.Value, Current.Span);
+
                 return Literal.Fabricate(Eat().Span);
         }
     }
