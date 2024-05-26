@@ -97,8 +97,8 @@ public class Analyzer
         var (opKind, resultType) = UnaryOperation.GetOperation(ue.Operator.Kind, operand.Type);
 
         // Successfully found the operation
-        if (opKind is not null)
-            return new SemanticUnaryExpression(operand, opKind.Value, resultType, ue.Span);
+        if (opKind is not UnaryOperationKind.INVALID)
+            return new SemanticUnaryExpression(operand, opKind, resultType, ue.Span);
 
         // Failed to find the operation
         Reporter.ReportInvalidUnaryOperator(ue.Operator.Value, operand.Type.Name, ue.Span);
@@ -112,8 +112,8 @@ public class Analyzer
         var (opKind, resultType) = BinaryOperation.GetOperation(left.Type, be.Operator.Kind, right.Type);
 
         // Successfully found the operation
-        if (opKind is not null)
-            return new SemanticBinaryExpression(left, right, opKind.Value, resultType, be.Span);
+        if (opKind is not BinaryOperationKind.INVALID)
+            return new SemanticBinaryExpression(left, right, opKind, resultType, be.Span);
 
         // Failed to find the operation
         Reporter.ReportInvalidBinaryOperator(be.Operator.Value, left.Type.Name, right.Type.Name, be.Span);

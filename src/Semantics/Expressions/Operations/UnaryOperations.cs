@@ -5,6 +5,8 @@ namespace Enuii.Semantics;
 
 public enum UnaryOperationKind
 {
+    INVALID,
+
     Identity,
     Negation,
     Complement,
@@ -14,8 +16,8 @@ public enum UnaryOperationKind
 public class UnaryOperation
 {
     public TokenKind          Operator { get; }
-    public TypeSymbol         Operand  { get; }
-    public TypeSymbol         Result   { get; }
+    public TypeSymbol         Operand  { get; private set; }
+    public TypeSymbol         Result   { get; private set; }
     public UnaryOperationKind Kind     { get; }
 
     // Use this constructor if both the operand and the result are of the same type
@@ -31,13 +33,23 @@ public class UnaryOperation
         Kind     = kind;
     }
 
-    public static (UnaryOperationKind?, TypeSymbol) GetOperation(TokenKind opKind, TypeSymbol operand)
+    public static (UnaryOperationKind, TypeSymbol) GetOperation(TokenKind opKind, TypeSymbol operand)
     {
         foreach (var op in operations)
-            if (op.Operator == opKind && op.Operand.Matches(operand))
+            if (op.Matches(opKind, operand))
                 return (op.Kind, op.Result);
 
-        return (null, TypeSymbol.Unknown);
+        return (UnaryOperationKind.INVALID, TypeSymbol.Unknown);
+    }
+
+    public bool Matches(TokenKind op, TypeSymbol operand)
+    {
+        // if any of the types is null then it's generic
+        Operand ??= operand;
+        Result ??= operand;
+
+        return Operator == op
+            && Operand.Matches(operand);
     }
 
     // Big array of all possible native unary operations

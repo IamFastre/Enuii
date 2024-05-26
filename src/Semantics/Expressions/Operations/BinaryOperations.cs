@@ -5,6 +5,8 @@ namespace Enuii.Semantics;
 
 public enum BinaryOperationKind
 {
+    INVALID,
+
     Equality,
     Inequality,
 
@@ -63,17 +65,18 @@ public class BinaryOperation
         Kind     = kind;
     }
 
-    public static (BinaryOperationKind?, TypeSymbol) GetOperation(TypeSymbol left, TokenKind opKind, TypeSymbol right)
+    public static (BinaryOperationKind, TypeSymbol) GetOperation(TypeSymbol left, TokenKind opKind, TypeSymbol right)
     {
         foreach (var op in operations)
             if (op.Matches(left, opKind, right))
                 return (op.Kind, op.Result);
 
-        return (null, TypeSymbol.Unknown);
+        return (BinaryOperationKind.INVALID, TypeSymbol.Unknown);
     }
 
     public bool Matches(TypeSymbol left, TokenKind op, TypeSymbol right)
     {
+        // if any of the types is null then it's generic
         Left ??= left;
         Right ??= right;
         Result ??= left;
