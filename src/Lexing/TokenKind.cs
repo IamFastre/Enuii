@@ -43,6 +43,16 @@ public enum TokenKind
 
     DoubleAmpersand,
     DoublePipe,
+    DoubleQuestionMark,
+
+    // Comparison
+    EqualEqual,
+    NotEqual,
+    Less,
+    Greater,
+    LessEqual,
+    GreaterEqual,
+    In,
 
     // Brackets
     OpenParenthesis,
@@ -59,9 +69,7 @@ internal static class TokenKindExtension
     public static bool IsParserIgnorable(this TokenKind kind) => TokenKind.__IGNORABLE_START__ < kind
                                                               && TokenKind.__IGNORABLE_END__   > kind;
 
-    
-    public static int UnaryPrecedence(this TokenKind kind)
-    => kind switch
+    public static int UnaryPrecedence(this TokenKind kind) => kind switch
     {
         TokenKind.Plus      or
         TokenKind.Minus     or
@@ -71,8 +79,7 @@ internal static class TokenKindExtension
         _ => 0,
     };
 
-    public static int BinaryPrecedence(this TokenKind kind)
-    => kind switch
+    public static int BinaryPrecedence(this TokenKind kind) => kind switch
     {
         // Multiplicative
         TokenKind.Asterisk or TokenKind.ForwardSlash or TokenKind.Percent or TokenKind.Power
@@ -80,14 +87,19 @@ internal static class TokenKindExtension
         // Additive
         TokenKind.Plus or TokenKind.Minus
             => 5,
-        // Comparative => 4,
+        // Comparative
+        TokenKind.EqualEqual or TokenKind.NotEqual or TokenKind.Less or TokenKind.Greater or TokenKind.LessEqual or TokenKind.GreaterEqual or TokenKind.In
+            => 4,
         // ANDs
         TokenKind.Ampersand or TokenKind.DoubleAmpersand
             => 3,
         // ORs
         TokenKind.Pipe or TokenKind.Caret or TokenKind.DoublePipe
             => 2,
-        // TokenKind.NullishCoalescing => 1,
+        // Nullish coalescing
+        TokenKind.DoubleQuestionMark
+            => 1,
+
         _ => 0,
     };
 }

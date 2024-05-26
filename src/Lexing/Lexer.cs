@@ -208,6 +208,25 @@ public class Lexer
         if (IsUpcoming("||"))
             return CreateToken(TokenKind.DoublePipe);
 
+        if (IsUpcoming("??"))
+            return CreateToken(TokenKind.DoubleQuestionMark);
+
+        // Comparison
+        if (IsUpcoming("=="))
+            return CreateToken(TokenKind.EqualEqual);
+
+        if (IsUpcoming("!="))
+            return CreateToken(TokenKind.NotEqual);
+
+        if (IsUpcoming("<="))
+            return CreateToken(TokenKind.LessEqual);
+
+        if (IsUpcoming(">="))
+            return CreateToken(TokenKind.GreaterEqual);
+
+        if (IsUpcoming("in"))
+            return CreateToken(TokenKind.In);
+
         // Others:
         if (IsUpcoming("->"))
             return CreateToken(TokenKind.SingleArrow);
@@ -239,6 +258,11 @@ public class Lexer
                 return CreateToken(TokenKind.Pipe);
             case '^':
                 return CreateToken(TokenKind.Caret);
+            // Comparison:
+            case '<':
+                return CreateToken(TokenKind.Less);
+            case '>':
+                return CreateToken(TokenKind.Greater);
             // Brackets:
             case '(':
                 return CreateToken(TokenKind.OpenParenthesis);

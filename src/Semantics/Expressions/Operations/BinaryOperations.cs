@@ -5,6 +5,11 @@ namespace Enuii.Semantics;
 
 public enum BinaryOperationKind
 {
+    Equality,
+    Inequality,
+
+    NullishCoalescence,
+
     LogicalAND,
     LogicalOR,
 
@@ -19,27 +24,33 @@ public enum BinaryOperationKind
     Power,
     Modulo,
 
+    Greater,
+    Less,
+    GreaterEqual,
+    LessEqual,
+
     CharIncrementing,
     CharDecrementing,
 
     StringConcatenation,
     StringMultiplication,
+    StringInclusion,
 }
 
 public class BinaryOperation
 {
     public TokenKind           Operator { get; }
-    public TypeSymbol          Left     { get; }
-    public TypeSymbol          Right    { get; }
-    public TypeSymbol          Result   { get; }
+    public TypeSymbol          Left     { get; private set; }
+    public TypeSymbol          Right    { get; private set; }
+    public TypeSymbol          Result   { get; private set; }
     public BinaryOperationKind Kind     { get; }
 
     // Use this constructor if both operands and the result are of the same type
-    public BinaryOperation(TokenKind op, BinaryOperationKind kind, TypeSymbol type)
+    private BinaryOperation(TokenKind op, BinaryOperationKind kind, TypeSymbol type)
         : this(op, kind, type, type, type) { }
 
     // Use this constructor if both operands are the same type but have a different result type
-    public BinaryOperation(TokenKind op, BinaryOperationKind kind, TypeSymbol operands, TypeSymbol result)
+    private BinaryOperation(TokenKind op, BinaryOperationKind kind, TypeSymbol operands, TypeSymbol result)
         : this(op, kind, operands, operands, result) { }
 
     // Use this constructor if both your parents hate you
@@ -55,15 +66,33 @@ public class BinaryOperation
     public static (BinaryOperationKind?, TypeSymbol) GetOperation(TypeSymbol left, TokenKind opKind, TypeSymbol right)
     {
         foreach (var op in operations)
-            if (op.Left.Matches(left) && op.Operator == opKind && op.Right.Matches(right))
+            if (op.Matches(left, opKind, right))
                 return (op.Kind, op.Result);
 
-        throw new Exception("Cannot find such binary operation");
+        return (null, TypeSymbol.Unknown);
+    }
+
+    public bool Matches(TypeSymbol left, TokenKind op, TypeSymbol right)
+    {
+        Left ??= left;
+        Right ??= right;
+        Result ??= left;
+
+        return Operator == op
+            && Left.Matches(left)
+            && Right.Matches(right);
     }
 
     // Big array of all possible native binary operations
     private static readonly BinaryOperation[] operations =
     [
+        /* ============================= General ============================ */
+
+        new(TokenKind.EqualEqual, BinaryOperationKind.Equality, null!, TypeSymbol.Boolean), // <T?> == <T> -> bool
+        new(TokenKind.NotEqual, BinaryOperationKind.Inequality, null!, TypeSymbol.Boolean), // <T?> != <T> -> bool
+
+        new(TokenKind.DoubleQuestionMark, BinaryOperationKind.NullishCoalescence, null!),   // <T?> ?? <T> -> <T>
+
         /* ============================ Booleany ============================ */
 
         new(TokenKind.DoubleAmpersand, BinaryOperationKind.LogicalAND, TypeSymbol.Boolean), // bool && bool -> bool
@@ -81,27 +110,40 @@ public class BinaryOperation
 
         new(TokenKind.Plus, BinaryOperationKind.Addition, TypeSymbol.Integer),                                // int + int -> int
         new(TokenKind.Plus, BinaryOperationKind.Addition, TypeSymbol.Float),                                  // float + float -> float
-        new(TokenKind.Plus, BinaryOperationKind.Addition, TypeSymbol.Number, TypeSymbol.Float),               // int + float -> float (interchangeable)
+        new(TokenKind.Plus, BinaryOperationKind.Addition, TypeSymbol.Number, TypeSymbol.Float),               // number + number -> float
 
         new(TokenKind.Minus, BinaryOperationKind.Subtraction, TypeSymbol.Integer),                            // int - int -> int
         new(TokenKind.Minus, BinaryOperationKind.Subtraction, TypeSymbol.Float),                              // float - float -> float
-        new(TokenKind.Minus, BinaryOperationKind.Subtraction, TypeSymbol.Number, TypeSymbol.Float),           // int - float -> float (interchangeable)
+        new(TokenKind.Minus, BinaryOperationKind.Subtraction, TypeSymbol.Number, TypeSymbol.Float),           // number - number -> float
 
         new(TokenKind.Asterisk, BinaryOperationKind.Multiplication, TypeSymbol.Integer),                      // int * int -> int
         new(TokenKind.Asterisk, BinaryOperationKind.Multiplication, TypeSymbol.Float),                        // float * float -> float
-        new(TokenKind.Asterisk, BinaryOperationKind.Multiplication, TypeSymbol.Number, TypeSymbol.Float),     // int * float -> float (interchangeable)
+        new(TokenKind.Asterisk, BinaryOperationKind.Multiplication, TypeSymbol.Number, TypeSymbol.Float),     // number * number -> float
 
         new(TokenKind.ForwardSlash, BinaryOperationKind.Division, TypeSymbol.Integer),                        // int / int -> int (floored)
         new(TokenKind.ForwardSlash, BinaryOperationKind.Division, TypeSymbol.Float),                          // float / float -> float
-        new(TokenKind.ForwardSlash, BinaryOperationKind.Division, TypeSymbol.Number, TypeSymbol.Float),       // int / float -> float (interchangeable)
+        new(TokenKind.ForwardSlash, BinaryOperationKind.Division, TypeSymbol.Number, TypeSymbol.Float),       // number / number -> float
 
         new(TokenKind.Power, BinaryOperationKind.Power, TypeSymbol.Integer),                                  // int ** int -> int (floored)
         new(TokenKind.Power, BinaryOperationKind.Power, TypeSymbol.Float),                                    // float ** float -> float
-        new(TokenKind.Power, BinaryOperationKind.Power, TypeSymbol.Number, TypeSymbol.Float),                 // int ** float -> float (interchangeable)
+        new(TokenKind.Power, BinaryOperationKind.Power, TypeSymbol.Number, TypeSymbol.Float),                 // number ** number -> float
 
         new(TokenKind.Percent, BinaryOperationKind.Modulo, TypeSymbol.Integer),                               // int % int -> int
         new(TokenKind.Percent, BinaryOperationKind.Modulo, TypeSymbol.Float),                                 // float % float -> float
-        new(TokenKind.Percent, BinaryOperationKind.Modulo, TypeSymbol.Number, TypeSymbol.Float),              // int % float -> float (interchangeable)
+        new(TokenKind.Percent, BinaryOperationKind.Modulo, TypeSymbol.Number, TypeSymbol.Float),              // number % number -> float
+
+
+        /* =========================== Comparative ========================== */
+
+        new(TokenKind.Less, BinaryOperationKind.Less, TypeSymbol.Number, TypeSymbol.Boolean),                 // number < number -> bool
+        new(TokenKind.Greater, BinaryOperationKind.Greater, TypeSymbol.Number, TypeSymbol.Boolean),           // number > number -> bool
+        new(TokenKind.LessEqual, BinaryOperationKind.LessEqual, TypeSymbol.Number, TypeSymbol.Boolean),       // number <= number -> bool
+        new(TokenKind.GreaterEqual, BinaryOperationKind.GreaterEqual, TypeSymbol.Number, TypeSymbol.Boolean), // number <= number -> bool
+
+        new(TokenKind.Less, BinaryOperationKind.Less, TypeSymbol.Char, TypeSymbol.Boolean),                   // char < char -> bool
+        new(TokenKind.Greater, BinaryOperationKind.Greater, TypeSymbol.Char, TypeSymbol.Boolean),             // char > char -> bool
+        new(TokenKind.LessEqual, BinaryOperationKind.LessEqual, TypeSymbol.Char, TypeSymbol.Boolean),         // char <= char -> bool
+        new(TokenKind.GreaterEqual, BinaryOperationKind.GreaterEqual, TypeSymbol.Char, TypeSymbol.Boolean),   // char <= char -> bool
 
         /* ============================= Stringy ============================ */
 
@@ -114,5 +156,8 @@ public class BinaryOperation
 
         new(TokenKind.Asterisk, BinaryOperationKind.StringMultiplication, TypeSymbol.Integer, TypeSymbol.String, TypeSymbol.String), // string * int -> string
         new(TokenKind.Asterisk, BinaryOperationKind.StringMultiplication, TypeSymbol.String, TypeSymbol.Integer, TypeSymbol.String), // int * string -> string
+
+        new(TokenKind.In, BinaryOperationKind.StringInclusion, TypeSymbol.Char, TypeSymbol.String, TypeSymbol.Boolean), // char in string -> bool
+        new(TokenKind.In, BinaryOperationKind.StringInclusion, TypeSymbol.String, TypeSymbol.Boolean),                  // string in string -> bool
     ];
 }

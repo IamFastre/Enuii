@@ -37,7 +37,7 @@ public class UnaryOperation
             if (op.Operator == opKind && op.Operand.Matches(operand))
                 return (op.Kind, op.Result);
 
-        throw new Exception("Cannot find such unary operation");
+        return (null, TypeSymbol.Unknown);
     }
 
     // Big array of all possible native unary operations
