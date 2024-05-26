@@ -35,7 +35,11 @@ public class Parser
         if (Current.Kind == kind)
             return Eat();
 
-        Reporter.ReportExpectedToken(kind.ToString(), Current.Value, span ?? Current.Span);
+        if (EOF)
+            Reporter.ReportEndOfFile(Current.Span);
+        else
+            Reporter.ReportExpectedToken(kind.ToString(), Current.Value, span ?? Current.Span);
+
         return Token.Fabricate(Current.Span);
     }
 
@@ -51,6 +55,7 @@ public class Parser
         return new(statements);
     }
 
+
     /* ====================================================================== */
     /*                               Statements                               */
     /* ====================================================================== */
@@ -61,6 +66,8 @@ public class Parser
         {
             default:
                 return GetExpressionStatement();
+            case TokenKind.OpenCurlyBracket:
+                return GetBlockStatement();
         }
     }
 
@@ -68,6 +75,21 @@ public class Parser
     {
         var expr = GetExpression();
         return new(expr);
+    }
+
+    private BlockStatement GetBlockStatement()
+    {
+        var body = ImmutableArray.CreateBuilder<Statement>();
+        var open  = Eat();
+
+        // Keep on looking for statements unless it's a close bracket
+        // or it's end of file
+        while (Current.Kind != TokenKind.CloseCurlyBracket && !EOF)
+            body.Add(GetStatement());
+
+        var cls = Expect(TokenKind.CloseCurlyBracket);
+
+        return new(open, body, cls);
     }
 
 

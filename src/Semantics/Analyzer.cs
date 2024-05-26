@@ -40,6 +40,9 @@ public class Analyzer
             case NodeKind.ExpressionStatement:
                 return BindExpressionStatement((ExpressionStatement) stmt);
 
+            case NodeKind.BlockStatement:
+                return BindBlockStatement((BlockStatement) stmt);
+
             default:
                 throw new Exception($"Unrecognized statement kind: {stmt.Kind}");
         }
@@ -49,6 +52,16 @@ public class Analyzer
     {
         var expr = BindExpression(stmt.Expression);
         return new(expr);
+    }
+
+    private SemanticBlockStatement BindBlockStatement(BlockStatement bs)
+    {
+        var body = ImmutableArray.CreateBuilder<SemanticStatement>();
+
+        foreach (var statement in bs.Body)
+            body.Add(BindStatement(statement));
+
+        return new([..body], bs.Span);
     }
 
     /* ====================================================================== */

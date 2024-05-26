@@ -189,16 +189,23 @@ public class Lexer
                 return CreateToken(TokenKind.Pipe);
             case '^':
                 return CreateToken(TokenKind.Caret);
+
             // Comparison:
             case '<':
                 return CreateToken(TokenKind.Less);
             case '>':
                 return CreateToken(TokenKind.Greater);
+
             // Brackets:
             case '(':
                 return CreateToken(TokenKind.OpenParenthesis);
             case ')':
                 return CreateToken(TokenKind.CloseParenthesis);
+            case '{':
+                return CreateToken(TokenKind.OpenCurlyBracket);
+            case '}':
+                return CreateToken(TokenKind.CloseCurlyBracket);
+
             // Others
             case ':':
                 return CreateToken(TokenKind.Colon);

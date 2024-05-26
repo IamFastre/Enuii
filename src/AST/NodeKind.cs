@@ -20,4 +20,5 @@ public enum NodeKind
 
     // Statements
     ExpressionStatement,
+    BlockStatement,
 }

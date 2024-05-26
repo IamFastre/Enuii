@@ -57,6 +57,8 @@ public enum TokenKind
     // Brackets
     OpenParenthesis,
     CloseParenthesis,
+    OpenCurlyBracket,
+    CloseCurlyBracket,
 
     // Others
     Colon,

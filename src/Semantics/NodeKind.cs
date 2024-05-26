@@ -14,4 +14,5 @@ public enum SemanticKind
 
     // Statements
     ExpressionStatement,
+    BlockStatement,
 }
