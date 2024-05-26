@@ -43,6 +43,9 @@ public class Reporter(IEnumerable<Error>? errors = null)
     internal void ReportExpressionExpectedAfter(string after, Span span)
         => Report(ErrorKind.SyntaxError, $"Expected an expression after '{after}'", span);
 
+    internal void ReportExpectedToken(string needed, string gotten, Span span)
+        => Report(ErrorKind.SyntaxError, $"Expected {("euioa".Contains(needed[0]) ? "an" : "a")} '{needed}' got '{gotten}'", span);
+
     internal void ReportInvalidUnaryOperator(string op, string type, Span span)
         => Report(ErrorKind.TypeError, $"Operator '{op}' cannot be applied on operand of type '{type}'", span);
 

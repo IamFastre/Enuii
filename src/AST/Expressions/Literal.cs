@@ -1,4 +1,3 @@
-using Enuii.General.Constants;
 using Enuii.General.Positioning;
 using Enuii.Syntax.Lexing;
 
@@ -12,6 +11,6 @@ public sealed class Literal(Token token, NodeKind kind)
     public override NodeKind Kind { get; } = kind;
     public override Span     Span { get; } = token.Span;
 
-    public static Literal Unknown(Span span)
-        => new(new(CONSTS.UNKNOWN, TokenKind.Unknown, span), NodeKind.Unknown);
+    public static Literal Fabricate(Span span)
+        => new(Token.Fabricate(span), NodeKind.Unknown);
 }

@@ -23,5 +23,8 @@ while (true)
     var analyzer = new Analyzer(synTree, reporter);
     var semTree  = analyzer.Start();
 
+    foreach (var error in reporter.Errors)
+        Console.WriteLine(error);
+
     Console.WriteLine("Yeah just use breakpoints for now");
 }

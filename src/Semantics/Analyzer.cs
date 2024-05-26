@@ -68,6 +68,9 @@ public class Analyzer
             case NodeKind.String:
                 return BindLiteral((Literal) expr);
 
+            case NodeKind.ParenthesizedExpression:
+                return BindParenthesizedExpression((ParenthesizedExpression) expr);
+
             case NodeKind.UnaryExpression:
                 return BindUnaryExpression((UnaryExpression) expr);
 
@@ -84,6 +87,9 @@ public class Analyzer
         var type = TypeSymbol.GetNodeType(l.Kind);
         return new(l.Value, type, l.Span);
     }
+
+    private SemanticExpression BindParenthesizedExpression(ParenthesizedExpression pe)
+        => BindExpression(pe.Expression);
 
     private SemanticExpression BindUnaryExpression(UnaryExpression ue)
     {

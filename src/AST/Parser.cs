@@ -1,4 +1,5 @@
 using System.Collections.Immutable;
+using Enuii.General.Constants;
 using Enuii.General.Positioning;
 using Enuii.Reports;
 using Enuii.Syntax.Lexing;
@@ -29,8 +30,14 @@ public class Parser
         return current;
     }
 
-    private Expression FabricateExpression(Span? span = null)
-        => Literal.Unknown(span ?? Current.Span);
+    private Token Expect(TokenKind kind, Span? span = null)
+    {
+        if (Current.Kind == kind)
+            return Eat();
+
+        Reporter.ReportExpectedToken(kind.ToString(), Current.Value, span ?? Current.Span);
+        return Token.Fabricate(Current.Span);
+    }
 
     /* ====================================================================== */
 
@@ -87,7 +94,7 @@ public class Parser
             if (left is null)
             {
                 Reporter.ReportExpressionExpectedAfter(uOp.Value, uOp.Span);
-                return FabricateExpression(uOp.Span);
+                return Literal.Fabricate(uOp.Span);
             }
 
             left = new UnaryExpression(uOp, left);
@@ -106,10 +113,10 @@ public class Parser
             if (right is null)
             {
                 Reporter.ReportExpressionExpectedAfter(binOp.Value, binOp.Span);
-                return FabricateExpression(new(left!.Span, binOp.Span));
+                return Literal.Fabricate(left.Span.To(binOp.Span));
             }
 
-            left = new BinaryExpression(left!, binOp, right);
+            left = new BinaryExpression(left, binOp, right);
         }
 
         return left;
@@ -140,9 +147,26 @@ public class Parser
             case TokenKind.Identifier:
                 return new NameLiteral(Eat());
 
+            case TokenKind.OpenParenthesis:
+                return GetParenthesized();
+
             default:
                 Reporter.ReportInvalidToken(Current.Value, Current.Span);
-                return FabricateExpression(Eat().Span);
+                return Literal.Fabricate(Eat().Span);
         }
+    }
+
+    private Expression GetParenthesized()
+    {
+        var open = Eat();
+        var expr = GetExpression();
+        var cls  = expr.Kind != NodeKind.Unknown
+                 ? Expect(TokenKind.CloseParenthesis)
+                 : null;
+
+        if (cls is null || cls.IsFabricated)
+            return Literal.Fabricate(open.Span.To(cls?.Span ?? expr.Span));
+
+        return new ParenthesizedExpression(open, expr, cls);
     }
 }

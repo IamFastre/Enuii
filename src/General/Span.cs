@@ -25,18 +25,16 @@ public class Span
         End   = end ?? start;
     }
 
-    public Span(Span start, Span? end = null)
-    {
-        Start = start.Start;
-        End   = end?.End ?? start.End;
-    }
-
     // Method to set end and return self for various uses
     public Span SetEnd(Position position)
     {
         End = position;
         return this;
     }
+
+    // Turn two positions into a span
+    public Span To(Span end)
+        => new(Start, end.End);
 
     public override string ToString()
         => IsShort ? $"{Start}" : $"{Start} => {End}";

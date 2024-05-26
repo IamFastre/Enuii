@@ -6,6 +6,6 @@ public class SyntaxTree(IEnumerable<Statement> body)
 {
     public Statement[] Body { get; } = body.ToArray();
     public Span        Span { get; } = body.Any()
-                                     ? new(body.First().Span, body.Last().Span)
+                                     ? body.First().Span.To(body.Last().Span)
                                      : new();
 }

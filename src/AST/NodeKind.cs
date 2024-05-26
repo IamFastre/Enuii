@@ -14,6 +14,7 @@ public enum NodeKind
     Identifier,
 
     // Expressions
+    ParenthesizedExpression,
     UnaryExpression,
     BinaryExpression,
 

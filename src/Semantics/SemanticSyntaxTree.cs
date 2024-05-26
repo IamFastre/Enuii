@@ -6,6 +6,6 @@ public class SemanticTree(IEnumerable<SemanticStatement> body)
 {
     public SemanticStatement[] Body { get; } = body.ToArray();
     public Span                Span { get; } = body.Any()
-                                             ? new(body.First().Span, body.Last().Span)
+                                             ? body.First().Span.To(body.Last().Span)
                                              : new();
 }

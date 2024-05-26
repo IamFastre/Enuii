@@ -14,6 +14,7 @@ public class TypeSymbol(string name, TypeID id)
     internal static TypeSymbol GetNodeType(NodeKind kind)
     => kind switch
     {
+        NodeKind.Unknown => Unknown,
         NodeKind.Null    => Null,
         NodeKind.Boolean => Boolean,
         NodeKind.Integer => Integer,

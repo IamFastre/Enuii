@@ -44,6 +44,10 @@ public enum TokenKind
     DoubleAmpersand,
     DoublePipe,
 
+    // Brackets
+    OpenParenthesis,
+    CloseParenthesis,
+
     // Others
     Colon,
     SingleArrow,

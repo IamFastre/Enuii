@@ -239,6 +239,11 @@ public class Lexer
                 return CreateToken(TokenKind.Pipe);
             case '^':
                 return CreateToken(TokenKind.Caret);
+            // Brackets:
+            case '(':
+                return CreateToken(TokenKind.OpenParenthesis);
+            case ')':
+                return CreateToken(TokenKind.CloseParenthesis);
             // Others
             case ':':
                 return CreateToken(TokenKind.Colon);
