@@ -207,6 +207,8 @@ public class Lexer
                 return CreateToken(TokenKind.CloseCurlyBracket);
 
             // Others
+            case '?':
+                return CreateToken(TokenKind.QuestionMark);
             case ':':
                 return CreateToken(TokenKind.Colon);
         }

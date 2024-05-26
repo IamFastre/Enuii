@@ -6,7 +6,8 @@ namespace Enuii.Syntax.AST;
 public sealed class Literal(Token token, NodeKind kind)
     : Expression
 {
-    public string Value { get; } = token.Value!;
+    public string Value        { get; } = token.Value;
+    public bool   IsFabricated { get; } = token.IsFabricated;
 
     public override NodeKind Kind { get; } = kind;
     public override Span     Span { get; } = token.Span;

@@ -1,4 +1,5 @@
 using System.Collections.Immutable;
+using Enuii.General.Positioning;
 using Enuii.Reports;
 using Enuii.Symbols.Typing;
 using Enuii.Syntax.AST;
@@ -68,6 +69,15 @@ public class Analyzer
     /*                               Expressions                              */
     /* ====================================================================== */
 
+    private SemanticExpression BindExpression(Expression expr, TypeSymbol expected)
+    {
+        var val = BindExpression(expr);
+        if (!expected.Matches(val.Type))
+            Reporter.ReportUnexpectedType(expected.ToString(), val.Type.ToString(), expr.Span);
+
+        return val;
+    }
+
     private SemanticExpression BindExpression(Expression expr)
     {
         switch (expr.Kind)
@@ -89,6 +99,9 @@ public class Analyzer
 
             case NodeKind.BinaryExpression:
                 return BindBinaryExpression((BinaryExpression) expr);
+
+            case NodeKind.TernaryExpression:
+                return BindTernaryExpression((TernaryExpression) expr);
 
             default:
                 throw new Exception($"Unrecognized expression kind: {expr.Kind}");
@@ -114,7 +127,7 @@ public class Analyzer
             return new SemanticUnaryExpression(operand, opKind, resultType, ue.Span);
 
         // Failed to find the operation
-        Reporter.ReportInvalidUnaryOperator(ue.Operator.Value, operand.Type.Name, ue.Span);
+        Reporter.ReportInvalidUnaryOperator(ue.Operator.Value, operand.Type.ToString(), ue.Span);
         return new SemanticFailedOperation(operand);
     }
 
@@ -129,7 +142,20 @@ public class Analyzer
             return new SemanticBinaryExpression(left, right, opKind, resultType, be.Span);
 
         // Failed to find the operation
-        Reporter.ReportInvalidBinaryOperator(be.Operator.Value, left.Type.Name, right.Type.Name, be.Span);
+        Reporter.ReportInvalidBinaryOperator(be.Operator.Value, left.Type.ToString(), right.Type.ToString(), be.Span);
         return new SemanticFailedOperation(left, right);
+    }
+
+    private SemanticTernaryExpression BindTernaryExpression(TernaryExpression te)
+    {
+        var condition = BindExpression(te.Condition, TypeSymbol.Boolean);
+        var trueExpr  = BindExpression(te.TrueExpression);
+        var falseExpr = BindExpression(te.FalseExpression);
+
+        var match = trueExpr.Type.Matches(falseExpr.Type);
+        if (match)
+            Reporter.ReportTernaryTypesDoNotMatch(trueExpr.Type.ToString(), falseExpr.Type.ToString(), te.Span);
+
+        return new(condition, trueExpr, falseExpr, match ? trueExpr.Type : TypeSymbol.Unknown, condition.Span.To(falseExpr.Span));
     }
 }

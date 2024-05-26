@@ -62,6 +62,7 @@ public enum TokenKind
 
     // Others
     Colon,
+    QuestionMark,
     SingleArrow,
 }
 

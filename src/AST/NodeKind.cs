@@ -17,6 +17,7 @@ public enum NodeKind
     ParenthesizedExpression,
     UnaryExpression,
     BinaryExpression,
+    TernaryExpression,
 
     // Statements
     ExpressionStatement,

@@ -3,7 +3,7 @@ using Enuii.Symbols.Typing;
 
 namespace Enuii.Semantics;
 
-public class SemanticFailedOperation(params SemanticExpression[] expressions)
+public sealed class SemanticFailedOperation(params SemanticExpression[] expressions)
     : SemanticExpression(TypeSymbol.Unknown)
 {
     public SemanticExpression[] Expressions { get; } = expressions;

@@ -3,7 +3,8 @@ using Enuii.Syntax.Lexing;
 
 namespace Enuii.Syntax.AST;
 
-public sealed class BlockStatement(Token open, IEnumerable<Statement> statements, Token close) : Statement
+public sealed class BlockStatement(Token open, IEnumerable<Statement> statements, Token close)
+    : Statement
 {
     public Token       Open  { get; } = open;
     public Statement[] Body  { get; } = statements.ToArray();

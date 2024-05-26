@@ -4,9 +4,9 @@ using Enuii.Syntax.AST;
 namespace Enuii.Symbols.Typing;
 
 public class TypeSymbol(string name, TypeID id)
+    : Symbol(name)
 {
-    public string Name { get; } = name;
-    public TypeID ID   { get; } = id;
+    public TypeID ID { get; } = id;
 
     public virtual bool Matches(TypeSymbol other)
         => ID.HasFlag(other.ID);

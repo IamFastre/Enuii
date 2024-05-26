@@ -3,7 +3,7 @@ using Enuii.Symbols.Typing;
 
 namespace Enuii.Semantics;
 
-public class SemanticBinaryExpression(SemanticExpression left, SemanticExpression right, BinaryOperationKind kind, TypeSymbol result, Span span)
+public sealed class SemanticBinaryExpression(SemanticExpression left, SemanticExpression right, BinaryOperationKind kind, TypeSymbol result, Span span)
     : SemanticExpression(result)
 {
     public SemanticExpression  LHS           { get; } = left;

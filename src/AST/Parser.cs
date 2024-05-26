@@ -1,5 +1,4 @@
 using System.Collections.Immutable;
-using Enuii.General.Constants;
 using Enuii.General.Positioning;
 using Enuii.Reports;
 using Enuii.Syntax.Lexing;
@@ -111,10 +110,11 @@ public class Parser
         else
         {
             var uOp = Eat();
-            left = GetSecondary(unaryPrecedence);
+            left    = GetSecondary(unaryPrecedence);
 
-            if (left is null)
+            if (left.Kind == NodeKind.Unknown)
             {
+                Reporter.Pop();
                 Reporter.ReportExpressionExpectedAfter(uOp.Value, uOp.Span);
                 return Literal.Fabricate(uOp.Span);
             }
@@ -129,16 +129,43 @@ public class Parser
             if (binaryPrecedence == 0 || binaryPrecedence <= parentPrecedence)
                 break;
 
-            var binOp = Eat();
+            var biOp  = Eat();
             var right = GetSecondary(binaryPrecedence);
 
-            if (right is null)
+            if (right.Kind == NodeKind.Unknown)
             {
-                Reporter.ReportExpressionExpectedAfter(binOp.Value, binOp.Span);
-                return Literal.Fabricate(left.Span.To(binOp.Span));
+                Reporter.Pop();
+                Reporter.ReportExpressionExpectedAfter(biOp.Value, biOp.Span);
+                return Literal.Fabricate(left.Span.To(biOp.Span));
             }
 
-            left = new BinaryExpression(left, binOp, right);
+            left = new BinaryExpression(left, biOp, right);
+        }
+
+        /* ============================= Ternary ============================ */
+        if (Current.Kind == TokenKind.QuestionMark && parentPrecedence == 0)
+        {
+            var qMark     = Eat();
+            var trueExpr  = GetSecondary();
+
+            if (trueExpr.Kind == NodeKind.Unknown)
+            {
+                Reporter.Pop();
+                Reporter.ReportExpressionExpectedAfter(qMark.Value, qMark.Span);
+                return Literal.Fabricate(left.Span.To(qMark.Span));
+            }
+
+            var colon     = Expect(TokenKind.Colon);
+
+            var falseExpr = GetSecondary();
+            if (falseExpr.Kind == NodeKind.Unknown)
+            {
+                Reporter.Pop();
+                Reporter.ReportExpressionExpectedAfter(colon.Value, colon.Span);
+                return trueExpr;
+            }
+
+            return new TernaryExpression(left, trueExpr, falseExpr);
         }
 
         return left;

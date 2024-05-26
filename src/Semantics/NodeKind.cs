@@ -11,6 +11,7 @@ public enum SemanticKind
     FailedOperation,
     UnaryExpression,
     BinaryExpression,
+    TernaryExpression,
 
     // Statements
     ExpressionStatement,
