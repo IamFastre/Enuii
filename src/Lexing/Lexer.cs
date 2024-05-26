@@ -127,75 +127,6 @@ public class Lexer
             return CreateToken(value.Length > 1 ? TokenKind.BigWhiteSpace : TokenKind.WhiteSpace);
         }
 
-        /* ============================= Numbers ============================ */
-        //    Peek in and if it's number char advance then add it
-        //    after that return the token
-        if (char.IsAsciiDigit(Current) || Current == CONSTS.DOT && char.IsAsciiDigit(Next))
-        {
-            bool isFloat = Current == CONSTS.DOT;
-            while (char.IsAsciiDigit(Next) || Next == CONSTS.DOT && !isFloat)
-            {
-                if (Next == CONSTS.DOT)
-                    isFloat = true;
-                Step();
-            }
-
-            // if 'f' or 'F' is present after the number; it's a float
-            if ("fF".Contains(Next))
-            {
-                Step();
-                isFloat = true;
-            }
-
-            return CreateToken(isFloat ? TokenKind.Float : TokenKind.Integer);
-        }
-
-        // Look for for ∞ and ∞f
-        if (Current == CONSTS.INF)
-        {
-            bool isFloat = false;
-            if ("fF".Contains(Next))
-            {
-                Step();
-                isFloat = true;
-            }
-
-            return CreateToken(isFloat ? TokenKind.Float : TokenKind.Integer);
-        }
-
-        /* ============================= Quotes ============================= */
-        //     Lexes strings and chars by known their closing pair
-        //     and appending everything in between to value
-        if (CONSTS.StrOpen.Contains(Current) || CONSTS.CharOpen.Contains(Current))
-        {
-            var (close, kind) = CONSTS.GetQuotePair(Current);
-            while (Next != close && !(PEOF || PEOL))
-            {
-                if (Next == '\\')
-                    Step();
-                Step();
-            }
-
-            if (Next == close)
-                Step();
-            else
-                Reporter.ReportUnterminatedQuote(kind, span);
-            
-            return CreateToken(kind);
-        }
-
-        
-        /* =========================== Identifiers ========================== */
-        //    Lexes identifiers, keywords, and constant literal values,
-        //    such as false, maybe, true and null
-        if (char.IsLetter(Current) || Current == '_')
-        {
-            while (char.IsLetterOrDigit(Next) || Next == '_')
-                Step();
-
-            return CreateToken(CONSTS.GetIdentifierKind(value.ToString()));
-        }
-
         /* ======================= Character-sequences ====================== */
         //    Use `IsUpcoming` helper function to test
         // Operators:
@@ -271,6 +202,74 @@ public class Lexer
             // Others
             case ':':
                 return CreateToken(TokenKind.Colon);
+        }
+
+        /* ============================= Numbers ============================ */
+        //    Peek in and if it's number char advance then add it
+        //    after that return the token
+        if (char.IsAsciiDigit(Current) || Current == CONSTS.DOT && char.IsAsciiDigit(Next))
+        {
+            bool isFloat = Current == CONSTS.DOT;
+            while (char.IsAsciiDigit(Next) || Next == CONSTS.DOT && !isFloat)
+            {
+                if (Next == CONSTS.DOT)
+                    isFloat = true;
+                Step();
+            }
+
+            // if 'f' or 'F' is present after the number; it's a float
+            if ("fF".Contains(Next))
+            {
+                Step();
+                isFloat = true;
+            }
+
+            return CreateToken(isFloat ? TokenKind.Float : TokenKind.Integer);
+        }
+
+        // Look for for ∞ and ∞f
+        if (Current == CONSTS.INF)
+        {
+            bool isFloat = false;
+            if ("fF".Contains(Next))
+            {
+                Step();
+                isFloat = true;
+            }
+
+            return CreateToken(isFloat ? TokenKind.Float : TokenKind.Integer);
+        }
+
+        /* ============================= Quotes ============================= */
+        //     Lexes strings and chars by known their closing pair
+        //     and appending everything in between to value
+        if (CONSTS.StrOpen.Contains(Current) || CONSTS.CharOpen.Contains(Current))
+        {
+            var (close, kind) = CONSTS.GetQuotePair(Current);
+            while (Next != close && !(PEOF || PEOL))
+            {
+                if (Next == '\\')
+                    Step();
+                Step();
+            }
+
+            if (Next == close)
+                Step();
+            else
+                Reporter.ReportUnterminatedQuote(kind, span);
+            
+            return CreateToken(kind);
+        }
+
+        /* =========================== Identifiers ========================== */
+        //    Lexes identifiers, keywords, and constant literal values,
+        //    such as false, maybe, true and null
+        if (char.IsLetter(Current) || Current == '_')
+        {
+            while (char.IsLetterOrDigit(Next) || Next == '_')
+                Step();
+
+            return CreateToken(CONSTS.GetIdentifierKind(value.ToString()));
         }
 
         // If none of the above; not known
