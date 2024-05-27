@@ -52,7 +52,7 @@ public static class CONSTS
         else if ((i = StrOpen.IndexOf(q)) > -1)
             return (StrClose[i], TokenKind.String);
         else
-            throw new Exception("Not found");
+            throw new Exception($"Could not find the quote pair for this char while lexing: {q}");
     }
 
     public static TokenKind GetIdentifierKind(string value)

@@ -11,7 +11,7 @@ public class TypeSymbol(string name, TypeID id)
     public virtual bool Matches(TypeSymbol other)
         => ID.HasFlag(other.ID);
 
-    internal static TypeSymbol GetNodeType(NodeKind kind)
+    internal static TypeSymbol GetLiteralType(NodeKind kind)
     => kind switch
     {
         NodeKind.Unknown => Unknown,
@@ -23,7 +23,7 @@ public class TypeSymbol(string name, TypeID id)
         NodeKind.String  => String,
         NodeKind.Range   => Range,
 
-        _ => throw new Exception($"Cannot translate token kind {kind} into a type"),
+        _ => throw new Exception($"Unrecognized literal kind while analyzing: {kind}"),
     };
 
     public static readonly TypeSymbol Any     = new(CONSTS.ANY,     TypeID.Any);

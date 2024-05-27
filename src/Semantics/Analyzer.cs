@@ -50,7 +50,7 @@ public class Analyzer
                 return BindWhileStatement((WhileStatement) stmt);
 
             default:
-                throw new Exception($"Unrecognized statement kind: {stmt.Kind}");
+                throw new Exception($"Unrecognized statement kind while analyzing: {stmt.Kind}");
         }
     }
 
@@ -134,13 +134,13 @@ public class Analyzer
                 return BindTernaryExpression((TernaryExpression) expr);
 
             default:
-                throw new Exception($"Unrecognized expression kind: {expr.Kind}");
+                throw new Exception($"Unrecognized expression kind while analyzing: {expr.Kind}");
         }
     }
 
     private SemanticConstantLiteral BindConstant(ConstantLiteral cl)
     {
-        var type = TypeSymbol.GetNodeType(cl.Kind);
+        var type = TypeSymbol.GetLiteralType(cl.Kind);
         return new(cl.Value, type, cl.Span);
     }
 
