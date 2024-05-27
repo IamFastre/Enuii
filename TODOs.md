@@ -13,6 +13,8 @@
 | ☐ | Values | Runtime Values |
 | ☐ | Identifier | Analysis for identifiers, requires scopes |
 
+---
+
 - `☐` > Planned
 - `—` > On it
 - `☑` > Done
