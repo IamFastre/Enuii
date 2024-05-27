@@ -41,7 +41,7 @@ public static class CONSTS
     public const string EMPTY = "";
 
     // Groups
-    public static readonly string[] TYPES = [ ANY, NULL, BOOLEAN, NUMBER, INTEGER, FLOAT, CHAR, STRING ];
+    public static readonly string[] TYPES = [ ANY, NULL, BOOLEAN, NUMBER, INTEGER, FLOAT, CHAR, STRING, RANGE ];
 
     // Gets closing pair of an opening quote
     public static (char, TokenKind) GetQuotePair(char q)
