@@ -9,4 +9,5 @@ public abstract class Node
 }
 
 public abstract class Statement  : Node;
+public abstract class Clause     : Node;
 public abstract class Expression : Node;

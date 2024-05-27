@@ -65,8 +65,12 @@ public class Parser
         {
             default:
                 return GetExpressionStatement();
+
             case TokenKind.OpenCurlyBracket:
                 return GetBlockStatement();
+
+            case TokenKind.If:
+                return GetIfStatement();
         }
     }
 
@@ -91,6 +95,39 @@ public class Parser
         return new(open, body, cls);
     }
 
+    private IfStatement GetIfStatement()
+    {
+        ElseClause? elseClause = null;
+
+        var ifKeyword = Eat();
+        var condition = GetExpression();
+        
+        if (condition.Kind is NodeKind.Unknown)
+        {
+            Reporter.Pop();
+            Reporter.ReportExpressionExpectedAfter(ifKeyword.Value, ifKeyword.Span);
+        }
+        Expect(TokenKind.Colon);
+
+        var thenStmt = GetStatement();
+
+        if (Current.Kind == TokenKind.Else)
+            elseClause = GetElseClause();
+
+        return new(ifKeyword, condition, thenStmt, elseClause);
+    }
+
+    private ElseClause GetElseClause()
+    {
+        var elseKeyword = Eat();
+
+        if (Current.Kind is not TokenKind.If)
+            Expect(TokenKind.Colon);
+
+        var statement   = GetStatement();
+
+        return new(elseKeyword, statement);
+    }
 
     /* ====================================================================== */
     /*                               Expressions                              */

@@ -43,6 +43,9 @@ public class Analyzer
             case NodeKind.BlockStatement:
                 return BindBlockStatement((BlockStatement) stmt);
 
+            case NodeKind.IfStatement:
+                return BindIfStatement((IfStatement) stmt);
+
             default:
                 throw new Exception($"Unrecognized statement kind: {stmt.Kind}");
         }
@@ -62,6 +65,17 @@ public class Analyzer
             body.Add(BindStatement(statement));
 
         return new([..body], bs.Span);
+    }
+
+    private SemanticStatement BindIfStatement(IfStatement @is)
+    {
+        var condition = BindExpression(@is.Condition, TypeSymbol.Boolean);
+        var thenStmt  = BindStatement(@is.Then);
+        var elseStmt  = @is.ElseClause is not null
+                      ? BindStatement(@is.ElseClause.Body)
+                      : null;
+
+        return new SemanticIfStatement(condition, thenStmt, elseStmt, @is.Span);
     }
 
     /* ====================================================================== */

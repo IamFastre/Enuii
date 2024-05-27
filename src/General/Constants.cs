@@ -15,12 +15,16 @@ public static class CONSTS
     public const string StrOpen   = "\"«“";
     public const string StrClose  = "\"»”";
 
-    // Keywords & Consts
+    // Constants
     public const string UNKNOWN = "?";
     public const string NULL    = "null";
     public const string FALSE   = "false";
     public const string MAYBE   = "maybe";
     public const string TRUE    = "true";
+
+    // Keywords
+    public const string IF   = "if";
+    public const string ELSE = "else";
 
     // Types
     public const string ANY       = "any";
@@ -53,10 +57,15 @@ public static class CONSTS
     public static TokenKind GetIdentifierKind(string value)
     => value switch
     {
-        NULL     => TokenKind.Null,
-        FALSE    => TokenKind.Boolean,
-        MAYBE    => TokenKind.Boolean,
-        TRUE     => TokenKind.Boolean,
+        // Constants
+        NULL  => TokenKind.Null,
+        FALSE => TokenKind.Boolean,
+        MAYBE => TokenKind.Boolean,
+        TRUE  => TokenKind.Boolean,
+
+        // Keywords
+        IF   => TokenKind.If,
+        ELSE => TokenKind.Else,
 
         _ when TYPES.Contains(value) => TokenKind.Type,
 

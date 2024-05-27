@@ -24,9 +24,13 @@ public enum TokenKind
     Null,
     Boolean,
 
-    Equal,
+    // Keywords
+    If,
+    Else,
 
     // Operators
+    Equal,
+
     Tilde,
     BangMark,
 

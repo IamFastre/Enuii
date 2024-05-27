@@ -23,4 +23,8 @@ public enum NodeKind
     // Statements
     ExpressionStatement,
     BlockStatement,
+    IfStatement,
+    
+    // Clauses
+    ElseClause,
 }
