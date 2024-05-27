@@ -24,6 +24,7 @@ public enum NodeKind
     ExpressionStatement,
     BlockStatement,
     IfStatement,
+    WhileStatement,
     
     // Clauses
     ElseClause,

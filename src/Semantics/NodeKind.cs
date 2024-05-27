@@ -18,4 +18,5 @@ public enum SemanticKind
     ExpressionStatement,
     BlockStatement,
     IfStatement,
+    WhileStatement,
 }

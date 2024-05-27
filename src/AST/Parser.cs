@@ -71,6 +71,9 @@ public class Parser
 
             case TokenKind.If:
                 return GetIfStatement();
+
+            case TokenKind.While:
+                return GetWhileStatement();
         }
     }
 
@@ -107,8 +110,8 @@ public class Parser
             Reporter.Pop();
             Reporter.ReportExpressionExpectedAfter(ifKeyword.Value, ifKeyword.Span);
         }
-        Expect(TokenKind.Colon);
 
+        Expect(TokenKind.Colon);
         var thenStmt = GetStatement();
 
         if (Current.Kind == TokenKind.Else)
@@ -117,11 +120,33 @@ public class Parser
         return new(ifKeyword, condition, thenStmt, elseClause);
     }
 
+    private WhileStatement GetWhileStatement()
+    {
+        ElseClause? elseClause = null;
+
+        var whileKeyword = Eat();
+        var condition = GetExpression();
+        
+        if (condition.Kind is NodeKind.Unknown)
+        {
+            Reporter.Pop();
+            Reporter.ReportExpressionExpectedAfter(whileKeyword.Value, whileKeyword.Span);
+        }
+
+        Expect(TokenKind.Colon);
+        var thenStmt = GetStatement();
+
+        if (Current.Kind == TokenKind.Else)
+            elseClause = GetElseClause();
+
+        return new(whileKeyword, condition, thenStmt, elseClause);
+    }
+
     private ElseClause GetElseClause()
     {
         var elseKeyword = Eat();
 
-        if (Current.Kind is not TokenKind.If)
+        if (Current.Kind is not (TokenKind.If or TokenKind.While))
             Expect(TokenKind.Colon);
 
         var statement   = GetStatement();

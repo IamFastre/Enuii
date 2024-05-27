@@ -46,6 +46,9 @@ public class Analyzer
             case NodeKind.IfStatement:
                 return BindIfStatement((IfStatement) stmt);
 
+            case NodeKind.WhileStatement:
+                return BindWhileStatement((WhileStatement) stmt);
+
             default:
                 throw new Exception($"Unrecognized statement kind: {stmt.Kind}");
         }
@@ -67,7 +70,7 @@ public class Analyzer
         return new([..body], bs.Span);
     }
 
-    private SemanticStatement BindIfStatement(IfStatement @is)
+    private SemanticIfStatement BindIfStatement(IfStatement @is)
     {
         var condition = BindExpression(@is.Condition, TypeSymbol.Boolean);
         var thenStmt  = BindStatement(@is.Then);
@@ -75,7 +78,18 @@ public class Analyzer
                       ? BindStatement(@is.ElseClause.Body)
                       : null;
 
-        return new SemanticIfStatement(condition, thenStmt, elseStmt, @is.Span);
+        return new(condition, thenStmt, elseStmt, @is.Span);
+    }
+
+    private SemanticWhileStatement BindWhileStatement(WhileStatement ws)
+    {
+        var condition = BindExpression(ws.Condition, TypeSymbol.Boolean);
+        var loopStmt  = BindStatement(ws.Loop);
+        var elseStmt  = ws.ElseClause is not null
+                      ? BindStatement(ws.ElseClause.Body)
+                      : null;
+
+        return new(condition, loopStmt, elseStmt, ws.Span);
     }
 
     /* ====================================================================== */

@@ -27,6 +27,7 @@ public enum TokenKind
     // Keywords
     If,
     Else,
+    While,
 
     // Operators
     Equal,

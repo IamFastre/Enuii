@@ -23,8 +23,9 @@ public static class CONSTS
     public const string TRUE    = "true";
 
     // Keywords
-    public const string IF   = "if";
-    public const string ELSE = "else";
+    public const string IF    = "if";
+    public const string ELSE  = "else";
+    public const string WHILE = "while";
 
     // Types
     public const string ANY       = "any";
@@ -64,8 +65,9 @@ public static class CONSTS
         TRUE  => TokenKind.Boolean,
 
         // Keywords
-        IF   => TokenKind.If,
-        ELSE => TokenKind.Else,
+        IF    => TokenKind.If,
+        ELSE  => TokenKind.Else,
+        WHILE => TokenKind.While,
 
         _ when TYPES.Contains(value) => TokenKind.Type,
 
