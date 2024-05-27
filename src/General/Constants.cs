@@ -21,6 +21,8 @@ public static class CONSTS
     // Constants
     public const string UNKNOWN = "?";
     public const string NULL    = "null";
+    public const string NAN     = "NaN";
+    public const string NANF    = "NaNf";
     public const string FALSE   = "false";
     public const string MAYBE   = "maybe";
     public const string TRUE    = "true";
@@ -66,6 +68,8 @@ public static class CONSTS
 
         // Constants
         NULL  => TokenKind.Null,
+        NAN   => TokenKind.Integer,
+        NANF  => TokenKind.Float,
         FALSE => TokenKind.Boolean,
         MAYBE => TokenKind.Boolean,
         TRUE  => TokenKind.Boolean,
