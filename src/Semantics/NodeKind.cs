@@ -10,6 +10,7 @@ public enum SemanticKind
     // Expressions
     FailedExpression,
     FailedOperation,
+    ConversionExpression,
     UnaryExpression,
     BinaryExpression,
     TernaryExpression,

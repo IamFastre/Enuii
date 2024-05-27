@@ -11,7 +11,8 @@ public class Parser
     public Reporter    Reporter { get; }
 
     private int   Index   { get; set; } = 0;
-    public  Token Current => Index < Tokens.Count ? Tokens[Index] : Tokens[^1];
+    public  Token Current => Index     < Tokens.Count ? Tokens[Index]     : Tokens[^1];
+    public  Token Next    => Index + 1 < Tokens.Count ? Tokens[Index + 1] : Tokens[^1];
     public  bool  EOF     => Current.Kind == TokenKind.EOF;
 
     public Parser(IEnumerable<Token> tokens, Reporter? reporter = null)
@@ -22,10 +23,16 @@ public class Parser
 
     /* =========================== Helper Methods =========================== */
 
-    private Token Eat()
+    private Token Eat(int amount = 1)
     {
-        var current = Current;
-        Index++;
+        Token current = Current;
+
+        for (int i = 0; i < amount; i++)
+        {
+            current = Current;
+            Index++;
+        }
+
         return current;
     }
 
@@ -142,6 +149,11 @@ public class Parser
         return new(whileKeyword, condition, thenStmt, elseClause);
     }
 
+
+    /* ====================================================================== */
+    /*                                 Clauses                                */
+    /* ====================================================================== */
+
     private ElseClause GetElseClause()
     {
         var elseKeyword = Eat();
@@ -152,6 +164,38 @@ public class Parser
         var statement   = GetStatement();
 
         return new(elseKeyword, statement);
+    }
+
+    private TypeClause GetTypeClause()
+    {
+        ImmutableArray<TypeClause>.Builder? parameters = null;
+        var listDim = 0;
+
+        var type = Expect(TokenKind.Type);
+        var span = type.Span.Copy();
+
+        // if `<` is met start to think generic until you meet `>`
+        if (Current.Kind == TokenKind.Less)
+        {
+            do
+            {
+                Eat();
+                parameters ??= ImmutableArray.CreateBuilder<TypeClause>();
+                parameters.Add(GetTypeClause());
+            }
+            while (Current.Kind == TokenKind.Comma);
+
+            span.SetEnd(Expect(TokenKind.Greater).Span);
+        }
+
+        // if the type is followed by `[]` then eat both tokens and add to the array dimension
+        while (Current.Kind == TokenKind.OpenSquareBracket && Next.Kind == TokenKind.CloseSquareBracket)
+        {
+            listDim++;
+            span.SetEnd(Eat(2).Span);
+        }
+
+        return new(type, parameters, listDim, span);
     }
 
     /* ====================================================================== */
@@ -168,7 +212,7 @@ public class Parser
 
         /* ============================== Unary ============================= */
         if (unaryPrecedence == 0 || unaryPrecedence < parentPrecedence)
-            left = GetIntermediate();
+            left = GetConversion();
         else
         {
             var uOp = Eat();
@@ -231,6 +275,19 @@ public class Parser
         }
 
         return left;
+    }
+
+    private Expression GetConversion()
+    {
+        var expr = GetIntermediate();
+
+        while (Current.Kind is TokenKind.SingleArrow)
+        {
+            Eat();
+            expr = new ConversionExpression(expr, GetTypeClause());
+        }
+
+        return expr;
     }
 
     private Expression GetIntermediate()

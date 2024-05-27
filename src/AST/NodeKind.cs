@@ -16,6 +16,7 @@ public enum NodeKind
 
     // Expressions
     ParenthesizedExpression,
+    ConversionExpression,
     UnaryExpression,
     BinaryExpression,
     TernaryExpression,
@@ -28,4 +29,5 @@ public enum NodeKind
     
     // Clauses
     ElseClause,
+    TypeClause,
 }

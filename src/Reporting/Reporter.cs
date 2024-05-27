@@ -63,4 +63,10 @@ public class Reporter(IEnumerable<Error>? errors = null)
 
     internal void ReportTernaryTypesDoNotMatch(string first, string second, Span span)
         => Report(ErrorKind.TypeError, $"Types '{first}' and '{second}' don't match in ternary operation", span);
+
+    internal void ReportCannotConvert(string type1, string type2, Span span)
+        => Report(ErrorKind.TypeError, $"Cannot convert from '{type1}' to '{type2}'", span);
+
+    internal void ReportInvalidTypeClause(Span span)
+        => Report(ErrorKind.SymbolError, $"Invalid type", span);
 }

@@ -9,6 +9,9 @@ public static class CONSTS
     public const char DOT = '.';
     public const char INF = '∞';
 
+    // Operators
+    public const string IN = "in";
+
     // Quotes
     public const string CharOpen  = "\'‹";
     public const string CharClose = "\'›";
@@ -58,6 +61,9 @@ public static class CONSTS
     public static TokenKind GetIdentifierKind(string value)
     => value switch
     {
+        // Operators
+        IN    => TokenKind.In,
+
         // Constants
         NULL  => TokenKind.Null,
         FALSE => TokenKind.Boolean,
@@ -70,7 +76,6 @@ public static class CONSTS
         WHILE => TokenKind.While,
 
         _ when TYPES.Contains(value) => TokenKind.Type,
-
-        _ => TokenKind.Identifier,
+        _                            => TokenKind.Identifier,
     };
 }

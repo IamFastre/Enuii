@@ -62,10 +62,13 @@ public enum TokenKind
     // Brackets
     OpenParenthesis,
     CloseParenthesis,
+    OpenSquareBracket,
+    CloseSquareBracket,
     OpenCurlyBracket,
     CloseCurlyBracket,
 
     // Others
+    Comma,
     Colon,
     QuestionMark,
     SingleArrow,

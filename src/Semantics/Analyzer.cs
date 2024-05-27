@@ -1,4 +1,5 @@
 using System.Collections.Immutable;
+using Enuii.General.Positioning;
 using Enuii.Reports;
 using Enuii.Symbols.Typing;
 using Enuii.Syntax.AST;
@@ -54,9 +55,9 @@ public class Analyzer
         }
     }
 
-    private SemanticExpressionStatement BindExpressionStatement(ExpressionStatement stmt)
+    private SemanticExpressionStatement BindExpressionStatement(ExpressionStatement es)
     {
-        var expr = BindExpression(stmt.Expression);
+        var expr = BindExpression(es.Expression);
         return new(expr);
     }
 
@@ -70,15 +71,15 @@ public class Analyzer
         return new([..body], bs.Span);
     }
 
-    private SemanticIfStatement BindIfStatement(IfStatement @is)
+    private SemanticIfStatement BindIfStatement(IfStatement fs)
     {
-        var condition = BindExpression(@is.Condition, TypeSymbol.Boolean);
-        var thenStmt  = BindStatement(@is.Then);
-        var elseStmt  = @is.ElseClause is not null
-                      ? BindStatement(@is.ElseClause.Body)
+        var condition = BindExpression(fs.Condition, TypeSymbol.Boolean);
+        var thenStmt  = BindStatement(fs.Then);
+        var elseStmt  = fs.ElseClause is not null
+                      ? BindStatement(fs.ElseClause.Body)
                       : null;
 
-        return new(condition, thenStmt, elseStmt, @is.Span);
+        return new(condition, thenStmt, elseStmt, fs.Span);
     }
 
     private SemanticWhileStatement BindWhileStatement(WhileStatement ws)
@@ -91,6 +92,28 @@ public class Analyzer
 
         return new(condition, loopStmt, elseStmt, ws.Span);
     }
+
+
+    /* ====================================================================== */
+    /*                                 Clauses                                */
+    /* ====================================================================== */
+
+    private TypeSymbol BindTypeClause(TypeClause tc)
+    {
+        var type = TypeSymbol.GetStringType(tc.Type.Value);
+        
+        if (!type.IsKnown)
+        {
+            Reporter.ReportInvalidTypeClause(tc.Span);
+            return TypeSymbol.Unknown;
+        }
+
+        // for (int i = 0; i < tc.ListDimension; i++)
+        //     type = TypeSymbol.List(type);
+
+        return type;
+    }
+
 
     /* ====================================================================== */
     /*                               Expressions                              */
@@ -124,6 +147,9 @@ public class Analyzer
             case NodeKind.ParenthesizedExpression:
                 return BindParenthesizedExpression((ParenthesizedExpression) expr);
 
+            case NodeKind.ConversionExpression:
+                return BindConversionExpression((ConversionExpression) expr);
+
             case NodeKind.UnaryExpression:
                 return BindUnaryExpression((UnaryExpression) expr);
 
@@ -139,10 +165,7 @@ public class Analyzer
     }
 
     private SemanticConstantLiteral BindConstant(ConstantLiteral cl)
-    {
-        var type = TypeSymbol.GetLiteralType(cl.Kind);
-        return new(cl.Value, type, cl.Span);
-    }
+        => new(cl.Value, TypeSymbol.GetLiteralType(cl.Kind), cl.Span);
 
     private SemanticRangeLiteral BindRange(RangeLiteral rl)
     {
@@ -156,17 +179,36 @@ public class Analyzer
     private SemanticExpression BindParenthesizedExpression(ParenthesizedExpression pe)
         => BindExpression(pe.Expression);
 
+    private SemanticExpression BindConversionExpression(ConversionExpression ce)
+    {
+        var expr   = BindExpression(ce.Expression);
+        var dest   = BindTypeClause(ce.Destination);
+        var cvKind = ConversionOperation.GetConversionKind(expr.Type, dest);
+
+        // Successfully found the operation
+        if (cvKind is not ConversionKind.INVALID)
+            return new SemanticConversionExpression(expr, dest, cvKind, ce.Span);
+
+        // Failed to find the operation
+        if (expr.Type.IsKnown && dest.IsKnown)
+            Reporter.ReportCannotConvert(expr.Type.ToString(), dest.ToString(), ce.Span);
+
+        return new SemanticFailedOperation(expr);
+    }
+
     private SemanticExpression BindUnaryExpression(UnaryExpression ue)
     {
         var operand = BindExpression(ue.Operand);
         var (opKind, resultType) = UnaryOperation.GetOperation(ue.Operator.Kind, operand.Type);
 
         // Successfully found the operation
-        if (opKind is not UnaryOperationKind.INVALID)
+        if (opKind is not UnaryKind.INVALID)
             return new SemanticUnaryExpression(operand, opKind, resultType, ue.Span);
 
         // Failed to find the operation
-        Reporter.ReportInvalidUnaryOperator(ue.Operator.Value, operand.Type.ToString(), ue.Span);
+        if (operand.Type.IsKnown)
+            Reporter.ReportInvalidUnaryOperator(ue.Operator.Value, operand.Type.ToString(), ue.Span);
+
         return new SemanticFailedOperation(operand);
     }
 
@@ -177,11 +219,13 @@ public class Analyzer
         var (opKind, resultType) = BinaryOperation.GetOperation(left.Type, be.Operator.Kind, right.Type);
 
         // Successfully found the operation
-        if (opKind is not BinaryOperationKind.INVALID)
+        if (opKind is not BinaryKind.INVALID)
             return new SemanticBinaryExpression(left, right, opKind, resultType, be.Span);
 
         // Failed to find the operation
-        Reporter.ReportInvalidBinaryOperator(be.Operator.Value, left.Type.ToString(), right.Type.ToString(), be.Span);
+        if (left.Type.IsKnown && right.Type.IsKnown)
+            Reporter.ReportInvalidBinaryOperator(be.Operator.Value, left.Type.ToString(), right.Type.ToString(), be.Span);
+
         return new SemanticFailedOperation(left, right);
     }
 
@@ -197,4 +241,15 @@ public class Analyzer
 
         return new(condition, trueExpr, falseExpr, match ? trueExpr.Type : TypeSymbol.Unknown, condition.Span.To(falseExpr.Span));
     }
+}
+
+public sealed class SemanticConversionExpression(SemanticExpression expr, TypeSymbol dest, ConversionKind cvKind, Span span)
+    : SemanticExpression(dest)
+{
+    public SemanticExpression Expr   { get; } = expr;
+    public TypeSymbol         Dest   { get; } = dest;
+    public ConversionKind     CvKind { get; } = cvKind;
+
+    public override SemanticKind Kind { get; } = SemanticKind.ConversionExpression;
+    public override Span         Span { get; } = span;
 }

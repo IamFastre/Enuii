@@ -31,10 +31,19 @@ public class Span
         End = position;
         return this;
     }
+    
+    public Span SetEnd(Span span)
+    {
+        End = span.End;
+        return this;
+    }
 
     // Turn two positions into a span
     public Span To(Span end)
         => new(Start, end.End);
+
+    public Span Copy()
+        => new(Start, End);
 
     public override string ToString()
         => IsShort ? $"{Start}" : $"{Start} => {End}";

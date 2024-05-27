@@ -155,9 +155,6 @@ public class Lexer
         if (IsUpcoming(">="))
             return CreateToken(TokenKind.GreaterEqual);
 
-        if (IsUpcoming("in"))
-            return CreateToken(TokenKind.In);
-
         // Others:
         if (IsUpcoming("->"))
             return CreateToken(TokenKind.SingleArrow);
@@ -201,6 +198,10 @@ public class Lexer
                 return CreateToken(TokenKind.OpenParenthesis);
             case ')':
                 return CreateToken(TokenKind.CloseParenthesis);
+            case '[':
+                return CreateToken(TokenKind.OpenSquareBracket);
+            case ']':
+                return CreateToken(TokenKind.CloseSquareBracket);
             case '{':
                 return CreateToken(TokenKind.OpenCurlyBracket);
             case '}':

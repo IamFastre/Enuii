@@ -5,4 +5,5 @@ public enum ErrorKind
     UnknownError,
     SyntaxError,
     TypeError,
+    SymbolError,
 }
