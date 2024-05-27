@@ -11,6 +11,7 @@ public enum NodeKind
     Float,
     Char,
     String,
+    Range,
     Identifier,
 
     // Expressions

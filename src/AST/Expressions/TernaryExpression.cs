@@ -2,7 +2,7 @@ using Enuii.General.Positioning;
 
 namespace Enuii.Syntax.AST;
 
-public class TernaryExpression(Expression condition, Expression trueExpr, Expression falseExpr)
+public sealed class TernaryExpression(Expression condition, Expression trueExpr, Expression falseExpr)
     : Expression
 {
     public Expression Condition       { get; } = condition;

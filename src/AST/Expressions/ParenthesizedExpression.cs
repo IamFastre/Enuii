@@ -3,7 +3,7 @@ using Enuii.Syntax.Lexing;
 
 namespace Enuii.Syntax.AST;
 
-public class ParenthesizedExpression(Token open, Expression expr, Token close)
+public sealed class ParenthesizedExpression(Token open, Expression expr, Token close)
     : Expression
 {
     public Token      Open       { get; } = open;

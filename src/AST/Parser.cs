@@ -106,7 +106,7 @@ public class Parser
 
         /* ============================== Unary ============================= */
         if (unaryPrecedence == 0 || unaryPrecedence < parentPrecedence)
-            left = GetPrimary();
+            left = GetIntermediate();
         else
         {
             var uOp = Eat();
@@ -116,7 +116,7 @@ public class Parser
             {
                 Reporter.Pop();
                 Reporter.ReportExpressionExpectedAfter(uOp.Value, uOp.Span);
-                return Literal.Fabricate(uOp.Span);
+                return ConstantLiteral.Fabricate(uOp.Span);
             }
 
             left = new UnaryExpression(uOp, left);
@@ -136,7 +136,7 @@ public class Parser
             {
                 Reporter.Pop();
                 Reporter.ReportExpressionExpectedAfter(biOp.Value, biOp.Span);
-                return Literal.Fabricate(left.Span.To(biOp.Span));
+                return ConstantLiteral.Fabricate(left.Span.To(biOp.Span));
             }
 
             left = new BinaryExpression(left, biOp, right);
@@ -152,7 +152,7 @@ public class Parser
             {
                 Reporter.Pop();
                 Reporter.ReportExpressionExpectedAfter(qMark.Value, qMark.Span);
-                return Literal.Fabricate(left.Span.To(qMark.Span));
+                return ConstantLiteral.Fabricate(left.Span.To(qMark.Span));
             }
 
             var colon     = Expect(TokenKind.Colon);
@@ -171,27 +171,65 @@ public class Parser
         return left;
     }
 
+    private Expression GetIntermediate()
+    {
+        switch (Current.Kind)
+        {
+            case TokenKind.Pipe:
+                return GetRange();
+            default:
+                return GetPrimary();
+        }
+    }
+
+    private RangeLiteral GetRange()
+    {
+        Expression? start = null, end = null, step = null;
+        var open = Eat();
+
+        RangeLiteral newRange()
+            => new(open, start, end, step, Eat());
+
+        if (Current.Kind != TokenKind.Colon)
+            start = GetPrimary();
+
+        Expect(TokenKind.Colon);
+
+        if (Current.Kind == TokenKind.Pipe)
+            return newRange();
+
+        end = GetPrimary();
+
+        if (Current.Kind == TokenKind.Pipe)
+            return newRange();
+
+        Expect(TokenKind.Colon);
+        step = GetPrimary();
+
+        return newRange();
+    }
+
     private Expression GetPrimary()
     {
         switch (Current.Kind)
         {
             case TokenKind.Null:
-                return new Literal(Eat(), NodeKind.Null);
+                return new ConstantLiteral(Eat(), NodeKind.Null);
 
             case TokenKind.Boolean:
-                return new Literal(Eat(), NodeKind.Boolean);
+                return new ConstantLiteral(Eat(), NodeKind.Boolean);
 
             case TokenKind.Integer:
-                return new Literal(Eat(), NodeKind.Integer);
+                return new ConstantLiteral(Eat(), NodeKind.Integer);
 
             case TokenKind.Float:
-                return new Literal(Eat(), NodeKind.Float);
+                return new ConstantLiteral(Eat(), NodeKind.Float);
 
             case TokenKind.Char:
-                return new Literal(Eat(), NodeKind.Char);
+                return new ConstantLiteral(Eat(), NodeKind.Char);
 
             case TokenKind.String:
-                return new Literal(Eat(), NodeKind.String);
+                return new ConstantLiteral(Eat(), NodeKind.String);
 
             case TokenKind.Identifier:
                 return new NameLiteral(Eat());
@@ -205,7 +243,7 @@ public class Parser
                 else
                     Reporter.ReportInvalidSyntax(Current.Value, Current.Span);
 
-                return Literal.Fabricate(Eat().Span);
+                return ConstantLiteral.Fabricate(Eat().Span);
         }
     }
 
@@ -218,7 +256,7 @@ public class Parser
                  : null;
 
         if (cls is null || cls.IsFabricated)
-            return Literal.Fabricate(open.Span.To(cls?.Span ?? expr.Span));
+            return ConstantLiteral.Fabricate(open.Span.To(cls?.Span ?? expr.Span));
 
         return new ParenthesizedExpression(open, expr, cls);
     }

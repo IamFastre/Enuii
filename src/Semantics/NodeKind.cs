@@ -3,7 +3,8 @@ namespace Enuii.Semantics;
 public enum SemanticKind
 {
     // Literals
-    Literal,
+    Constant,
+    Range,
     Name,
 
     // Expressions

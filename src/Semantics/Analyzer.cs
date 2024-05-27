@@ -1,5 +1,4 @@
 using System.Collections.Immutable;
-using Enuii.General.Positioning;
 using Enuii.Reports;
 using Enuii.Symbols.Typing;
 using Enuii.Syntax.AST;
@@ -72,7 +71,7 @@ public class Analyzer
     private SemanticExpression BindExpression(Expression expr, TypeSymbol expected)
     {
         var val = BindExpression(expr);
-        if (!expected.Matches(val.Type))
+        if (!expected.Matches(val.Type) && !TypeSymbol.Unknown.Matches(val.Type))
             Reporter.ReportUnexpectedType(expected.ToString(), val.Type.ToString(), expr.Span);
 
         return val;
@@ -89,7 +88,10 @@ public class Analyzer
             case NodeKind.Float:
             case NodeKind.Char:
             case NodeKind.String:
-                return BindLiteral((Literal) expr);
+                return BindConstant((ConstantLiteral) expr);
+
+            case NodeKind.Range:
+                return BindRange((RangeLiteral) expr);
 
             case NodeKind.ParenthesizedExpression:
                 return BindParenthesizedExpression((ParenthesizedExpression) expr);
@@ -108,10 +110,19 @@ public class Analyzer
         }
     }
 
-    private SemanticLiteral BindLiteral(Literal l)
+    private SemanticConstantLiteral BindConstant(ConstantLiteral cl)
     {
-        var type = TypeSymbol.GetNodeType(l.Kind);
-        return new(l.Value, type, l.Span);
+        var type = TypeSymbol.GetNodeType(cl.Kind);
+        return new(cl.Value, type, cl.Span);
+    }
+
+    private SemanticRangeLiteral BindRange(RangeLiteral rl)
+    {
+        var start = rl.Start is not null ? BindExpression(rl.Start, TypeSymbol.Number) : null;
+        var end   = rl.End   is not null ? BindExpression(rl.End,   TypeSymbol.Number) : null;
+        var step  = rl.Step  is not null ? BindExpression(rl.Step,  TypeSymbol.Number) : null;
+
+        return new(start, end, step, rl.Span);
     }
 
     private SemanticExpression BindParenthesizedExpression(ParenthesizedExpression pe)

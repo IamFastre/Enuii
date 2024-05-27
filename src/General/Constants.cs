@@ -30,6 +30,7 @@ public static class CONSTS
     public const string FLOAT     = "float";
     public const string CHAR      = "char";
     public const string STRING    = "string";
+    public const string RANGE     = "range";
 
     // Others
     public const string EMPTY = "";

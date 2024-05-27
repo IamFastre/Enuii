@@ -47,7 +47,7 @@ public class Reporter(IEnumerable<Error>? errors = null)
         => Report(ErrorKind.SyntaxError, $"Expected an expression after '{after}'", span);
 
     internal void ReportExpectedToken(string needed, string gotten, Span span)
-        => Report(ErrorKind.SyntaxError, $"Expected {("euioa".Contains(needed[0]) ? "an" : "a")} '{needed}' got '{gotten} instead'", span);
+        => Report(ErrorKind.SyntaxError, $"Expected {("euioa".Contains(needed[0]) ? "an" : "a")} '{needed}' got '{gotten}' instead", span);
 
     internal void ReportInvalidUnaryOperator(string op, string type, Span span)
         => Report(ErrorKind.TypeError, $"Operator '{op}' cannot be applied on operand of type '{type}'", span);
@@ -56,7 +56,7 @@ public class Reporter(IEnumerable<Error>? errors = null)
         => Report(ErrorKind.TypeError, $"Operator '{op}' cannot be applied to operands of type '{left}' and '{right}'", span);
 
     internal void ReportUnexpectedType(string needed, string gotten, Span span)
-        => Report(ErrorKind.TypeError, $"Expected expression of type '{needed}' got '{gotten} instead'", span);
+        => Report(ErrorKind.TypeError, $"Expected expression of type '{needed}' got '{gotten}' instead", span);
 
     internal void ReportTypesDoNotMatch(string needed, string gotten, Span span)
         => Report(ErrorKind.TypeError, $"Types '{needed}' and '{gotten} do not match'", span);
