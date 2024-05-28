@@ -154,18 +154,6 @@ public class Parser
     /*                                 Clauses                                */
     /* ====================================================================== */
 
-    private ElseClause GetElseClause()
-    {
-        var elseKeyword = Eat();
-
-        if (Current.Kind is not (TokenKind.If or TokenKind.While))
-            Expect(TokenKind.Colon);
-
-        var statement   = GetStatement();
-
-        return new(elseKeyword, statement);
-    }
-
     private TypeClause GetTypeClause()
     {
         ImmutableArray<TypeClause>.Builder? parameters = null;
@@ -197,6 +185,46 @@ public class Parser
 
         return new(type, parameters, listDim, span);
     }
+
+    private SeparatedClause<E> GetSeparated<E>(Func<E> getElement, TokenKind endToken) where E : Node
+    {
+        if (Current.Kind == endToken)
+            return SeparatedClause<E>.Empty;
+
+        var elements   = ImmutableArray.CreateBuilder<E>();
+        var separators = ImmutableArray.CreateBuilder<Token>();
+
+        do
+        {
+            var elem = getElement();
+
+            if (elem.Kind == NodeKind.Unknown)
+                break;
+
+            elements.Add(elem);
+
+            if (Current.Kind == TokenKind.Comma)
+                separators.Add(Eat());
+            else
+                break;
+        }
+        while (Current.Kind != endToken);
+
+        return new(elements, separators);
+    }
+
+    private ElseClause GetElseClause()
+    {
+        var elseKeyword = Eat();
+
+        if (Current.Kind is not (TokenKind.If or TokenKind.While))
+            Expect(TokenKind.Colon);
+
+        var statement   = GetStatement();
+
+        return new(elseKeyword, statement);
+    }
+
 
     /* ====================================================================== */
     /*                               Expressions                              */
@@ -296,6 +324,10 @@ public class Parser
         {
             case TokenKind.Pipe:
                 return GetRange();
+
+            case TokenKind.OpenSquareBracket:
+                return GetList();
+
             default:
                 return GetPrimary();
         }
@@ -326,6 +358,15 @@ public class Parser
         step = GetPrimary();
 
         return newRange();
+    }
+
+    private ListLiteral GetList()
+    {
+        var open  = Eat();
+        var exprs = GetSeparated(GetExpression, TokenKind.CloseSquareBracket);
+        var cls   = Expect(TokenKind.CloseSquareBracket);
+
+        return new(open, exprs, cls);
     }
 
     private Expression GetPrimary()

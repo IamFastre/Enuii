@@ -41,12 +41,13 @@ public static class CONSTS
     public const string CHAR      = "char";
     public const string STRING    = "string";
     public const string RANGE     = "range";
+    public const string LIST      = "list";
 
     // Others
     public const string EMPTY = "";
 
     // Groups
-    public static readonly string[] TYPES = [ ANY, NULL, BOOLEAN, NUMBER, INTEGER, FLOAT, CHAR, STRING, RANGE ];
+    public static readonly string[] TYPES = [ ANY, NULL, BOOLEAN, NUMBER, INTEGER, FLOAT, CHAR, STRING, RANGE, LIST ];
 
     // Gets closing pair of an opening quote
     public static (char, TokenKind) GetQuotePair(char q)

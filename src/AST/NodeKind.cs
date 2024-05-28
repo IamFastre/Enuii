@@ -12,6 +12,7 @@ public enum NodeKind
     Char,
     String,
     Range,
+    List,
     Identifier,
 
     // Expressions
@@ -21,13 +22,14 @@ public enum NodeKind
     BinaryExpression,
     TernaryExpression,
 
+    // Clauses
+    TypeClause,
+    SeparatedClause,
+    ElseClause,
+
     // Statements
     ExpressionStatement,
     BlockStatement,
     IfStatement,
     WhileStatement,
-    
-    // Clauses
-    ElseClause,
-    TypeClause,
 }

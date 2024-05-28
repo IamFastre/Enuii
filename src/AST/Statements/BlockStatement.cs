@@ -7,7 +7,7 @@ public sealed class BlockStatement(Token open, IEnumerable<Statement> statements
     : Statement
 {
     public Token       Open  { get; } = open;
-    public Statement[] Body  { get; } = statements.ToArray();
+    public Statement[] Body  { get; } = [..statements];
     public Token       Close { get; } = close;
 
     public override NodeKind Kind { get; } = NodeKind.BlockStatement;

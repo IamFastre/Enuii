@@ -5,6 +5,7 @@ public enum SemanticKind
     // Literals
     Constant,
     Range,
+    List,
     Name,
 
     // Expressions

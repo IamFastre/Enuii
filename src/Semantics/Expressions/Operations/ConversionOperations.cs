@@ -31,7 +31,7 @@ public class ConversionOperation
 {
     public static ConversionKind GetConversionKind(TypeSymbol from, TypeSymbol to)
     {
-        if (to.Matches(from))
+        if (to.HasFlag(from))
             return ConversionKind.Fuzzy;
 
         return (from.ID, to.ID) switch

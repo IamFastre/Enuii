@@ -82,8 +82,8 @@ public class BinaryOperation
         Result ??= left;
 
         return Operator == op
-            && Left.Matches(left)
-            && Right.Matches(right);
+            && Left.HasFlag(left)
+            && Right.HasFlag(right);
     }
 
     // Big array of all possible native binary operations

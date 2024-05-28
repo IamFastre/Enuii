@@ -11,10 +11,11 @@ public enum TypeID
     Char     = 1 << 6,
     String   = 1 << 7,
     Range    = 1 << 8,
+    List     = 1 << 9,
 
-    Any      = int.MaxValue,
-    Number   = Integer | Float,
-    Iterable = String  | Range,
+    Any        = int.MaxValue,
+    Number     = Integer | Float,
+    Enumerable = String  | Range | List,
 }
 
 public static class TypeIDExtension

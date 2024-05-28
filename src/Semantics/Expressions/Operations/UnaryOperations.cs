@@ -49,7 +49,7 @@ public class UnaryOperation
         Result ??= operand;
 
         return Operator == op
-            && Operand.Matches(operand);
+            && Operand.HasFlag(operand);
     }
 
     // Big array of all possible native unary operations

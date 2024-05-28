@@ -1,5 +1,4 @@
 using System.Collections.Immutable;
-using Enuii.General.Positioning;
 using Enuii.Reports;
 using Enuii.Symbols.Typing;
 using Enuii.Syntax.AST;
@@ -122,7 +121,7 @@ public class Analyzer
     private SemanticExpression BindExpression(Expression expr, TypeSymbol expected)
     {
         var val = BindExpression(expr);
-        if (!expected.Matches(val.Type) && !TypeSymbol.Unknown.Matches(val.Type))
+        if (!expected.HasFlag(val.Type) && !TypeSymbol.Unknown.HasFlag(val.Type))
             Reporter.ReportUnexpectedType(expected.ToString(), val.Type.ToString(), expr.Span);
 
         return val;
@@ -143,6 +142,9 @@ public class Analyzer
 
             case NodeKind.Range:
                 return BindRange((RangeLiteral) expr);
+
+            case NodeKind.List:
+                return BindList((ListLiteral) expr);
 
             case NodeKind.ParenthesizedExpression:
                 return BindParenthesizedExpression((ParenthesizedExpression) expr);
@@ -165,7 +167,7 @@ public class Analyzer
     }
 
     private SemanticConstantLiteral BindConstant(ConstantLiteral cl)
-        => new(cl.Value, TypeSymbol.GetLiteralType(cl.Kind), cl.Span);
+        => new(cl.Value, TypeSymbol.GetConstantType(cl.Kind), cl.Span);
 
     private SemanticRangeLiteral BindRange(RangeLiteral rl)
     {
@@ -174,6 +176,32 @@ public class Analyzer
         var step  = rl.Step  is not null ? BindExpression(rl.Step,  TypeSymbol.Number) : null;
 
         return new(start, end, step, rl.Span);
+    }
+
+    private SemanticList BindList(ListLiteral ll)
+    {
+        TypeSymbol? type  = null;
+        var exprs = ImmutableArray.CreateBuilder<SemanticExpression>();
+
+        foreach (var elem in ll.Elements.Elements)
+        {
+            var expr = BindExpression(elem);
+
+            // if list is not typed yet
+            // or the expression has a more fuzzy type
+            // give it that type
+            if (type is null || expr.Type.HasFlag(type))
+                type ??= expr.Type;
+            else if (!type.HasFlag(expr.Type) && type.IsKnown && expr.Type.IsKnown)
+            {
+                if(!TypeSymbol.GetCommonType(type, expr.Type, ref type))
+                    Reporter.ReportHeteroList(type.ToString(), expr.Type.ToString(), ll.Span);
+            }
+
+            exprs.Add(expr);
+        }
+
+        return new(exprs, type ?? TypeSymbol.Any, ll.Span);
     }
 
     private SemanticExpression BindParenthesizedExpression(ParenthesizedExpression pe)
@@ -235,7 +263,7 @@ public class Analyzer
         var trueExpr  = BindExpression(te.TrueExpression);
         var falseExpr = BindExpression(te.FalseExpression);
 
-        var match = trueExpr.Type.Matches(falseExpr.Type);
+        var match = trueExpr.Type.HasFlag(falseExpr.Type);
         if (match)
             Reporter.ReportTernaryTypesDoNotMatch(trueExpr.Type.ToString(), falseExpr.Type.ToString(), te.Span);
 
