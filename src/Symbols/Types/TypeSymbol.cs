@@ -89,8 +89,6 @@ public class TypeSymbol(string name, TypeID id, int paramsSize = 0)
     public static readonly TypeSymbol Range   = new(CONSTS.RANGE,   TypeID.Range);
     public static readonly TypeSymbol List    = new(CONSTS.LIST,    TypeID.List, 1);
 
-    public static readonly TypeSymbol[] TYPES = [ Any, Null, Boolean, Number, Integer, Float, Char, String, Range, List ];
-
 
     /* ====================================================================== */
     /*                                 Statics                                */
@@ -125,7 +123,7 @@ public class TypeSymbol(string name, TypeID id, int paramsSize = 0)
             return true;
         }
 
-        foreach (var t in TYPES)
+        foreach (var t in Builtins.TYPES)
             if (t.ID != TypeID.Any && t.HasFlag(type1) && t.HasFlag(type2))
             {
                 result = t;

@@ -1,5 +1,6 @@
 using System.Collections.Immutable;
 using Enuii.Reports;
+using Enuii.Symbols;
 using Enuii.Symbols.Typing;
 using Enuii.Syntax.AST;
 
@@ -103,7 +104,7 @@ public class Analyzer
         var parameters = tc.Parameters?.Select(BindTypeClause) ?? [];
         var paramCount = parameters.Count();
 
-        foreach (var t in TypeSymbol.TYPES)
+        foreach (var t in Builtins.TYPES)
         {
             if (t.Name == tc.Type.Value)
             {
