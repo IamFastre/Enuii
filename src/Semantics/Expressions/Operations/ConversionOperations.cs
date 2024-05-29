@@ -25,6 +25,13 @@ public enum ConversionKind
 
     CharToInt,
     CharToFloat,
+
+    RangeToNumberList,
+    RangeToIntList,
+    RangeToFloatList,
+
+    StringToCharList,
+    StringToStringList,
 }
 
 public class ConversionOperation
@@ -38,23 +45,36 @@ public class ConversionOperation
         {
             ( _ , TypeID.String) when from.IsKnown => ConversionKind.AnyToString,
 
-            (TypeID.Boolean, TypeID.Integer)       => ConversionKind.BoolToInt,
-            (TypeID.Boolean, TypeID.Float)         => ConversionKind.BoolToFloat,
-            (TypeID.Boolean, TypeID.Number)        => ConversionKind.BoolToNumber,
+            (TypeID.Boolean, TypeID.Number)  => ConversionKind.BoolToNumber,          // bool -> number
+            (TypeID.Boolean, TypeID.Integer) => ConversionKind.BoolToInt,             // bool -> int
+            (TypeID.Boolean, TypeID.Float)   => ConversionKind.BoolToFloat,           // bool -> float
 
-            (TypeID.Number, TypeID.Integer)        => ConversionKind.NumberToInt,
-            (TypeID.Number, TypeID.Float)          => ConversionKind.NumberToFloat,
-            (TypeID.Number, TypeID.Char)           => ConversionKind.NumberToChar,
+            (TypeID.Number, TypeID.Integer)  => ConversionKind.NumberToInt,           // number -> int
+            (TypeID.Number, TypeID.Float)    => ConversionKind.NumberToFloat,         // number -> float
+            (TypeID.Number, TypeID.Char)     => ConversionKind.NumberToChar,          // number -> char
 
-            (TypeID.Integer, TypeID.Char)          => ConversionKind.IntToChar,
-            (TypeID.Integer, TypeID.Float)         => ConversionKind.IntToFloat,
+            (TypeID.Integer, TypeID.Char)    => ConversionKind.IntToChar,             // int -> char
+            (TypeID.Integer, TypeID.Float)   => ConversionKind.IntToFloat,            // int -> float
 
-            (TypeID.Float, TypeID.Integer)         => ConversionKind.FloatToInt,
-            (TypeID.Float, TypeID.Char)            => ConversionKind.FloatToChar,
+            (TypeID.Float, TypeID.Integer)   => ConversionKind.FloatToInt,            // float -> int
+            (TypeID.Float, TypeID.Char)      => ConversionKind.FloatToChar,           // float -> char
 
-            (TypeID.Char, TypeID.Integer)          => ConversionKind.CharToInt,
-            (TypeID.Char, TypeID.Float)            => ConversionKind.CharToFloat,
+            (TypeID.Char, TypeID.Integer)    => ConversionKind.CharToInt,             // char -> int
+            (TypeID.Char, TypeID.Float)      => ConversionKind.CharToFloat,           // char -> float
 
+            (TypeID.Range, TypeID.List)      => to.Parameters[0].ID is TypeID.Number  // range -> number[]
+                                              ? ConversionKind.RangeToNumberList
+                                              : to.Parameters[0].ID is TypeID.Integer // range -> int[]
+                                              ? ConversionKind.RangeToIntList
+                                              : to.Parameters[0].ID is TypeID.Float   // range -> float[]
+                                              ? ConversionKind.RangeToFloatList
+                                              : ConversionKind.INVALID,
+
+            (TypeID.String, TypeID.List)     => to.Parameters[0].ID is TypeID.Char    // string -> char[]
+                                              ? ConversionKind.StringToCharList
+                                              : to.Parameters[0].ID is TypeID.String  // string -> string[]
+                                              ? ConversionKind.StringToStringList
+                                              : ConversionKind.INVALID,
             _  => ConversionKind.INVALID,
         };
     }

@@ -103,7 +103,7 @@ public class Analyzer
         var parameters = tc.Parameters?.Select(BindTypeClause) ?? [];
         var paramCount = parameters.Count();
 
-        foreach (var t in TypeSymbol.CONCRETES)
+        foreach (var t in TypeSymbol.TYPES)
         {
             if (t.Name == tc.Type.Value)
             {
