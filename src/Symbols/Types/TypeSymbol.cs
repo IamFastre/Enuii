@@ -7,16 +7,32 @@ namespace Enuii.Symbols.Typing;
 public class TypeSymbol(string name, TypeID id, int paramsSize = 0)
     : Symbol(name)
 {
-    public TypeID        ID         { get; } = id;
-    public int           ParamsSize { get; } = paramsSize;
-    public TypeSymbol[]? Parameters { get; } = new TypeSymbol[paramsSize]; // TODO: PARAMETERS SHOULD HAVE NAMES LIKE `Generic<T1, T2>`
+    public TypeID       ID         { get; } = id;
+    public int          ParamsSize { get; } = paramsSize;
+    public TypeSymbol[] Parameters { get; } = new TypeSymbol[paramsSize]; // TODO: PARAMETERS SHOULD HAVE NAMES LIKE `Generic<T1, T2>`
 
     // Metadata
     public bool IsKnown   { get; } = id is not TypeID.Unknown;
     public bool IsGeneric { get; } = paramsSize > 0;
 
     public bool HasFlag(TypeSymbol other)
-        => ID.HasFlag(other.ID);
+    {
+        // if parameter size don't match
+        // or if the base ID don't match
+        // return false otherwise keep looking
+        if (ParamsSize != other.ParamsSize || !ID.HasFlag(other.ID))
+            return false;
+
+        // check if each of the parameters do match
+        // with the `self` parameters being the parent
+        // so that `number[]` matches `int[]` but not the other way
+        for (int i = 0; i < Parameters.Length; i++)
+            if (!Parameters[i].HasFlag(other.Parameters[i]))
+                return false;
+
+        // nothing seems out of order
+        return true;
+    }
 
     public TypeSymbol SetParameters(params TypeSymbol[] paramz)
     {
@@ -26,10 +42,12 @@ public class TypeSymbol(string name, TypeID id, int paramsSize = 0)
         if (paramz.Length != ParamsSize)
             throw new Exception("Incorrect number of parameters given to generic type");
 
-        for (int i = 0; i < paramz.Length; i++)
-            Parameters[i] = paramz[i];
+        var self = new TypeSymbol(Name, ID, ParamsSize);
 
-        return this;
+        for (int i = 0; i < paramz.Length; i++)
+            self.Parameters[i] = paramz[i];
+
+        return self;
     }
 
     public override string ToString()
