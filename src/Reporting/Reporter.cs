@@ -70,6 +70,12 @@ public class Reporter(IEnumerable<Error>? errors = null)
     internal void ReportCannotConvert(string type1, string type2, Span span)
         => Report(ErrorKind.TypeError, $"Cannot convert from '{type1}' to '{type2}'", span);
 
+    internal void ReportTypeNotGeneric(string type, Span span)
+        => Report(ErrorKind.SymbolError, $"Type '{type}' is not generic", span);
+
+    internal void ReportWrongTypeParametersCount(string type, int needed, int given, Span span)
+        => Report(ErrorKind.TypeError, $"Generic type '{type}' takes in <{needed}> parameters, <{given}> were given", span);
+
     internal void ReportInvalidTypeClause(Span span)
         => Report(ErrorKind.SymbolError, $"Invalid type", span);
 }

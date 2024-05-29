@@ -1,20 +1,57 @@
+using System.Text;
 using Enuii.General.Constants;
 using Enuii.Syntax.AST;
 
 namespace Enuii.Symbols.Typing;
 
-public class TypeSymbol(string name, TypeID id, IEnumerable<TypeSymbol>? parameters = null)
+public class TypeSymbol(string name, TypeID id, int paramsSize = 0)
     : Symbol(name)
 {
     public TypeID        ID         { get; } = id;
-    public TypeSymbol[]? Parameters { get; } = parameters?.ToArray();
+    public int           ParamsSize { get; } = paramsSize;
+    public TypeSymbol[]? Parameters { get; } = new TypeSymbol[paramsSize]; // TODO: PARAMETERS SHOULD HAVE NAMES LIKE `Generic<T1, T2>`
 
     // Metadata
     public bool IsKnown   { get; } = id is not TypeID.Unknown;
-    public bool IsGeneric { get; } = parameters is not null;
+    public bool IsGeneric { get; } = paramsSize > 0;
 
-    public virtual bool HasFlag(TypeSymbol other)
+    public bool HasFlag(TypeSymbol other)
         => ID.HasFlag(other.ID);
+
+    public TypeSymbol SetParameters(params TypeSymbol[] paramz)
+    {
+        if (Parameters is null)
+            throw new Exception("Type is not generic to give parameters");
+
+        if (paramz.Length != ParamsSize)
+            throw new Exception("Incorrect number of parameters given to generic type");
+
+        for (int i = 0; i < paramz.Length; i++)
+            Parameters[i] = paramz[i];
+
+        return this;
+    }
+
+    public override string ToString()
+    {
+        if (!IsGeneric)
+            return Name;
+
+        var str = new StringBuilder(Name);
+
+        str.Append('<');
+        for (int i = 0; i < Parameters?.Length; i++)
+        {
+            var p = Parameters.ElementAt(i);
+            if (i == Parameters.Length - 1)
+                str.Append($"{p}");
+            else
+                str.Append($"{p}, ");
+        }
+        str.Append('>');
+
+        return str.ToString();
+    }
 
 
     /* ====================================================================== */
@@ -32,15 +69,9 @@ public class TypeSymbol(string name, TypeID id, IEnumerable<TypeSymbol>? paramet
     public static readonly TypeSymbol Char    = new(CONSTS.CHAR,    TypeID.Char);
     public static readonly TypeSymbol String  = new(CONSTS.STRING,  TypeID.String);
     public static readonly TypeSymbol Range   = new(CONSTS.RANGE,   TypeID.Range);
+    public static readonly TypeSymbol List    = new(CONSTS.LIST,    TypeID.List, 1);
 
-    public static readonly TypeSymbol[] CONCRETES = [ Any, Null, Boolean, Number, Integer, Float, Char, String, Range ];
-
-    /* ====================================================================== */
-
-    internal static TypeSymbol List(IEnumerable<TypeSymbol> element)
-        => new(CONSTS.LIST, TypeID.List, element);
-
-    public static readonly Func<IEnumerable<TypeSymbol>, TypeSymbol>[] GENERICS = [ List ];
+    public static readonly TypeSymbol[] CONCRETES = [ Any, Null, Boolean, Number, Integer, Float, Char, String, Range, List ];
 
 
     /* ====================================================================== */
@@ -61,15 +92,6 @@ public class TypeSymbol(string name, TypeID id, IEnumerable<TypeSymbol>? paramet
 
         _ => throw new Exception($"Unrecognized constant literal kind while analyzing: {kind}"),
     };
-
-    internal static TypeSymbol GetStringType(string name)
-    {
-        foreach (var t in CONCRETES)
-            if (t.Name == name)
-                return t;
-
-        return Unknown;
-    }
 
     internal static bool GetCommonType(TypeSymbol type1, TypeSymbol type2, ref TypeSymbol result)
     {

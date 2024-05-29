@@ -99,18 +99,36 @@ public class Analyzer
 
     private TypeSymbol BindTypeClause(TypeClause tc)
     {
-        var type = TypeSymbol.GetStringType(tc.Type.Value);
-        
-        if (!type.IsKnown)
+        TypeSymbol? type = null;
+        var parameters = tc.Parameters?.Select(BindTypeClause) ?? [];
+        var paramCount = parameters.Count();
+
+        foreach (var t in TypeSymbol.CONCRETES)
         {
-            Reporter.ReportInvalidTypeClause(tc.Span);
-            return TypeSymbol.Unknown;
+            if (t.Name == tc.Type.Value)
+            {
+                if (t.IsGeneric)
+                {
+                    if (t.ParamsSize == paramCount)
+                        t.SetParameters([..parameters]);
+                    else
+                        Reporter.ReportWrongTypeParametersCount(t.Name, t.ParamsSize, paramCount, tc.Span);
+                }
+                else if (paramCount != 0)
+                    Reporter.ReportTypeNotGeneric(t.Name, tc.Type.Span);
+
+                type = t;
+                break;
+            }
         }
 
-        // for (int i = 0; i < tc.ListDimension; i++)
-        //     type = TypeSymbol.List(type);
+        if (type is null)
+            Reporter.ReportInvalidTypeClause(tc.Span);
+        else
+            for (int i = 0; i < tc.ListDimension; i++)
+                type = TypeSymbol.List.SetParameters(type);
 
-        return type;
+        return type ?? TypeSymbol.Unknown;
     }
 
 

@@ -4,7 +4,7 @@ using Enuii.Symbols.Typing;
 namespace Enuii.Semantics;
 
 public sealed class SemanticList(IEnumerable<SemanticExpression> exprs, TypeSymbol type, Span span)
-    : SemanticExpression(TypeSymbol.List(type))
+    : SemanticExpression(TypeSymbol.List.SetParameters(type))
 {
     public SemanticExpression[] Expressions { get; } = [..exprs];
 
