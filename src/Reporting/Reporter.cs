@@ -46,8 +46,8 @@ public class Reporter(IEnumerable<Error>? errors = null)
     internal void ReportExpressionExpectedAfter(string after, Span span)
         => Report(ErrorKind.SyntaxError, $"Expected an expression after '{after}'", span);
 
-    internal void ReportExpectedToken(string needed, string gotten, Span span)
-        => Report(ErrorKind.SyntaxError, $"Expected {("euioa".Contains(needed[0]) ? "an" : "a")} '{needed}' got '{gotten}' instead", span);
+    internal void ReportExpectedToken(string needed, string given, Span span)
+        => Report(ErrorKind.SyntaxError, $"Expected {("euioa".Contains(needed[0]) ? "an" : "a")} '{needed}' got '{given}' instead", span);
 
     internal void ReportInvalidUnaryOperator(string op, string type, Span span)
         => Report(ErrorKind.TypeError, $"Operator '{op}' cannot be applied on operand of type '{type}'", span);
@@ -55,11 +55,11 @@ public class Reporter(IEnumerable<Error>? errors = null)
     internal void ReportInvalidBinaryOperator(string op, string left, string right, Span span)
         => Report(ErrorKind.TypeError, $"Operator '{op}' cannot be applied to operands of type '{left}' and '{right}'", span);
 
-    internal void ReportUnexpectedType(string needed, string gotten, Span span)
-        => Report(ErrorKind.TypeError, $"Expected expression of type '{needed}' got '{gotten}' instead", span);
+    internal void ReportUnexpectedType(string needed, string given, Span span)
+        => Report(ErrorKind.TypeError, $"Expected expression of type '{needed}' got '{given}' instead", span);
 
-    internal void ReportTypesDoNotMatch(string needed, string gotten, Span span)
-        => Report(ErrorKind.TypeError, $"Types '{needed}' and '{gotten} do not match'", span);
+    internal void ReportTypesDoNotMatch(string needed, string given, Span span)
+        => Report(ErrorKind.TypeError, $"Types '{needed}' and '{given}' do not match'", span);
 
     internal void ReportTernaryTypesDoNotMatch(string first, string second, Span span)
         => Report(ErrorKind.TypeError, $"Types '{first}' and '{second}' don't match in ternary operation", span);
@@ -78,4 +78,7 @@ public class Reporter(IEnumerable<Error>? errors = null)
 
     internal void ReportInvalidTypeClause(Span span)
         => Report(ErrorKind.SymbolError, $"Invalid type", span);
+
+    internal void ReportInternalParsingError(string value, string type, Span span)
+        => Report(ErrorKind.InternalError, $"An internal error has occurred trying to parse: <{value}> (allegedly) of type '{type}'", span);
 }

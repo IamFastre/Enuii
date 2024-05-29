@@ -1,5 +1,6 @@
 ﻿using System.Text;
 using Enuii.Reports;
+using Enuii.Runtime.Evaluation;
 using Enuii.Semantics;
 using Enuii.Syntax.AST;
 using Enuii.Syntax.Lexing;
@@ -26,5 +27,10 @@ while (true)
     foreach (var error in reporter.Errors)
         Console.WriteLine(error);
 
-    Console.WriteLine("Yeah just use breakpoints for now");
+    if (reporter.Errors.Count == 0)
+    {
+        var evaluator = new Evaluator(semTree, reporter);
+        var value = evaluator.Start();
+        Console.WriteLine(value);
+    }
 }
