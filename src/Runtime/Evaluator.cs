@@ -62,6 +62,9 @@ public class Evaluator
             case SemanticKind.Range:
                 return EvaluateRange((SemanticRangeLiteral) expr);
 
+            case SemanticKind.UnaryExpression:
+                return EvaluateUnaryExpression((SemanticUnaryExpression) expr);
+
             default:
                 throw new Exception($"Unrecognized semantic expression kind while evaluating: {expr.Kind} of type {expr.Type}");
         }
@@ -109,5 +112,25 @@ public class Evaluator
         var step  = (NumberValue?) (rl.Step  is not null ? EvaluateExpression(rl.Step)  : null);
 
         return new(start, end, step);
+    }
+
+    private RuntimeValue EvaluateUnaryExpression(SemanticUnaryExpression ue)
+    {
+        var operand = EvaluateExpression(ue.Operand);
+
+        return ue.OperationKind switch
+        {
+            UnaryKind.Identity          => operand,
+
+            UnaryKind.Negation          => operand is IntValue
+                                         ? new IntValue(-(double) operand.Value)
+                                         : new FloatValue(-(double) operand.Value),
+
+            UnaryKind.Complement        => new BoolValue(!(bool) operand.Value),
+
+            UnaryKind.BitwiseComplement => new IntValue(-(double) operand.Value - 1),
+
+            _ => throw new Exception($"Unrecognized unary operation kind while evaluating result: {ue.OperationKind} on '{ue.Type}'"),
+        };
     }
 }
