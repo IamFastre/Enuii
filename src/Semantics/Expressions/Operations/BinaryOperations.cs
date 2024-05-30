@@ -69,21 +69,20 @@ public class BinaryOperation
     {
         foreach (var op in operations)
             if (op.Matches(left, opKind, right))
-                return (op.Kind, op.Result);
+                return (op.Kind, op.Result ?? op.Left ?? left);
 
         return (BinaryKind.INVALID, TypeSymbol.Unknown);
     }
 
     public bool Matches(TypeSymbol left, TokenKind op, TypeSymbol right)
     {
-        // if any of the types is null then it's generic
-        Left ??= left;
-        Right ??= right;
-        Result ??= left;
+        if (Operator == op)
+            if (Result is null)
+                return (Left ?? left).HasFlag(Right ?? right);
+            else 
+                return (Left ?? left).HasFlag(left) && (Right ?? right).HasFlag(right);
 
-        return Operator == op
-            && Left.HasFlag(left)
-            && Right.HasFlag(right);
+        return false;
     }
 
     // Big array of all possible native binary operations
