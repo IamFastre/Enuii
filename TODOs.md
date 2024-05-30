@@ -9,6 +9,7 @@
 | ☐ | U | Add unary operations evaluation |
 | ☐ | Bi | Add binary operations evaluation |
 | ☐ | Con | Add conversion operations evaluation |
+| ☐ | Lists | Add list runtime values |
 | ☐ | For | Add for and for/else statements |
 | ☑ | While | Add while and while/else statements |
 
