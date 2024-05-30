@@ -18,3 +18,6 @@
 - `…` > On it
 - `☑` > Done
 - `☒` > Cancelled
+
+## Other Plans
+- [ ] A package manager close to that of `pip`, `npm` or `NuGet`
