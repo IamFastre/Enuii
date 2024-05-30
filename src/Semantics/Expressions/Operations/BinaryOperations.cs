@@ -41,11 +41,11 @@ public enum BinaryKind
 
 public class BinaryOperation
 {
-    public TokenKind  Operator { get; }
-    public TypeSymbol Left     { get; private set; }
-    public TypeSymbol Right    { get; private set; }
-    public TypeSymbol Result   { get; private set; }
-    public BinaryKind Kind     { get; }
+    public TokenKind   Operator  { get; }
+    public BinaryKind  Kind      { get; }
+    public TypeSymbol? Left      { get; private set; }
+    public TypeSymbol? Right     { get; private set; }
+    public TypeSymbol? Result    { get; private set; }
 
     // Use this constructor if both operands and the result are of the same type
     private BinaryOperation(TokenKind op, BinaryKind kind, TypeSymbol type)
@@ -80,7 +80,7 @@ public class BinaryOperation
             if (Result is null)
                 return (Left ?? left).HasFlag(Right ?? right);
             else 
-                return (Left ?? left).HasFlag(left) && (Right ?? right).HasFlag(right);
+                return (Left ?? left).HasFlag(left) && (Right ?? left).HasFlag(right);
 
         return false;
     }
@@ -90,8 +90,8 @@ public class BinaryOperation
     [
         /* ============================= General ============================ */
 
-        new(TokenKind.EqualEqual, BinaryKind.Equality, null!, TypeSymbol.Boolean), // <T?> == <T> -> bool
-        new(TokenKind.NotEqual, BinaryKind.Inequality, null!, TypeSymbol.Boolean), // <T?> != <T> -> bool
+        new(TokenKind.EqualEqual, BinaryKind.Equality, null!, TypeSymbol.Boolean), // <T> == <T> -> bool
+        new(TokenKind.NotEqual, BinaryKind.Inequality, null!, TypeSymbol.Boolean), // <T> != <T> -> bool
 
         new(TokenKind.DoubleQuestionMark, BinaryKind.NullishCoalescence, null!),   // <T?> ?? <T> -> <T>
 
