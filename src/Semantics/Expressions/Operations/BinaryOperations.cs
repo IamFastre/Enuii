@@ -77,10 +77,8 @@ public class BinaryOperation
     public bool Matches(TypeSymbol left, TokenKind op, TypeSymbol right)
     {
         if (Operator == op)
-            if (Result is null)
-                return (Left ?? left).HasFlag(Right ?? right);
-            else 
-                return (Left ?? left).HasFlag(left) && (Right ?? left).HasFlag(right);
+            return (Left  ?? left).HasFlag(left)
+                && (Right ?? left).HasFlag(right);
 
         return false;
     }
