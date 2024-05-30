@@ -6,12 +6,12 @@ namespace Enuii.Runtime.Evaluation;
 public sealed class StringValue(string value)
     : RuntimeValue
 {
-    public override object     Value { get; } = Parse(value);
+    public override object     Value { get; } = value;
     public override TypeSymbol Type  { get; } = TypeSymbol.String;
 
     public override string ToString()
         => (string) Value;
 
-    public static string Parse(string value)
-        => Regex.Unescape(value[1..^1]);
+    public static StringValue Parse(string value)
+        => new(Regex.Unescape(value[1..^1]));
 }

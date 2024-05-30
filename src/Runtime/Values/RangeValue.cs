@@ -10,7 +10,7 @@ public sealed class RangeValue(NumberValue? start, NumberValue? end, NumberValue
 
     public NumberValue? Start { get; } = start;
     public NumberValue? End   { get; } = end;
-    public NumberValue  Step  { get; } = step ?? new NumberValue("1");
+    public NumberValue  Step  { get; } = step ?? new IntValue(1);
 
     public override string ToString()
         => $"|{Start}:{End}:{Step}|";

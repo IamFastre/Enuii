@@ -4,25 +4,25 @@ using Enuii.Symbols.Typing;
 
 namespace Enuii.Runtime.Evaluation;
 
-public sealed class BoolValue(string value)
+public sealed class BoolValue(bool value)
     : RuntimeValue
 {
-    public override object     Value { get; } = Parse(value);
+    public override object     Value { get; } = value;
     public override TypeSymbol Type  { get; } = TypeSymbol.Boolean;
 
     public override string ToString()
         => (bool) Value ? CONSTS.TRUE : CONSTS.FALSE;
 
-    public static bool Parse(string value)
+    public static BoolValue Parse(string value)
     {
         if (value == CONSTS.TRUE)
-            return true;
+            return new(true);
 
         else if (value == CONSTS.FALSE)
-            return false;
+            return new(false);
 
         else if (value == CONSTS.MAYBE)
-            return Utils.CoinFlip();
+            return new(Utils.CoinFlip());
 
         else
             throw new Exception($"Cannot parse boolean value: {value}");

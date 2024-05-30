@@ -6,6 +6,8 @@ namespace Enuii.Runtime.Evaluation;
 public sealed class NullValue
     : RuntimeValue
 {
+    public static readonly NullValue Template = new();
+
     public override object     Value { get; } = null!;
     public override TypeSymbol Type  { get; } = TypeSymbol.Null;
 

@@ -74,25 +74,23 @@ public class Evaluator
             switch(cl.Type.ID)
             {
                 case TypeID.Null:
-                    return new NullValue();
-                
+                    return NullValue.Template;
+
                 case TypeID.Boolean:
-                    return new BoolValue(cl.Value);
+                    return BoolValue.Parse(cl.Value);
 
                 case TypeID.Integer:
-                    return new IntValue(cl.Value);
+                    return NumberValue.Parse(cl.Value, true);
 
                 case TypeID.Float:
-                    return new FloatValue(cl.Value);
-
                 case TypeID.Number:
-                    return new NumberValue(cl.Value);
+                    return NumberValue.Parse(cl.Value);
 
                 case TypeID.Char:
-                    return new CharValue(cl.Value);
+                    return CharValue.Parse(cl.Value);
 
                 case TypeID.String:
-                    return new StringValue(cl.Value);
+                    return StringValue.Parse(cl.Value);
             }
         }
         catch
