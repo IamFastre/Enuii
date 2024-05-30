@@ -157,7 +157,7 @@ public class Parser
     private TypeClause GetTypeClause()
     {
         ImmutableArray<TypeClause>.Builder? parameters = null;
-        var listDim = 0;
+        var listDim = 0u;
 
         var type = Expect(TokenKind.Type);
         var span = type.Span.Copy();
@@ -349,7 +349,8 @@ public class Parser
         if (Current.Kind == TokenKind.Pipe)
             return newRange();
 
-        end = GetPrimary();
+        if (Current.Kind != TokenKind.Colon)
+            end = GetPrimary();
 
         if (Current.Kind == TokenKind.Pipe)
             return newRange();

@@ -59,6 +59,9 @@ public class Evaluator
             case SemanticKind.Constant:
                 return EvaluateConstant((SemanticConstantLiteral) expr);
 
+            case SemanticKind.Range:
+                return EvaluateRange((SemanticRangeLiteral) expr);
+
             default:
                 throw new Exception($"Unrecognized semantic expression kind while evaluating: {expr.Kind} of type {expr.Type}");
         }
@@ -99,5 +102,14 @@ public class Evaluator
         }
 
         throw new Exception($"Unrecognized semantic constant type '{cl.Type}' while evaluating");
+    }
+
+    private RangeValue EvaluateRange(SemanticRangeLiteral rl)
+    {
+        var start = (NumberValue?) (rl.Start is not null ? EvaluateExpression(rl.Start) : null);
+        var end   = (NumberValue?) (rl.End   is not null ? EvaluateExpression(rl.End)   : null);
+        var step  = (NumberValue?) (rl.Step  is not null ? EvaluateExpression(rl.Step)  : null);
+
+        return new(start, end, step);
     }
 }
