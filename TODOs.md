@@ -11,6 +11,7 @@
 | ☐ | Lists | Add list runtime values |
 | ☐ | For | Add for and for/else statements |
 | ☐ | Error Tips | Tips/Suggestions for bad code |
+| ☐ | Enumerators | Proper enumerators for string/range/list |
 | ☑ | U | Add unary operations evaluation |
 | ☑ | While | Add while and while/else statements |
 
