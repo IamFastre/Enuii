@@ -152,12 +152,13 @@ public class BinaryOperation
 
         new(TokenKind.Minus, BinaryKind.CharDecrementing, TypeSymbol.Char, TypeSymbol.Integer, TypeSymbol.Char),            // char - int -> char
 
-        new(TokenKind.Plus, BinaryKind.StringConcatenation, TypeSymbol.String),                                             // string + string -> string
+        new(TokenKind.Plus, BinaryKind.StringConcatenation, TypeSymbol.String, TypeSymbol.Any, TypeSymbol.String),          // string + any -> string
+        new(TokenKind.Plus, BinaryKind.StringConcatenation, TypeSymbol.Any, TypeSymbol.String, TypeSymbol.String),          // any + string -> string
 
         new(TokenKind.Asterisk, BinaryKind.StringMultiplication, TypeSymbol.Integer, TypeSymbol.String, TypeSymbol.String), // string * int -> string
         new(TokenKind.Asterisk, BinaryKind.StringMultiplication, TypeSymbol.String, TypeSymbol.Integer, TypeSymbol.String), // int * string -> string
 
-        new(TokenKind.In, BinaryKind.StringInclusion, TypeSymbol.Char, TypeSymbol.String, TypeSymbol.Boolean), // char in string -> bool
-        new(TokenKind.In, BinaryKind.StringInclusion, TypeSymbol.String, TypeSymbol.Boolean),                  // string in string -> bool
+        new(TokenKind.In, BinaryKind.StringInclusion, TypeSymbol.Char, TypeSymbol.String, TypeSymbol.Boolean),              // char in string -> bool
+        new(TokenKind.In, BinaryKind.StringInclusion, TypeSymbol.String, TypeSymbol.Boolean),                               // string in string -> bool
     ];
 }

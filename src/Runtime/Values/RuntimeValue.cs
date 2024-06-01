@@ -10,7 +10,7 @@ public abstract class RuntimeValue
     public abstract override string ToString();
 
     public override bool Equals(object? obj)
-        => obj is RuntimeValue rv && GetType() == obj.GetType() && Value == rv.Value;
+        => obj is RuntimeValue rv && Type.HasFlag(rv.Type) && Equals(Value, rv.Value);
 
     public override int GetHashCode()
         => Value is null ? 0 : Value.GetHashCode();

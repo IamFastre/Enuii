@@ -16,9 +16,9 @@ public enum UnaryKind
 public class UnaryOperation
 {
     public TokenKind  Operator { get; }
+    public UnaryKind  Kind     { get; }
     public TypeSymbol Operand  { get; private set; }
     public TypeSymbol Result   { get; private set; }
-    public UnaryKind  Kind     { get; }
 
     // Use this constructor if both the operand and the result are of the same type
     private UnaryOperation(TokenKind op, UnaryKind kind, TypeSymbol operand)

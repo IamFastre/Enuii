@@ -12,6 +12,7 @@ public class TypeSymbol(string name, TypeID id, int paramsSize = 0)
     public TypeSymbol[] Parameters { get; } = new TypeSymbol[paramsSize]; // TODO: PARAMETERS SHOULD HAVE NAMES LIKE `Generic<T1, T2>`
 
     // Metadata
+    public bool IsNull    { get; } = id is TypeID.Null;
     public bool IsKnown   { get; } = id is not TypeID.Unknown;
     public bool IsGeneric { get; } = paramsSize > 0;
 

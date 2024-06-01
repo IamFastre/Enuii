@@ -65,6 +65,9 @@ public class Evaluator
             case SemanticKind.UnaryExpression:
                 return EvaluateUnaryExpression((SemanticUnaryExpression) expr);
 
+            case SemanticKind.BinaryExpression:
+                return EvaluateBinaryExpression((SemanticBinaryExpression) expr);
+
             default:
                 throw new Exception($"Unrecognized semantic expression kind while evaluating: {expr.Kind} of type {expr.Type}");
         }
@@ -130,7 +133,116 @@ public class Evaluator
 
             UnaryKind.BitwiseComplement => new IntValue(-(double) operand.Value - 1),
 
-            _ => throw new Exception($"Unrecognized unary operation kind while evaluating result: {ue.OperationKind} on '{ue.Type}'"),
+            _ => throw new Exception($"Unrecognized unary operation kind while evaluating result: {ue.OperationKind}:{ue.Type} on '{ue.Operand.Type}'"),
+        };
+    }
+
+    private RuntimeValue EvaluateBinaryExpression(SemanticBinaryExpression be)
+    {
+        var left  = EvaluateExpression(be.LHS);
+        var right = EvaluateExpression(be.RHS);
+
+        switch(be.OperationKind)
+        {
+            /* =========================== General ========================== */
+
+            case BinaryKind.Equality:
+                return new BoolValue(left == right);
+
+            case BinaryKind.Inequality:
+                return new BoolValue(left != right);
+
+            case BinaryKind.NullishCoalescence:
+                return left.Type.IsNull ? right : left;
+
+            /* =========================== Boolean ========================== */
+
+            case BinaryKind.LogicalAND:
+            case BinaryKind.BitwiseAND when be.Type.ID is TypeID.Boolean:
+                return new BoolValue(((bool) left.Value) && ((bool) right.Value));
+
+            case BinaryKind.LogicalOR:
+            case BinaryKind.BitwiseOR  when be.Type.ID is TypeID.Boolean:
+                return new BoolValue(((bool) left.Value) || ((bool) right.Value));
+
+            case BinaryKind.BitwiseXOR when be.Type.ID is TypeID.Boolean:
+                return new BoolValue(((bool) left.Value) ^  ((bool) right.Value));
+            
+            case BinaryKind.BitwiseAND when be.Type.ID is TypeID.Integer:
+                return new IntValue(((int) left.Value) & ((int) right.Value));
+
+            case BinaryKind.BitwiseOR  when be.Type.ID is TypeID.Integer:
+                return new IntValue(((int) left.Value) | ((int) right.Value));
+
+            case BinaryKind.BitwiseXOR when be.Type.ID is TypeID.Integer:
+                return new IntValue(((int) left.Value) ^ ((int) right.Value));
+
+            /* ======================== Mathematical ======================== */
+
+            case BinaryKind.Addition:
+                return NumberValue.Get(((double) left.Value) + ((double) right.Value), be.Type.ID);
+
+            case BinaryKind.Subtraction:
+                return NumberValue.Get(((double) left.Value) - ((double) right.Value), be.Type.ID);
+
+            case BinaryKind.Multiplication:
+                return NumberValue.Get(((double) left.Value) * ((double) right.Value), be.Type.ID);
+
+            case BinaryKind.Division:
+                return NumberValue.Get(((double) left.Value) / ((double) right.Value), be.Type.ID);
+
+            case BinaryKind.Power:
+                return NumberValue.Get(Math.Pow((double) left.Value, (double) right.Value), be.Type.ID);
+
+            case BinaryKind.Modulo:
+                return NumberValue.Get(((double) left.Value) % ((double) right.Value), be.Type.ID);
+
+            /* ========================= Comparative ======================== */
+
+            case BinaryKind.Less:
+                return new BoolValue(((double) left.Value) <  ((double) right.Value));
+
+            case BinaryKind.Greater:
+                return new BoolValue(((double) left.Value) >  ((double) right.Value));
+
+            case BinaryKind.LessEqual:
+                return new BoolValue(((double) left.Value) <= ((double) right.Value));
+
+            case BinaryKind.GreaterEqual:
+                return new BoolValue(((double) left.Value) >= ((double) right.Value));
+
+            /* =========================== Stringy ========================== */
+
+            case BinaryKind.CharIncrementing:
+                return new CharValue(left.Type.ID is TypeID.Char
+                    ? (char)((((char) left.Value)   + ((double) right.Value)) % (char.MaxValue + 1))
+                    : (char)((((double) left.Value) + ((char) right.Value))   % (char.MaxValue + 1)));
+
+            case BinaryKind.CharDecrementing:
+                return new CharValue((char)((((char) left.Value) - ((double) right.Value)) % (char.MaxValue + 1)));
+
+            case BinaryKind.StringConcatenation:
+                return new StringValue(left.ToString() + right.ToString());
+
+            case BinaryKind.StringMultiplication:
+                var num = (double) (left.Type.ID is TypeID.Integer ? left.Value : right.Value);
+                var str = (string) (left.Type.ID is TypeID.String  ? left.Value : right.Value);
+
+                var result = string.Empty;
+
+                if (num < 0)
+                    str = new(str.Reverse().ToArray());
+
+                for (int i = 0; i < Math.Abs(num); i++)
+                    result += str;
+
+                return new StringValue(result);
+
+            case BinaryKind.StringInclusion:
+                return new BoolValue(((string) right.Value).Contains(left.Value!.ToString()!)); // TODO: Change this piece of shit
+
+            default:
+                throw new Exception($"Unrecognized binary operation kind while evaluating result: {be.OperationKind}:{be.Type} on '{be.RHS.Type}' and '{be.RHS.Type}'");
         };
     }
 }
