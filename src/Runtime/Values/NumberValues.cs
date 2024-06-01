@@ -9,10 +9,12 @@ public abstract class NumberValue
         => Value.ToString()!.Replace('E', 'e')
          + (this is FloatValue ? "f" : "");
 
-    public static NumberValue Parse(string value, bool floor = false)
+    public static NumberValue Parse(string value, bool parseInt = false)
     {
         var db = double.Parse(value.Replace("f", "").Replace("F", ""));
-        return floor ? new IntValue(db) : new FloatValue(db);
+        return parseInt
+             ? new IntValue(db)
+             : new FloatValue(db);
     }
 
     public static NumberValue Get(double value, TypeID id)
