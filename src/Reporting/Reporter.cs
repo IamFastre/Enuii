@@ -34,7 +34,7 @@ public class Reporter(IEnumerable<Error>? errors = null)
     internal void ReportUnterminatedQuote(TokenKind kind, Span span)
         => Report(ErrorKind.SyntaxError, $"Unterminated {kind.ToString().ToLower()} literal", span);
 
-    internal void ReportUnrecognizedChar(StringBuilder value, Span span)
+    internal void ReportUnrecognizedChar(string value, Span span)
         => Report(ErrorKind.SyntaxError, $"Unrecognized character '{value}'", span);
 
     internal void ReportInvalidSyntax(string value, Span span)

@@ -285,7 +285,7 @@ public class Lexer
         }
 
         // If none of the above; not known
-        Reporter.ReportUnrecognizedChar(value, span);
+        Reporter.ReportUnrecognizedChar(value.ToString(), span);
         return CreateToken(TokenKind.Unknown);
     }
 }
