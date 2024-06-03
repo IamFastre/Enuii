@@ -8,7 +8,7 @@ public sealed class SemanticBinaryExpression(SemanticExpression left, SemanticEx
 {
     public SemanticExpression  LHS           { get; } = left;
     public SemanticExpression  RHS           { get; } = right;
-    public BinaryKind OperationKind { get; } = kind;
+    public BinaryKind          OperationKind { get; } = kind;
 
     public override SemanticKind Kind { get; } = SemanticKind.BinaryExpression;
     public override Span         Span { get; } = span;

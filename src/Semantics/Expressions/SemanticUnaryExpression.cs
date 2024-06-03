@@ -7,7 +7,7 @@ public sealed class SemanticUnaryExpression(SemanticExpression operand, UnaryKin
     : SemanticExpression(result)
 {
     public SemanticExpression Operand       { get; } = operand;
-    public UnaryKind OperationKind { get; } = kind;
+    public UnaryKind          OperationKind { get; } = kind;
 
     public override SemanticKind Kind { get; } = SemanticKind.UnaryExpression;
     public override Span         Span { get; } = span;
