@@ -23,6 +23,11 @@ public abstract class NumberValue
          : id == TypeID.Float
          ? new FloatValue(value)
          : throw new Exception($"Can only use int for float not: {id}");
+
+    public static NumberValue GetBest(double value)
+        => double.IsInteger(value)
+         ? new IntValue(value)
+         : new FloatValue(value);
 }
 
 
