@@ -1,4 +1,5 @@
 using Enuii.Reports;
+using Enuii.Runtime.Conversion;
 using Enuii.Semantics;
 using Enuii.Symbols.Typing;
 
@@ -62,6 +63,9 @@ public class Evaluator
             case SemanticKind.Range:
                 return EvaluateRange((SemanticRangeLiteral) expr);
 
+            case SemanticKind.ConversionExpression:
+                return EvaluateConversionExpression((SemanticConversionExpression) expr);
+
             case SemanticKind.UnaryExpression:
                 return EvaluateUnaryExpression((SemanticUnaryExpression) expr);
 
@@ -115,6 +119,14 @@ public class Evaluator
         var step  = (NumberValue?) (rl.Step  is not null ? EvaluateExpression(rl.Step)  : null);
 
         return new(start, end, step);
+    }
+
+    private RuntimeValue EvaluateConversionExpression(SemanticConversionExpression ce)
+    {
+        var value  = EvaluateExpression(ce.Expression);
+        var result = Converter.Convert(value, ce.OperationKind);
+
+        return result;
     }
 
     private RuntimeValue EvaluateUnaryExpression(SemanticUnaryExpression ue)
@@ -215,11 +227,11 @@ public class Evaluator
 
             case BinaryKind.CharIncrementing:
                 return new CharValue(left.Type.ID is TypeID.Char
-                    ? (char)((((char) left.Value)   + ((double) right.Value)) % (char.MaxValue + 1))
-                    : (char)((((double) left.Value) + ((char) right.Value))   % (char.MaxValue + 1)));
+                    ? (char)(((char) left.Value)   + ((double) right.Value))
+                    : (char)(((double) left.Value) + ((char) right.Value)));
 
             case BinaryKind.CharDecrementing:
-                return new CharValue((char)((((char) left.Value) - ((double) right.Value)) % (char.MaxValue + 1)));
+                return new CharValue((char)(((char) left.Value) - ((double) right.Value)));
 
             case BinaryKind.StringConcatenation:
                 return new StringValue(left.ToString() + right.ToString());
