@@ -46,6 +46,9 @@ public class Evaluator
 
             case SemanticKind.IfStatement:
                 return EvaluateIfStatement((SemanticIfStatement) stmt);
+            
+            case SemanticKind.WhileStatement:
+                return EvaluateWhileStatement((SemanticWhileStatement) stmt);
 
             default:
                 throw new Exception($"Unrecognized semantic statement kind while evaluating: {stmt.Kind}");
@@ -72,6 +75,20 @@ public class Evaluator
         var elseStmt  = fs.Else is not null ? EvaluateStatement(fs.Else) : null;
 
         return (bool) condition.Value ? thenStmt : elseStmt ?? VoidValue.Template;
+    }
+
+    private RuntimeValue EvaluateWhileStatement(SemanticWhileStatement ws)
+    {
+        RuntimeValue value = VoidValue.Template;
+        var conditionVal = EvaluateExpression(ws.Condition);
+
+        if ((bool) conditionVal.Value)
+            while ((bool) EvaluateExpression(ws.Condition).Value)
+                value = EvaluateStatement(ws.Loop);
+        else if (ws.Else is not null)
+            value = EvaluateStatement(ws.Else);
+
+        return value;
     }
 
 
