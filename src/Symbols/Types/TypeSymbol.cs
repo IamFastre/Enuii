@@ -76,10 +76,10 @@ public class TypeSymbol(string name, TypeID id, int paramsSize = 0)
     /*                                  Types                                 */
     /* ====================================================================== */
 
-    public static readonly TypeSymbol Any     = new(CONSTS.ANY,     TypeID.Any);
     public static readonly TypeSymbol Unknown = new(CONSTS.UNKNOWN, TypeID.Unknown);
     public static readonly TypeSymbol Void    = new(CONSTS.VOID,    TypeID.Void);
 
+    public static readonly TypeSymbol Any     = new(CONSTS.ANY,     TypeID.Any);
     public static readonly TypeSymbol Null    = new(CONSTS.NULL,    TypeID.Null);
     public static readonly TypeSymbol Boolean = new(CONSTS.BOOLEAN, TypeID.Boolean);
     public static readonly TypeSymbol Number  = new(CONSTS.NUMBER,  TypeID.Number);
@@ -118,7 +118,7 @@ public class TypeSymbol(string name, TypeID id, int paramsSize = 0)
         if (type2.HasFlag(type1))
             return type2;
 
-        foreach (var t in Builtins.TYPES)
+        foreach (var t in Builtins.USABLE_TYPES)
             if (t.ID != TypeID.Any && t.HasFlag(type1) && t.HasFlag(type2))
                 return t;
 
@@ -139,7 +139,7 @@ public class TypeSymbol(string name, TypeID id, int paramsSize = 0)
             return true;
         }
 
-        foreach (var t in Builtins.TYPES)
+        foreach (var t in Builtins.USABLE_TYPES)
             if (t.ID != TypeID.Any && t.HasFlag(type1) && t.HasFlag(type2))
             {
                 result = t;

@@ -7,7 +7,7 @@ public static class Builtins
     /* ====================================================================== */
     /*                                  Types                                 */
     /* ====================================================================== */
-    public static readonly TypeSymbol[] TYPES =
+    public static readonly TypeSymbol[] USABLE_TYPES =
     [
         TypeSymbol.Any,
         TypeSymbol.Null,

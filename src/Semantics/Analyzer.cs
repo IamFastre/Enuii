@@ -104,7 +104,7 @@ public class Analyzer
         var parameters = tc.Parameters?.Select(BindTypeClause) ?? [];
         var paramCount = parameters.Count();
 
-        foreach (var t in Builtins.TYPES)
+        foreach (var t in Builtins.USABLE_TYPES)
         {
             if (t.Name == tc.Type.Value)
             {
@@ -124,7 +124,7 @@ public class Analyzer
         }
 
         if (type is null)
-            Reporter.ReportInvalidTypeClause(tc.Span);
+            Reporter.ReportUnusableType(tc.Type.Value, tc.Span);
         else
             for (int i = 0; i < tc.ListDimension; i++)
                 type = TypeSymbol.List.SetParameters(type);

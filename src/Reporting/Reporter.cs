@@ -76,8 +76,8 @@ public class Reporter(IEnumerable<Error>? errors = null)
     internal void ReportTypeNotGeneric(string type, Span span)
         => Report(ErrorKind.SymbolError, $"Type '{type}' is not generic", span);
 
-    internal void ReportInvalidTypeClause(Span span)
-        => Report(ErrorKind.SymbolError, $"Invalid type symbol", span);
+    internal void ReportUnusableType(string type, Span span)
+        => Report(ErrorKind.SymbolError, $"Unusable type '{type}'", span);
 
     internal void ReportZeroStepRange(Span span)
         => Report(ErrorKind.MathError, $"Range doesn't step much", span);
