@@ -5,6 +5,13 @@ namespace Enuii.Runtime.Evaluation;
 public abstract class NumberValue
     : RuntimeValue
 {
+
+    public override int GetHashCode()
+        => Value.GetHashCode();
+
+    public override bool Equals(object? obj)
+        => obj is NumberValue nv && Equals(Value, nv.Value);
+
     public override string ToString()
         => Value.ToString()!.Replace('E', 'e')
          + (this is FloatValue ? "f" : "");

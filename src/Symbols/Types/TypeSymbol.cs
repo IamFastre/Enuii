@@ -109,6 +109,21 @@ public class TypeSymbol(string name, TypeID id, int paramsSize = 0)
         _ => throw new Exception($"Unrecognized constant literal kind while analyzing: {kind}"),
     };
 
+    internal static TypeSymbol? GetCommonType(TypeSymbol type1, TypeSymbol type2)
+    {
+        if (type1.HasFlag(type2))
+            return type1;
+
+        if (type2.HasFlag(type1))
+            return type2;
+
+        foreach (var t in Builtins.TYPES)
+            if (t.ID != TypeID.Any && t.HasFlag(type1) && t.HasFlag(type2))
+                return t;
+
+        return null;
+    }
+
     internal static bool GetCommonType(TypeSymbol type1, TypeSymbol type2, ref TypeSymbol result)
     {
         if (type1.HasFlag(type2))

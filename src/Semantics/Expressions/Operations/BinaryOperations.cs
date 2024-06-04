@@ -69,7 +69,7 @@ public class BinaryOperation
     {
         foreach (var op in operations)
             if (op.Matches(left, opKind, right))
-                return (op.Kind, op.Result ?? op.Left ?? left);
+                return (op.Kind, op.Result ?? TypeSymbol.GetCommonType(left, right) ?? left);
 
         return (BinaryKind.INVALID, TypeSymbol.Unknown);
     }
@@ -77,8 +77,13 @@ public class BinaryOperation
     public bool Matches(TypeSymbol left, TokenKind op, TypeSymbol right)
     {
         if (Operator == op)
-            return (Left  ?? left).HasFlag(left)
-                && (Right ?? left).HasFlag(right);
+        {
+
+            if (Left is null || Right is null)
+                return TypeSymbol.GetCommonType(left, right) is not null;
+
+            return Left.HasFlag(left) && Right.HasFlag(right);
+        }
 
         return false;
     }
