@@ -44,6 +44,9 @@ public class Evaluator
             case SemanticKind.BlockStatement:
                 return EvaluateBlockStatement((SemanticBlockStatement) stmt);
 
+            case SemanticKind.IfStatement:
+                return EvaluateIfStatement((SemanticIfStatement) stmt);
+
             default:
                 throw new Exception($"Unrecognized semantic statement kind while evaluating: {stmt.Kind}");
         }
@@ -60,6 +63,15 @@ public class Evaluator
             value = EvaluateStatement(stmt);
 
         return value;
+    }
+
+    private RuntimeValue EvaluateIfStatement(SemanticIfStatement fs)
+    {
+        var condition = EvaluateExpression(fs.Condition);
+        var thenStmt  = EvaluateStatement(fs.Then);
+        var elseStmt  = fs.Else is not null ? EvaluateStatement(fs.Else) : null;
+
+        return (bool) condition.Value ? thenStmt : elseStmt ?? VoidValue.Template;
     }
 
 
