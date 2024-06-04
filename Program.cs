@@ -31,6 +31,10 @@ while (true)
     {
         var evaluator = new Evaluator(semTree, reporter);
         var value = evaluator.Start();
+
+        foreach (var error in reporter.Errors)
+            Console.WriteLine(error);
+
         Console.WriteLine(value);
     }
 }

@@ -70,14 +70,20 @@ public class Reporter(IEnumerable<Error>? errors = null)
     internal void ReportCannotConvert(string type1, string type2, Span span)
         => Report(ErrorKind.TypeError, $"Cannot convert from '{type1}' to '{type2}'", span);
 
-    internal void ReportTypeNotGeneric(string type, Span span)
-        => Report(ErrorKind.SymbolError, $"Type '{type}' is not generic", span);
-
     internal void ReportWrongTypeParametersCount(string type, int needed, int given, Span span)
         => Report(ErrorKind.TypeError, $"Generic type '{type}' takes in <{needed}> parameters, <{given}> were given", span);
 
+    internal void ReportTypeNotGeneric(string type, Span span)
+        => Report(ErrorKind.SymbolError, $"Type '{type}' is not generic", span);
+
     internal void ReportInvalidTypeClause(Span span)
-        => Report(ErrorKind.SymbolError, $"Invalid type", span);
+        => Report(ErrorKind.SymbolError, $"Invalid type symbol", span);
+
+    internal void ReportZeroStepRange(Span span)
+        => Report(ErrorKind.MathError, $"Range doesn't step much", span);
+
+    internal void ReportBadRangeDirection(Span span)
+        => Report(ErrorKind.MathError, $"Range's end point is opposite to step direction", span);
 
     internal void ReportInternalParsingError(string value, string type, Span span)
         => Report(ErrorKind.InternalError, $"An internal error has occurred trying to parse: <{value}> (allegedly) of type '{type}'", span);

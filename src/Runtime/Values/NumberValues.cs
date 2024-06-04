@@ -5,7 +5,6 @@ namespace Enuii.Runtime.Evaluation;
 public abstract class NumberValue
     : RuntimeValue
 {
-
     public override int GetHashCode()
         => HashCode.Combine(Value, Type.ID);
 

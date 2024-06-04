@@ -109,13 +109,27 @@ public class Evaluator
         }
     }
 
-    private RangeValue EvaluateRange(SemanticRangeLiteral rl)
+    private RuntimeValue EvaluateRange(SemanticRangeLiteral rl)
     {
         var start = (NumberValue?) (rl.Start is not null ? EvaluateExpression(rl.Start) : null);
         var end   = (NumberValue?) (rl.End   is not null ? EvaluateExpression(rl.End)   : null);
         var step  = (NumberValue?) (rl.Step  is not null ? EvaluateExpression(rl.Step)  : null);
 
-        return new(start, end, step);
+        // if step is given as 0 then report an error
+        if (step is not null && step.Value is double s && s == 0)
+        {
+            Reporter.ReportZeroStepRange(rl.Span);
+            return UnknownValue.Template;
+        }
+
+        // the direction of the range is invalid report an error
+        if (!RangeValue.Check((double?) start?.Value, (double?) end?.Value, (double?) step?.Value))
+        {
+            Reporter.ReportBadRangeDirection(rl.Span);
+            return UnknownValue.Template;
+        }
+
+        return new RangeValue(start, end, step);
     }
 
     private ListValue EvaluateList(SemanticListLiteral ll)

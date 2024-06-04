@@ -7,4 +7,5 @@ public enum ErrorKind
     SyntaxError,
     TypeError,
     SymbolError,
+    MathError,
 }
