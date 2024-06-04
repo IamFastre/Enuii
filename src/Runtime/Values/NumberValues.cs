@@ -7,7 +7,7 @@ public abstract class NumberValue
 {
 
     public override int GetHashCode()
-        => Value.GetHashCode();
+        => HashCode.Combine(Value, Type.ID);
 
     public override bool Equals(object? obj)
         => obj is NumberValue nv && Equals(Value, nv.Value);
