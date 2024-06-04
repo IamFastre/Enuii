@@ -197,7 +197,7 @@ public class Analyzer
         return new(start, end, step, rl.Span);
     }
 
-    private SemanticList BindList(ListLiteral ll)
+    private SemanticListLiteral BindList(ListLiteral ll)
     {
         TypeSymbol? type  = null;
         var exprs = ImmutableArray.CreateBuilder<SemanticExpression>();

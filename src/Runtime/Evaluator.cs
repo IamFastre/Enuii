@@ -1,3 +1,4 @@
+using System.Collections.Immutable;
 using Enuii.Reports;
 using Enuii.Runtime.Conversion;
 using Enuii.Semantics;
@@ -63,6 +64,9 @@ public class Evaluator
             case SemanticKind.Range:
                 return EvaluateRange((SemanticRangeLiteral) expr);
 
+            case SemanticKind.List:
+                return EvaluateList((SemanticListLiteral) expr);
+
             case SemanticKind.ConversionExpression:
                 return EvaluateConversionExpression((SemanticConversionExpression) expr);
 
@@ -79,37 +83,30 @@ public class Evaluator
 
     private RuntimeValue EvaluateConstant(SemanticConstantLiteral cl)
     {
-        try
+        switch(cl.Type.ID)
         {
-            switch(cl.Type.ID)
-            {
-                case TypeID.Null:
-                    return NullValue.Template;
+            case TypeID.Null:
+                return NullValue.Template;
 
-                case TypeID.Boolean:
-                    return BoolValue.Parse(cl.Value);
+            case TypeID.Boolean:
+                return BoolValue.Parse(cl.Value);
 
-                case TypeID.Integer:
-                    return NumberValue.Parse(cl.Value, true);
+            case TypeID.Integer:
+                return NumberValue.Parse(cl.Value, true);
 
-                case TypeID.Float:
-                case TypeID.Number:
-                    return NumberValue.Parse(cl.Value);
+            case TypeID.Float:
+            case TypeID.Number:
+                return NumberValue.Parse(cl.Value);
 
-                case TypeID.Char:
-                    return CharValue.Parse(cl.Value);
+            case TypeID.Char:
+                return CharValue.Parse(cl.Value);
 
-                case TypeID.String:
-                    return StringValue.Parse(cl.Value);
-            }
+            case TypeID.String:
+                return StringValue.Parse(cl.Value);
+
+            default:
+                throw new Exception($"Unrecognized semantic constant type '{cl.Type}' while evaluating");
         }
-        catch
-        {
-            Reporter.ReportInternalParsingError(cl.Value, cl.Type.ToString(), cl.Span);
-            return UnknownValue.Template;
-        }
-
-        throw new Exception($"Unrecognized semantic constant type '{cl.Type}' while evaluating");
     }
 
     private RangeValue EvaluateRange(SemanticRangeLiteral rl)
@@ -119,6 +116,16 @@ public class Evaluator
         var step  = (NumberValue?) (rl.Step  is not null ? EvaluateExpression(rl.Step)  : null);
 
         return new(start, end, step);
+    }
+
+    private ListValue EvaluateList(SemanticListLiteral ll)
+    {
+        var exprs = ImmutableArray.CreateBuilder<RuntimeValue>();
+
+        foreach (var expr in ll.Expressions)
+            exprs.Add(EvaluateExpression(expr));
+
+        return new(exprs, ll.Type);
     }
 
     private RuntimeValue EvaluateConversionExpression(SemanticConversionExpression ce)
