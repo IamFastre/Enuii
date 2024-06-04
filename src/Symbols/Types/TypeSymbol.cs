@@ -1,4 +1,3 @@
-using System.Text;
 using Enuii.General.Constants;
 using Enuii.Syntax.AST;
 
@@ -56,18 +55,18 @@ public class TypeSymbol(string name, TypeID id, int paramsSize = 0)
         if (!IsGeneric)
             return Name;
 
-        var str = new StringBuilder(Name);
+        var str = Name;
 
-        str.Append('<');
+        str += '<';
         for (int i = 0; i < Parameters?.Length; i++)
         {
-            var p = Parameters.ElementAt(i);
+            var p = Parameters[i];
             if (i == Parameters.Length - 1)
-                str.Append($"{p}");
+                str += $"{p}";
             else
-                str.Append($"{p}, ");
+                str += $"{p}, ";
         }
-        str.Append('>');
+        str += '>';
 
         return str.ToString();
     }
