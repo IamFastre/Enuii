@@ -21,7 +21,7 @@ public class Evaluator
 
     public RuntimeValue Start()
     {
-        RuntimeValue value = UnknownValue.Template;
+        RuntimeValue value = VoidValue.Template;
 
         foreach (var stmt in SemanticTree.Body)
             value = EvaluateStatement(stmt);
@@ -41,13 +41,26 @@ public class Evaluator
             case SemanticKind.ExpressionStatement:
                 return EvaluateExpressionStatement((SemanticExpressionStatement) stmt);
 
+            case SemanticKind.BlockStatement:
+                return EvaluateBlockStatement((SemanticBlockStatement) stmt);
+
             default:
                 throw new Exception($"Unrecognized semantic statement kind while evaluating: {stmt.Kind}");
         }
     }
 
-    private RuntimeValue EvaluateExpressionStatement(SemanticExpressionStatement stmt)
-        => EvaluateExpression(stmt.Expression);
+    private RuntimeValue EvaluateExpressionStatement(SemanticExpressionStatement es)
+        => EvaluateExpression(es.Expression);
+
+    private RuntimeValue EvaluateBlockStatement(SemanticBlockStatement bs)
+    {
+        RuntimeValue value = VoidValue.Template;
+
+        foreach (var stmt in bs.Body)
+            value = EvaluateStatement(stmt);
+
+        return value;
+    }
 
 
     /* ====================================================================== */

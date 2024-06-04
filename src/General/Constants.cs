@@ -34,6 +34,7 @@ public static class CONSTS
 
     // Types
     public const string ANY       = "any";
+    public const string VOID      = "void";
     public const string BOOLEAN   = "bool";
     public const string NUMBER    = "number";
     public const string INTEGER   = "int";

@@ -78,6 +78,7 @@ public class TypeSymbol(string name, TypeID id, int paramsSize = 0)
 
     public static readonly TypeSymbol Any     = new(CONSTS.ANY,     TypeID.Any);
     public static readonly TypeSymbol Unknown = new(CONSTS.UNKNOWN, TypeID.Unknown);
+    public static readonly TypeSymbol Void    = new(CONSTS.VOID,    TypeID.Void);
 
     public static readonly TypeSymbol Null    = new(CONSTS.NULL,    TypeID.Null);
     public static readonly TypeSymbol Boolean = new(CONSTS.BOOLEAN, TypeID.Boolean);
