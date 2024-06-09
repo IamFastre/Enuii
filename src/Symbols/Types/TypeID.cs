@@ -20,22 +20,3 @@ public enum TypeID
     Number     = Integer | Float,
     Enumerable = String  | Range | List,
 }
-
-public static class TypeIDExtension
-{
-    public static bool Match(this (TypeID L, TypeID R) Ns, TypeID left, TypeID? right = null, bool interchangeable = false)
-    {
-       if (right is null)
-            return left.HasFlag(Ns.L) && left.HasFlag(Ns.R);
-
-        if (interchangeable)
-            return left.HasFlag(Ns.L) && right.Value.HasFlag(Ns.R) || left.HasFlag(Ns.R) && right.Value.HasFlag(Ns.L);
-        return left.HasFlag(Ns.L) && right.Value.HasFlag(Ns.R);
-    }
-
-    public static bool Known(this (TypeID L, TypeID R) Ns)
-        => Ns.L.Known() && Ns.R.Known();
-
-    public static bool Known(this TypeID type)
-        => type is not TypeID.Unknown;
-}
