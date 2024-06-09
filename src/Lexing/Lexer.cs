@@ -1,5 +1,6 @@
 using System.Collections.Immutable;
 using System.Text;
+using System.Text.RegularExpressions;
 using Enuii.General.Constants;
 using Enuii.General.Positioning;
 using Enuii.Reports;
@@ -265,10 +266,56 @@ public class Lexer
                 Step();
             }
 
-            if (Next == close)
-                Step();
-            else
+            if (Next != close)
                 Reporter.ReportUnterminatedQuote(kind, span);
+            else
+            {
+                Step();
+                try
+                {
+                    var content = Regex.Unescape(value.ToString()[1..^1]);
+                    var open    = value[0];
+
+                    if (kind is TokenKind.Char)
+                    {
+                        // Error handling for character length
+                        if (content.Length == 1)
+                        {
+                            if (char.TryParse(content, out var c))
+                            {
+                                value.Clear();
+                                value.Append(open);
+                                value.Append(c);
+                                value.Append(close);
+                            }
+                        }
+                        else if (content.Length > 1)
+                            Reporter.ReportFatChar(span);
+                        else
+                            Reporter.ReportZeroLengthChar(span);
+                    }
+                    else if (kind is TokenKind.String)
+                    {
+                        value.Clear();
+                        value.Append(open);
+                        value.Append(content);
+                        value.Append(close);
+                    }
+                }
+                catch (RegexParseException e)
+                {
+                    switch(e.Error)
+                    {
+                        case RegexParseError.UnrecognizedEscape:
+                            Reporter.ReportUnrecognizedEscapeSequence(e.Message[^3..^1], span);
+                            break;
+
+                        default:
+                            Reporter.ReportUnrecognizedEscapeSequence(span);
+                            break;
+                    }
+                }
+            }
 
             return CreateToken(kind);
         }

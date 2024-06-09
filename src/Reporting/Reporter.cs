@@ -34,6 +34,18 @@ public class Reporter(IEnumerable<Error>? errors = null)
     internal void ReportUnterminatedQuote(TokenKind kind, Span span)
         => Report(ErrorKind.SyntaxError, $"Unterminated {kind.ToString().ToLower()} literal", span);
 
+    internal void ReportZeroLengthChar(Span span)
+        => Report(ErrorKind.SyntaxError, $"Character literal can't be empty", span);
+
+    internal void ReportFatChar(Span span)
+        => Report(ErrorKind.SyntaxError, $"Character literal can't be more than one character", span);
+
+    internal void ReportUnrecognizedEscapeSequence(Span span)
+        => Report(ErrorKind.SyntaxError, $"Invalid escape sequence", span);
+
+    internal void ReportUnrecognizedEscapeSequence(string seq, Span span)
+        => Report(ErrorKind.SyntaxError, $"Invalid escape sequence '{seq}'", span);
+
     internal void ReportUnrecognizedChar(string value, Span span)
         => Report(ErrorKind.SyntaxError, $"Unrecognized character '{value}'", span);
 

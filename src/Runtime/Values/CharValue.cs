@@ -13,5 +13,5 @@ public sealed class CharValue(char value)
         => Value.ToString()!;
 
     public static CharValue Parse(string value)
-        => new(char.Parse(Regex.Unescape(value[1..^1])));
+        => new(value[1]);
 }

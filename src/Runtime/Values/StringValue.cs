@@ -13,5 +13,5 @@ public sealed class StringValue(string value)
         => (string) Value;
 
     public static StringValue Parse(string value)
-        => new(Regex.Unescape(value[1..^1]));
+        => new(value[1..^1]);
 }
