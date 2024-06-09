@@ -97,6 +97,9 @@ public class Reporter(IEnumerable<Error>? errors = null)
     internal void ReportBadRangeDirection(Span span)
         => Report(ErrorKind.MathError, $"Range's end point is opposite to step direction", span);
 
+    internal void ReportInfiniteRange(Span span)
+        => Report(ErrorKind.MathError, $"Cannot convert infinite range into a list", span);
+
     internal void ReportInternalParsingError(string value, string type, Span span)
         => Report(ErrorKind.InternalError, $"An internal error has occurred trying to parse: <{value}> (allegedly) of type '{type}'", span);
 }

@@ -34,6 +34,15 @@ public abstract class NumberValue
         => double.IsInteger(value)
          ? new IntValue(value)
          : new FloatValue(value);
+
+    public FloatValue ToFloat()
+        => new((double) Value);
+
+    public IntValue ToInt()
+        => new((double) Value);
+
+    public NumberValue ToBest()
+        => GetBest((double) Value);
 }
 
 

@@ -187,6 +187,18 @@ public class Evaluator
     private RuntimeValue EvaluateConversionExpression(SemanticConversionExpression ce)
     {
         var value  = EvaluateExpression(ce.Expression);
+
+        // if it's a range conversion and the range is infinite
+        // handle the error
+        if (ce.OperationKind is ConversionKind.RangeToNumberList
+                             or ConversionKind.RangeToIntList
+                             or ConversionKind.RangeToFloatList
+        && (((RangeValue) value).Start is null || ((RangeValue) value).End is null))
+        {
+            Reporter.ReportInfiniteRange(ce.Expression.Span);
+            return UnknownValue.Template;
+        }
+
         var result = Converter.Convert(value, ce.OperationKind);
 
         return result;
