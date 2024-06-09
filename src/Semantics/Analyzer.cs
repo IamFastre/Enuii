@@ -110,10 +110,10 @@ public class Analyzer
             {
                 if (t.IsGeneric)
                 {
-                    if (t.ParamsSize == paramCount)
+                    if (t.Properties.ArgSize == paramCount)
                         t.SetParameters([..parameters]);
                     else
-                        Reporter.ReportWrongTypeParametersCount(t.Name, t.ParamsSize, paramCount, tc.Span);
+                        Reporter.ReportWrongTypeParametersCount(t.Name, (int) t.Properties.ArgSize, paramCount, tc.Span);
                 }
                 else if (paramCount != 0)
                     Reporter.ReportTypeNotGeneric(t.Name, tc.Type.Span);

@@ -3,31 +3,40 @@ using Enuii.Syntax.AST;
 
 namespace Enuii.Symbols.Typing;
 
-public class TypeSymbol(string name, TypeID id, int paramsSize = 0)
-    : Symbol(name)
+public class TypeSymbol
+    : Symbol
 {
-    public TypeID       ID         { get; } = id;
-    public int          ParamsSize { get; } = paramsSize;
-    public TypeSymbol[] Parameters { get; } = new TypeSymbol[paramsSize]; // TODO: PARAMETERS SHOULD HAVE NAMES LIKE `Generic<T1, T2>`
+    public TypeID         ID         { get; }
+    public TypeProperties Properties { get; private set; }
 
     // Metadata
-    public bool IsNull    { get; } = id is TypeID.Null;
-    public bool IsKnown   { get; } = id is not TypeID.Unknown;
-    public bool IsGeneric { get; } = paramsSize > 0;
+    public bool IsNull    => ID is TypeID.Null;
+    public bool IsKnown   => ID is not TypeID.Unknown;
+    public bool IsGeneric => Properties.ArgSize > 0;
+
+    public TypeSymbol(string name, TypeID id, TypeProperties? props = null, Action<TypeSymbol>? onCreate = null)
+        : base(name)
+    {
+        ID         = id;
+        Properties = props ?? TypeProperties.Blank;
+
+        onCreate?.Invoke(this);
+    }
 
     public bool HasFlag(TypeSymbol other)
     {
         // if parameter size don't match
         // or if the base ID don't match
         // return false otherwise keep looking
-        if (ParamsSize != other.ParamsSize || !ID.HasFlag(other.ID))
+        if (Properties.ArgSize != other.Properties.ArgSize || !ID.HasFlag(other.ID))
             return false;
 
         // check if each of the parameters do match
         // with the `self` parameters being the parent
-        // so that `number[]` matches `int[]` but not the other way
-        for (int i = 0; i < Parameters.Length; i++)
-            if (!Parameters[i].HasFlag(other.Parameters[i]))
+        // so that for example `number[]` matches `int[]`
+        // but not the other way around
+        for (int i = 0; i < Properties.Parameters.Length; i++)
+            if (!Properties.Parameters[i].HasFlag(other.Properties.Parameters[i]))
                 return false;
 
         // nothing seems out of order
@@ -36,32 +45,44 @@ public class TypeSymbol(string name, TypeID id, int paramsSize = 0)
 
     public TypeSymbol SetParameters(params TypeSymbol[] paramz)
     {
-        if (Parameters is null)
+        if (Properties.Parameters is null)
             throw new Exception("Type is not generic to give parameters");
 
-        if (paramz.Length != ParamsSize)
-            throw new Exception("Incorrect number of parameters given to generic type");
+        if (paramz.Length != Properties.ArgSize)
+            throw new Exception($"Incorrect number of parameters given to generic type. (given: {paramz.Length}) (required: {Properties.ArgSize})");
 
-        var self = new TypeSymbol(Name, ID, ParamsSize);
+        switch (ID)
+        {
+            case TypeID.List:
+                var list = new TypeSymbol(Name, ID, Properties);
+                list.Properties = TypeProperties.TypedList(list, paramz[0]);
+                return list;
 
-        for (int i = 0; i < paramz.Length; i++)
-            self.Parameters[i] = paramz[i];
+            default:
+                var self = new TypeSymbol(Name, ID, Properties);
 
-        return self;
+                for (int i = 0; i < paramz.Length; i++)
+                    self.Properties.Parameters[i] = paramz[i];
+
+                return self;
+        }
     }
 
     public override string ToString()
     {
+        if (Properties.CustomName is not null)
+            return Properties.CustomName.Invoke(this);
+
         if (!IsGeneric)
             return Name;
 
         var str = Name;
 
         str += '<';
-        for (int i = 0; i < Parameters?.Length; i++)
+        for (int i = 0; i < Properties.Parameters?.Length; i++)
         {
-            var p = Parameters[i];
-            if (i == Parameters.Length - 1)
+            var p = Properties.Parameters[i];
+            if (i == Properties.Parameters.Length - 1)
                 str += $"{p}";
             else
                 str += $"{p}, ";
@@ -70,7 +91,6 @@ public class TypeSymbol(string name, TypeID id, int paramsSize = 0)
 
         return str.ToString();
     }
-
 
     /* ====================================================================== */
     /*                                  Types                                 */
@@ -86,9 +106,9 @@ public class TypeSymbol(string name, TypeID id, int paramsSize = 0)
     public static readonly TypeSymbol Integer = new(CONSTS.INTEGER, TypeID.Integer);
     public static readonly TypeSymbol Float   = new(CONSTS.FLOAT,   TypeID.Float);
     public static readonly TypeSymbol Char    = new(CONSTS.CHAR,    TypeID.Char);
-    public static readonly TypeSymbol String  = new(CONSTS.STRING,  TypeID.String);
-    public static readonly TypeSymbol Range   = new(CONSTS.RANGE,   TypeID.Range);
-    public static readonly TypeSymbol List    = new(CONSTS.LIST,    TypeID.List, 1);
+    public static readonly TypeSymbol String  = new(CONSTS.STRING,  TypeID.String, TypeProperties.String);
+    public static readonly TypeSymbol Range   = new(CONSTS.RANGE,   TypeID.Range,  TypeProperties.Range);
+    public static readonly TypeSymbol List    = new(CONSTS.LIST,    TypeID.List,   TypeProperties.List);
 
 
     /* ====================================================================== */

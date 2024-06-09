@@ -6,7 +6,7 @@ public sealed class ListValue(IEnumerable<RuntimeValue> values, TypeSymbol type)
     : RuntimeValue
 {
     public override object     Value { get; } = null!;
-    public override TypeSymbol Type  { get; } = TypeSymbol.List.SetParameters(type);
+    public override TypeSymbol Type  { get; } = type;
 
     public RuntimeValue[] Values { get; } = values.ToArray();
 
