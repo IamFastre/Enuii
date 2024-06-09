@@ -28,6 +28,7 @@ public enum TokenKind
     If,
     Else,
     While,
+    For,
 
     // Operators
     Equal,

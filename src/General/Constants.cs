@@ -31,6 +31,7 @@ public static class CONSTS
     public const string IF    = "if";
     public const string ELSE  = "else";
     public const string WHILE = "while";
+    public const string FOR   = "for";
 
     // Types
     public const string ANY       = "any";
@@ -80,6 +81,7 @@ public static class CONSTS
         IF    => TokenKind.If,
         ELSE  => TokenKind.Else,
         WHILE => TokenKind.While,
+        FOR   => TokenKind.For,
 
         _ when TYPES.Contains(value) => TokenKind.Type,
         _                            => TokenKind.Identifier,
