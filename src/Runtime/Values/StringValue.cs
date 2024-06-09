@@ -1,10 +1,9 @@
-using System.Text.RegularExpressions;
 using Enuii.Symbols.Typing;
 
 namespace Enuii.Runtime.Evaluation;
 
 public sealed class StringValue(string value)
-    : RuntimeValue
+    : RuntimeValue, IEnumerableValue<CharValue>
 {
     public override object     Value { get; } = value;
     public override TypeSymbol Type  { get; } = TypeSymbol.String;
@@ -14,4 +13,14 @@ public sealed class StringValue(string value)
 
     public static StringValue Parse(string value)
         => new(value[1..^1]);
+
+    /* ============================ Enumerability =========================== */
+
+    public double Length => ((string) Value).Length;
+
+    public CharValue ElementAt(int index)
+        => new(((string) Value)[index]);
+
+    public bool Contains(CharValue value)
+        => ((string) Value).Contains((char) value.Value);
 }

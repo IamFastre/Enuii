@@ -1,4 +1,3 @@
-using System.Text.RegularExpressions;
 using Enuii.Symbols.Typing;
 
 namespace Enuii.Runtime.Evaluation;

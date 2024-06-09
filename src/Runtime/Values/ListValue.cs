@@ -2,11 +2,11 @@ using Enuii.Symbols.Typing;
 
 namespace Enuii.Runtime.Evaluation;
 
-public sealed class ListValue(IEnumerable<RuntimeValue> values, TypeSymbol type)
-    : RuntimeValue
+public sealed class ListValue(IEnumerable<RuntimeValue> values, TypeSymbol type, bool typeIsElement = false)
+    : RuntimeValue, IEnumerableValue<RuntimeValue>
 {
     public override object     Value { get; } = null!;
-    public override TypeSymbol Type  { get; } = type;
+    public override TypeSymbol Type  { get; } = typeIsElement ? TypeSymbol.List.SetParameters(type) : type;
 
     public RuntimeValue[] Values { get; } = values.ToArray();
 
@@ -43,4 +43,14 @@ public sealed class ListValue(IEnumerable<RuntimeValue> values, TypeSymbol type)
 
         return str;
     }
+
+    /* ============================ Enumerability =========================== */
+
+    public double Length => Values.Length;
+
+    public RuntimeValue ElementAt(int index)
+        => Values[index];
+
+    public bool Contains(RuntimeValue value)
+        => Values.Contains(value);
 }
