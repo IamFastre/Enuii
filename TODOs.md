@@ -4,7 +4,7 @@
 | :----: | :---: | :---------- |
 | … | Values | Runtime values |
 | … | Evaluator | Make an evaluator to handle values and runtime, requires values |
-| ☐ | Scope | Responsible for saving the symbol table, requires evaluator |
+| ☐ | Scope | Responsible for saving the symbol table, requires evaluator (VALUES AND TYPES) |
 | ☐ | Identifier | Analysis for identifiers, requires scopes |
 | … | Bi | Add binary operations evaluation |
 | ☐ | Con | Add conversion operations evaluation |
