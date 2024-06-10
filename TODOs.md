@@ -4,14 +4,15 @@
 | :----: | :---: | :---------- |
 | … | Values | Runtime values |
 | … | Evaluator | Make an evaluator to handle values and runtime, requires values |
-| ☐ | Scope | Responsible for saving the symbol table, requires evaluator (VALUES AND TYPES) |
-| ☐ | Identifier | Analysis for identifiers, requires scopes |
-| … | Bi | Add binary operations evaluation |
-| ☐ | Con | Add conversion operations evaluation |
-| ☐ | Lists | Add list runtime values |
+| … | Scope | Responsible for saving the symbol table, requires evaluator (VALUES AND TYPES) |
+| … | Identifier | Analysis for identifiers, requires scopes |
 | ☐ | For | Add for and for/else statements |
+| ☐ | Assignment | Special assignments such as `+=`, `-=` etc |
 | ☐ | Error Tips | Tips/Suggestions for bad code |
-| ☐ | Enumerators | Proper enumerators for string/range/list |
+| ☑ | Enumerators | Proper enumerators for string/range/list |
+| ☑ | Lists | Add list runtime values |
+| ☑ | Con | Add conversion operations evaluation |
+| ☑ | Bi | Add binary operations evaluation |
 | ☑ | U | Add unary operations evaluation |
 | ☑ | While | Add while and while/else statements |
 
