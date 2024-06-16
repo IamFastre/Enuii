@@ -8,6 +8,7 @@
 | ☐ | Declarations | Valueless declarations like `# var:int` or `# name` |
 | ☐ | Assignment | Special assignments such as `+=`, `-=` etc |
 | ☐ | Error Tips | Tips/Suggestions for bad code |
+| ☐ | Proper REPL | A proper REPL |
 | ☑ | Scope | Responsible for saving the symbol table, requires evaluator (VALUES AND TYPES) |
 | ☑ | Identifier | Analysis for identifiers, requires scopes |
 | ☑ | Enumerators | Proper enumerators for string/range/list |
