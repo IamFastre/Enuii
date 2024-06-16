@@ -84,8 +84,7 @@ public class REPL
                     var evaluator = new Evaluator(semTree, Scope, Reporter);
                     var value     = evaluator.Start();
 
-                    // TODO: Replace with `PrintValue(RuntimeValue)`
-                    Console.WriteLine($"{C.WHITE2}{value}{C.END}");
+                    Console.WriteLine(value.Repr());
                 }
 
                 ReportErrors();

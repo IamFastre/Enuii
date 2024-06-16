@@ -1,3 +1,4 @@
+using Enuii.General.Colors;
 using Enuii.Symbols.Types;
 
 namespace Enuii.Runtime.Evaluation;
@@ -17,10 +18,10 @@ public sealed class ListValue(IEnumerable<RuntimeValue> values, TypeSymbol type,
     {
         if (obj is ListValue list)
         {
-            if (Values.Length != list.Values.Length)
+            if (Values.LongLength != list.Values.LongLength)
                 return false;
 
-            for (int i = 0; i < Values.Length; i++)
+            for (int i = 0; i < Values.LongLength; i++)
                 if (!Values[i].Equals(list.Values[i]))
                     return false;
             return true;
@@ -28,13 +29,16 @@ public sealed class ListValue(IEnumerable<RuntimeValue> values, TypeSymbol type,
         return false;
     }
 
+    public override string Repr()
+        => "[" + string.Join(", ", Values.Select(e => e.Repr())) + "]";
+
     public override string ToString()
     {
         var str = "[";
-        for (int i = 0; i < Values.Length; i++)
+        for (int i = 0; i < Values.LongLength; i++)
         {
             var val = Values[i];
-            if (i != Values.Length - 1)
+            if (i != Values.LongLength - 1)
                 str += $"{val}, ";
             else
                 str += $"{val}";
@@ -46,7 +50,7 @@ public sealed class ListValue(IEnumerable<RuntimeValue> values, TypeSymbol type,
 
     /* ============================ Enumerability =========================== */
 
-    public double Length => Values.Length;
+    public double Length => Values.LongLength;
 
     public RuntimeValue ElementAt(int index)
         => Values[index];

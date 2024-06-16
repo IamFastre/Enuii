@@ -1,3 +1,4 @@
+using Enuii.General.Colors;
 using Enuii.Symbols.Types;
 
 namespace Enuii.Runtime.Evaluation;
@@ -10,6 +11,9 @@ public sealed class StringValue(string value)
 
     public override string ToString()
         => (string) Value;
+
+    public override string Repr()
+        => $"{C.GREEN2}\"{ToString()}\"{C.END}";
 
     public static StringValue Parse(string value)
         => new(value[1..^1]);

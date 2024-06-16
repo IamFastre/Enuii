@@ -1,3 +1,4 @@
+using Enuii.General.Colors;
 using Enuii.Symbols.Types;
 
 namespace Enuii.Runtime.Evaluation;
@@ -12,8 +13,10 @@ public abstract class NumberValue
         => obj is NumberValue nv && Equals(Value, nv.Value);
 
     public override string ToString()
-        => Value.ToString()!.Replace('E', 'e')
-         + (this is FloatValue ? "f" : "");
+        => Value.ToString()!.Replace('E', 'e');
+
+    public override string Repr()
+        => $"{C.CYAN}{ToString()}{(this is FloatValue ? "f" : "")}{C.END}";
 
     public static NumberValue Parse(string value, bool parseInt = false)
     {

@@ -1,3 +1,4 @@
+using Enuii.General.Colors;
 using Enuii.General.Constants;
 using Enuii.General.Utilities;
 using Enuii.Symbols.Types;
@@ -15,6 +16,9 @@ public sealed class BoolValue(bool value)
 
     public override string ToString()
         => (bool) Value ? CONSTS.TRUE : CONSTS.FALSE;
+
+    public override string Repr()
+        => C.MAGENTA2 + ToString() + C.END;
 
     public static BoolValue Parse(string value)
     {

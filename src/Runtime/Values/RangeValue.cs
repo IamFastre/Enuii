@@ -1,3 +1,4 @@
+using Enuii.General.Colors;
 using Enuii.Symbols.Types;
 
 namespace Enuii.Runtime.Evaluation;
@@ -23,6 +24,9 @@ public class RangeValue(NumberValue? start, NumberValue? end, NumberValue? step)
 
     public override string ToString()
         => $"|{Start}:{End}:{Step}|";
+
+    public override string Repr()
+        => $"|{Start?.Repr()}:{End?.Repr()}:{Step.Repr()}|";
 
     public static bool Check(double? start, double? end, double? step)
     {

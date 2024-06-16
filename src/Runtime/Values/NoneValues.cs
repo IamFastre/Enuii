@@ -1,3 +1,4 @@
+using Enuii.General.Colors;
 using Enuii.General.Constants;
 using Enuii.Symbols.Types;
 
@@ -13,6 +14,9 @@ public sealed class UnknownValue
 
     public override string ToString()
         => CONSTS.UNKNOWN;
+
+    public override string Repr()
+        => C.RED + ToString() + C.END;
 }
 
 public sealed class NullValue
@@ -25,6 +29,9 @@ public sealed class NullValue
 
     public override string ToString()
         => CONSTS.NULL;
+
+    public override string Repr()
+        => C.YELLOW + ToString() + C.END;
 }
 
 public sealed class VoidValue
@@ -37,4 +44,7 @@ public sealed class VoidValue
 
     public override string ToString()
         => CONSTS.EMPTY;
+
+    public override string Repr()
+        => ToString();
 }

@@ -8,7 +8,7 @@
 | ☐ | For | Add for and for/else statements |
 | ☐ | Declarations | Valueless declarations like `# var:int` or `# name` |
 | ☐ | Error Tips | Tips/Suggestions for bad code |
-| ☐ | String Representations | Fix runtime values' string representations |
+| ☑ | String Representations | Fix runtime values' string representations |
 | ☑ | Assignment | Special assignments such as `+=`, `-=` etc |
 | ☑ | Scope | Responsible for saving the symbol table, requires evaluator (VALUES AND TYPES) |
 | ☑ | Identifier | Analysis for identifiers, requires scopes |
