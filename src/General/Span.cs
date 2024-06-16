@@ -46,5 +46,5 @@ public class Span
         => new(Start, End);
 
     public override string ToString()
-        => IsShort ? $"{Start}" : $"{Start} => {End}";
+        => IsShort ? $"{Start}" : $"{Start} -> {End}";
 }
