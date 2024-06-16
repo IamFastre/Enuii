@@ -75,7 +75,7 @@ public class Analyzer
         var name = new NameSymbol(ds.Name.Value, type ?? expr.Type, ds.IsConstant);
 
         if (type is null || (type is not null && type.HasFlag(expr.Type)))
-            if (!Scope.TryDeclare(ds.Name.Value, name))
+            if (!Scope.TryDeclare(ds.Name.Value, name, Reporter.Errors.Count > 0))
                 Reporter.ReportNameAlreadyDeclared(ds.Name.Value, ds.Name.Span);
 
         return new(name, expr, ds.Span);

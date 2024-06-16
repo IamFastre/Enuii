@@ -5,7 +5,7 @@ namespace Enuii.Scoping;
 
 public class Scope(Scope? parent = null)
 {
-    public Scope? Parent { get; } = parent;
+    public Scope?                           Parent    { get; }              = parent;
     public Dictionary<string, RuntimeValue> Variables { get; private set; } = parent is null ? Builtins.GetBuiltins() : [];
 
     public RuntimeValue this[string variable] => Variables[variable];

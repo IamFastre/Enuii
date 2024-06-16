@@ -5,8 +5,8 @@ namespace Enuii.Scoping;
 
 public class SemanticScope(SemanticScope? parent = null)
 {
-    public SemanticScope? Parent { get; } = parent;
-    public Dictionary<string, NameSymbol> Names { get; private set; } = parent is null ? DeclareBuiltins() : [];
+    public SemanticScope?                 Parent { get; }              = parent;
+    public Dictionary<string, NameSymbol> Names  { get; private set; } = parent is null ? DeclareBuiltins() : [];
 
     public NameSymbol this[string variable] => Names[variable];
 
@@ -18,27 +18,15 @@ public class SemanticScope(SemanticScope? parent = null)
         return dict;
     }
 
-    public bool TryDeclare(string variable, NameSymbol name)
+    public bool TryDeclare(string variable, NameSymbol name, bool hasErrors = false)
     {
         if (Names.ContainsKey(variable))
             return false;
 
-        Names.Add(variable, name);
+        if (!hasErrors)
+            Names.Add(variable, name);
+
         return true;
-    }
-
-    public bool TryAssign(string variable, NameSymbol name)
-    {
-        if (Names.ContainsKey(variable))
-        {
-            Names[variable] = name;
-            return true;
-        }
-
-        if (Parent is not null)
-            return Parent.TryAssign(variable, name);
-
-        return false;
     }
 
     public bool TryGet(string variable, out NameSymbol name)
