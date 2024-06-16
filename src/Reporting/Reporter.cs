@@ -76,7 +76,7 @@ public class Reporter(IEnumerable<Error>? errors = null)
         => Report(ErrorKind.TypeError, $"Expected expression of type '{needed}' got '{given}' instead", span);
 
     internal void ReportTypesDoNotMatch(string needed, string given, Span span)
-        => Report(ErrorKind.TypeError, $"Types '{needed}' and '{given}' do not match'", span);
+        => Report(ErrorKind.TypeError, $"Types '{needed}' and '{given}' do not match", span);
 
     internal void ReportTernaryTypesDoNotMatch(string first, string second, Span span)
         => Report(ErrorKind.TypeError, $"Types '{first}' and '{second}' don't match in ternary operation", span);
