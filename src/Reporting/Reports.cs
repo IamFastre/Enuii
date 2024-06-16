@@ -11,7 +11,16 @@ public class Error(ErrorKind kind = ErrorKind.UnknownError, string message = "Un
 
 
     public override string ToString()
-        => $"{C.BOLD}• {C.RED}{Kind}{C.END}: {C.RED2}{Message}{C.END}{(
-           Kind is ErrorKind.InternalError ? ""
-           : $"\n    {C.YELLOW2}{(Span.IsShort ? "at" : "between")}{C.END} {Span}")}";
+    {
+        string str = $"{C.BOLD}• {C.RED}{Kind}{C.END}: {C.RED2}{Message}.{C.END}";
+
+        if (Kind is not ErrorKind.InternalError)
+        {
+            str += "\n    ";
+            str += C.YELLOW2 + (Span.IsShort ? "at" : "between") + C.END;
+            str += $" {Span}";
+        }
+
+        return str;
+    }
 }
