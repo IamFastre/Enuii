@@ -7,7 +7,7 @@ namespace Enuii.Runtime.Conversion;
 
 public static class Converter
 {
-    public static RuntimeValue Convert(RuntimeValue value, ConversionKind kind)
+    public static RuntimeValue Convert(RuntimeValue value, ConversionKind kind, TypeSymbol to)
     {
         switch (kind)
         {
@@ -15,7 +15,10 @@ public static class Converter
 
             case ConversionKind.Fuzzy:
                 return value;
-            
+
+            case ConversionKind.Polish:
+                return Convert(value, ConversionOperation.GetConversionKind(value.Type, to), to);
+
             case ConversionKind.AnyToString:
                 return new StringValue(value.ToString());
 

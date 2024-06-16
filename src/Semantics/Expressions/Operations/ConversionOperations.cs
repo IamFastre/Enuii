@@ -7,6 +7,8 @@ public enum ConversionKind
     INVALID,
 
     Fuzzy,
+    Polish, // 🇵🇱🐄
+
     AnyToString,
 
     BoolToInt,
@@ -75,7 +77,8 @@ public class ConversionOperation
                                               : to.Properties.ElementType.ID is TypeID.String   // string -> string[]
                                               ? ConversionKind.StringToStringList
                                               : ConversionKind.INVALID,
-            _  => ConversionKind.INVALID,
+
+            _  => from.HasFlag(to) ? ConversionKind.Polish : ConversionKind.INVALID,
         };
     }
 }

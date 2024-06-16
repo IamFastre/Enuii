@@ -229,7 +229,7 @@ public class Evaluator
             return UnknownValue.Template;
         }
 
-        var result = Converter.Convert(value, ce.OperationKind);
+        var result = Converter.Convert(value, ce.OperationKind, ce.Destination);
 
         return result;
     }
