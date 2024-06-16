@@ -9,6 +9,7 @@
 | ☐ | Assignment | Special assignments such as `+=`, `-=` etc |
 | ☐ | Error Tips | Tips/Suggestions for bad code |
 | ☐ | Proper REPL | A proper REPL |
+| ☐ | String Representations | Fix runtime values' string representations |
 | ☑ | Scope | Responsible for saving the symbol table, requires evaluator (VALUES AND TYPES) |
 | ☑ | Identifier | Analysis for identifiers, requires scopes |
 | ☑ | Enumerators | Proper enumerators for string/range/list |
