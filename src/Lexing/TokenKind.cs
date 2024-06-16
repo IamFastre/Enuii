@@ -5,6 +5,7 @@ public enum TokenKind
     Error,
     EOF,
 
+    // Parser Ignorables
     __IGNORABLE_START__,
     Unknown,
     NewLine,
@@ -31,25 +32,41 @@ public enum TokenKind
     For,
 
     // Operators
-    Equal,
-
+    // Nots
     Tilde,
     BangMark,
-
+    // Binary
     Plus,
     Minus,
     Asterisk,
     ForwardSlash,
     Percent,
     Power,
-
+    // Inty
     Ampersand,
     Pipe,
     Caret,
-
+    // Boolean
     DoubleAmpersand,
     DoublePipe,
     DoubleQuestionMark,
+
+    // Assignments
+    __ASSIGNMENT_START__,
+    Equal,
+    PlusEqual,
+    MinusEqual,
+    AsteriskEqual,
+    ForwardSlashEqual,
+    PercentEqual,
+    AmpersandEqual,
+    PipeEqual,
+    CaretEqual,
+    PowerEqual,
+    DoubleAmpersandEqual,
+    DoublePipEqual,
+    DoubleQuestionMarkEqual,
+    __ASSIGNMENT_END__,
 
     // Comparison
     EqualEqual,
@@ -81,6 +98,9 @@ internal static class TokenKindExtension
 {
     public static bool IsParserIgnorable(this TokenKind kind) => TokenKind.__IGNORABLE_START__ < kind
                                                               && TokenKind.__IGNORABLE_END__   > kind;
+
+    public static bool IsAssignment(this TokenKind kind)      => TokenKind.__ASSIGNMENT_START__ < kind
+                                                              && TokenKind.__ASSIGNMENT_END__   > kind;
 
     public static int UnaryPrecedence(this TokenKind kind) => kind switch
     {

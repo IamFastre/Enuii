@@ -206,6 +206,9 @@ public class Analyzer
             case NodeKind.AssignmentExpression:
                 return BindAssignmentExpression((AssignmentExpression) expr);
 
+            case NodeKind.CompoundAssignmentExpression:
+                return BindCompoundAssignmentExpression((CompoundAssignmentExpression) expr);
+
             default:
                 throw new Exception($"Unrecognized expression kind while analyzing: {expr.Kind}");
         }
@@ -335,5 +338,19 @@ public class Analyzer
             Reporter.ReportTypesDoNotMatch(name.Type.ToString(), expr.Type.ToString(), ae.Expression.Span);
 
         return new SemanticAssignmentExpression(name, expr, ae.Span);
+    }
+
+    private SemanticExpression BindCompoundAssignmentExpression(CompoundAssignmentExpression cae)
+    {
+        var bin  = new BinaryExpression(cae.Assignee, cae.Operation, cae.Expression);
+        var expr = BindBinaryExpression(bin);
+
+        if (!Scope.TryGet(cae.Assignee.Value, out var name))
+            Reporter.ReportNameNotDefined(cae.Assignee.Value, cae.Assignee.Span);
+
+        else if (!name.Type.HasFlag(expr.Type))
+            Reporter.ReportTypesDoNotMatch(name.Type.ToString(), expr.Type.ToString(), cae.Expression.Span);
+
+        return new SemanticAssignmentExpression(name, expr, cae.Span);
     }
 }

@@ -267,7 +267,7 @@ public class Parser
     {
         var assignee = GetSecondary();
 
-        // TODO: support for compound assignments such as `+=` or `-=`
+        /* =========================== Assignments ========================== */
         if (IsNextKind(TokenKind.Equal))
         {
             var expr = GetExpression();
@@ -279,6 +279,20 @@ public class Parser
             }
 
             return new AssignmentExpression((NameLiteral) assignee, expr);
+        }
+        /* ====================== Compound Assignments ====================== */
+        else if (Current.Kind.IsAssignment())
+        {
+            var op = Eat();
+            var expr = GetExpression();
+
+            if (assignee.Kind is not NodeKind.Name)
+            {
+                Reporter.ReportInvalidAssignee(assignee.Span);
+                return assignee;
+            }
+
+            return new CompoundAssignmentExpression((NameLiteral) assignee, op, expr);
         }
 
         return assignee;

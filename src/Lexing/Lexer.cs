@@ -129,7 +129,7 @@ public class Lexer
         }
 
         /* ======================= Character-sequences ====================== */
-        //    Use `IsUpcoming` helper function to test
+        // Use `IsUpcoming` helper function to test
         // Operators:
         if (IsUpcoming("**"))
             return CreateToken(TokenKind.Power);
@@ -156,12 +156,49 @@ public class Lexer
         if (IsUpcoming(">="))
             return CreateToken(TokenKind.GreaterEqual);
 
+        // Assignment
+        if (IsUpcoming("+="))
+            return CreateToken(TokenKind.PlusEqual);
+
+        if (IsUpcoming("-="))
+            return CreateToken(TokenKind.MinusEqual);
+
+        if (IsUpcoming("*="))
+            return CreateToken(TokenKind.AsteriskEqual);
+
+        if (IsUpcoming("/="))
+            return CreateToken(TokenKind.ForwardSlashEqual);
+
+        if (IsUpcoming("%="))
+            return CreateToken(TokenKind.PercentEqual);
+
+        if (IsUpcoming("&="))
+            return CreateToken(TokenKind.AmpersandEqual);
+
+        if (IsUpcoming("|="))
+            return CreateToken(TokenKind.PipeEqual);
+
+        if (IsUpcoming("^="))
+            return CreateToken(TokenKind.CaretEqual);
+
+        if (IsUpcoming("**="))
+            return CreateToken(TokenKind.PowerEqual);
+
+        if (IsUpcoming("&&="))
+            return CreateToken(TokenKind.DoubleAmpersandEqual);
+
+        if (IsUpcoming("||="))
+            return CreateToken(TokenKind.DoublePipEqual);
+
+        if (IsUpcoming("??="))
+            return CreateToken(TokenKind.DoubleQuestionMarkEqual);
+
         // Others:
         if (IsUpcoming("->"))
             return CreateToken(TokenKind.SingleArrow);
 
         /* ======================== Single-character ======================== */
-        //    Matching every single character token
+        // Matching every single character token
         switch (Current)
         {
             // Operators:
@@ -220,8 +257,8 @@ public class Lexer
         }
 
         /* ============================= Numbers ============================ */
-        //    Peek in and if it's number char advance then add it
-        //    after that return the token
+        // Peek in and if it's number char advance then add it
+        // after that return the token
         if (char.IsAsciiDigit(Current) || Current == CONSTS.DOT && char.IsAsciiDigit(Next))
         {
             bool isFloat = Current == CONSTS.DOT;
@@ -256,8 +293,8 @@ public class Lexer
         }
 
         /* ============================= Quotes ============================= */
-        //     Lexes strings and chars by known their closing pair
-        //     and appending everything in between to value
+        // Lexes strings and chars by known their closing pair
+        // and appending everything in between to value
         if (CONSTS.StrOpen.Contains(Current) || CONSTS.CharOpen.Contains(Current))
         {
             var (close, kind) = CONSTS.GetQuotePair(Current);
@@ -323,8 +360,8 @@ public class Lexer
         }
 
         /* =========================== Identifiers ========================== */
-        //    Lexes identifiers, keywords, and constant literal values,
-        //    such as false, maybe, true and null
+        // Lexes identifiers, keywords, and constant literal values,
+        // such as false, maybe, true and null
         if (char.IsLetter(Current) || Current == '_')
         {
             while (char.IsLetterOrDigit(Next) || Next == '_')
