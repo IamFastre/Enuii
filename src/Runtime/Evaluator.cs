@@ -44,6 +44,9 @@ public class Evaluator
             case SemanticKind.ExpressionStatement:
                 return EvaluateExpressionStatement((SemanticExpressionStatement) stmt);
 
+            case SemanticKind.DeclarationStatement:
+                return EvaluateDeclarationStatement((SemanticDeclarationStatement) stmt);
+
             case SemanticKind.BlockStatement:
                 return EvaluateBlockStatement((SemanticBlockStatement) stmt);
 
@@ -60,6 +63,16 @@ public class Evaluator
 
     private RuntimeValue EvaluateExpressionStatement(SemanticExpressionStatement es)
         => EvaluateExpression(es.Expression);
+
+    private RuntimeValue EvaluateDeclarationStatement(SemanticDeclarationStatement ds)
+    {
+        var expr = EvaluateExpression(ds.Expression);
+
+        if (Scope.TryDeclare(ds.Symbol.Name, expr))
+            return expr;
+
+        return UnknownValue.Template;
+    }
 
     private RuntimeValue EvaluateBlockStatement(SemanticBlockStatement bs)
     {

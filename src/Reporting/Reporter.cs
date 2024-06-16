@@ -96,6 +96,9 @@ public class Reporter(IEnumerable<Error>? errors = null)
     internal void ReportNameNotDefined(string name, Span span)
         => Report(ErrorKind.SymbolError, $"Name '{name}' is not defined", span);
 
+    internal void ReportNameAlreadyDeclared(string name, Span span)
+        => Report(ErrorKind.SymbolError, $"Name '{name}' is already defined", span);
+
     internal void ReportZeroStepRange(Span span)
         => Report(ErrorKind.MathError, $"Range doesn't step much", span);
 

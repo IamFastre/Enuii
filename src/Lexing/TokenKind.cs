@@ -69,6 +69,7 @@ public enum TokenKind
     CloseCurlyBracket,
 
     // Others
+    Hash,
     Comma,
     Colon,
     QuestionMark,

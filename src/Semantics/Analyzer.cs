@@ -2,6 +2,7 @@ using System.Collections.Immutable;
 using Enuii.Reports;
 using Enuii.Scoping;
 using Enuii.Symbols;
+using Enuii.Symbols.Names;
 using Enuii.Symbols.Types;
 using Enuii.Syntax.AST;
 
@@ -44,6 +45,9 @@ public class Analyzer
             case NodeKind.ExpressionStatement:
                 return BindExpressionStatement((ExpressionStatement) stmt);
 
+            case NodeKind.DeclarationStatement:
+                return BindDeclarationStatement((DeclarationStatement) stmt);
+
             case NodeKind.BlockStatement:
                 return BindBlockStatement((BlockStatement) stmt);
 
@@ -62,6 +66,18 @@ public class Analyzer
     {
         var expr = BindExpression(es.Expression);
         return new(expr);
+    }
+
+    private SemanticDeclarationStatement BindDeclarationStatement(DeclarationStatement ds)
+    {
+        var type = ds.TypeClause is not null ? BindTypeClause(ds.TypeClause) : null; // bind type if given
+        var expr = type is null ? BindExpression(ds.Expression) : BindExpression(ds.Expression, type); // if type is given; expect it
+        var name = new NameSymbol(ds.Name.Value, type, ds.IsConstant);
+
+        if (!Scope.TryDeclare(ds.Name.Value, name))
+            Reporter.ReportNameAlreadyDeclared(ds.Name.Value, ds.Name.Span);
+
+        return new(name, expr, ds.Span);
     }
 
     private SemanticBlockStatement BindBlockStatement(BlockStatement bs)

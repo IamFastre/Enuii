@@ -36,6 +36,16 @@ public class Parser
         return current;
     }
 
+    private bool IsNextKind(TokenKind kind)
+        => Optional(kind)?.Kind == kind;
+
+    private Token? Optional(TokenKind kind)
+    {
+        if (Current.Kind == kind)
+            return Eat();
+        return null;
+    }
+
     private Token Expect(TokenKind kind, Span? span = null)
     {
         if (Current.Kind == kind)
@@ -73,6 +83,9 @@ public class Parser
             default:
                 return GetExpressionStatement();
 
+            case TokenKind.Hash:
+                return GetDeclarationStatement();
+
             case TokenKind.OpenCurlyBracket:
                 return GetBlockStatement();
 
@@ -90,6 +103,23 @@ public class Parser
         return new(expr);
     }
 
+    private Statement GetDeclarationStatement()
+    {
+        // TODO: allow valueless declarations
+        TypeClause? type = null;
+        var hash    = Eat();
+        var isConst = IsNextKind(TokenKind.Asterisk);
+        var name    = Expect(TokenKind.Identifier);
+
+        if (IsNextKind(TokenKind.Colon))
+            type = GetTypeClause();
+
+        Expect(TokenKind.Equal);
+        var expr = GetExpression();
+
+        return new DeclarationStatement(hash, isConst, name, type, expr);
+    }
+
     private BlockStatement GetBlockStatement()
     {
         var body = ImmutableArray.CreateBuilder<Statement>();
@@ -97,7 +127,7 @@ public class Parser
 
         // Keep on looking for statements unless it's a close bracket
         // or it's end of file
-        while (Current.Kind != TokenKind.CloseCurlyBracket && !EOF)
+        while (Current.Kind is not TokenKind.CloseCurlyBracket && !EOF)
             body.Add(GetStatement());
 
         var cls = Expect(TokenKind.CloseCurlyBracket);
@@ -341,7 +371,7 @@ public class Parser
         RangeLiteral newRange()
             => new(open, start, end, step, Eat());
 
-        if (Current.Kind != TokenKind.Colon)
+        if (Current.Kind is not TokenKind.Colon)
             start = GetPrimary();
 
         Expect(TokenKind.Colon);
@@ -349,7 +379,7 @@ public class Parser
         if (Current.Kind == TokenKind.Pipe)
             return newRange();
 
-        if (Current.Kind != TokenKind.Colon)
+        if (Current.Kind is not TokenKind.Colon)
             end = GetPrimary();
 
         if (Current.Kind == TokenKind.Pipe)
@@ -412,7 +442,7 @@ public class Parser
     {
         var open = Eat();
         var expr = GetExpression();
-        var cls  = expr.Kind != NodeKind.Unknown
+        var cls  = expr.Kind is not NodeKind.Unknown
                  ? Expect(TokenKind.CloseParenthesis)
                  : null;
 

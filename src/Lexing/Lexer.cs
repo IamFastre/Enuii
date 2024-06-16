@@ -209,6 +209,8 @@ public class Lexer
                 return CreateToken(TokenKind.CloseCurlyBracket);
 
             // Others
+            case '#':
+                return CreateToken(TokenKind.Hash);
             case ',':
                 return CreateToken(TokenKind.Comma);
             case '?':

@@ -29,6 +29,7 @@ public enum NodeKind
 
     // Statements
     ExpressionStatement,
+    DeclarationStatement,
     BlockStatement,
     IfStatement,
     WhileStatement,

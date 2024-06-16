@@ -18,6 +18,7 @@ public enum SemanticKind
 
     // Statements
     ExpressionStatement,
+    DeclarationStatement,
     BlockStatement,
     IfStatement,
     WhileStatement,
