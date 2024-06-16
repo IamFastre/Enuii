@@ -357,7 +357,7 @@ public class Evaluator
 
             case BinaryKind.StringInclusion:
                 return new BoolValue(((string) right.Value).Contains(left.Value!.ToString()!)); // TODO: Change this piece of shit
-
+                                                                                                // c'mon it's pretty (I might have dissociative identity disorder)
             default:
                 throw new Exception($"Unrecognized binary operation kind while evaluating result: {be.OperationKind}:{be.Type} on '{be.RHS.Type}' and '{be.RHS.Type}'");
         };
