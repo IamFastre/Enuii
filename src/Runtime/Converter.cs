@@ -34,10 +34,8 @@ public static class Converter
             /* =========================== Numbers ========================== */
 
             case ConversionKind.FloatToInt:
-            case ConversionKind.NumberToInt:
                 return new IntValue((double) value.Value);
 
-            case ConversionKind.NumberToFloat:
             case ConversionKind.IntToFloat:
                 return new FloatValue((double) value.Value);
 

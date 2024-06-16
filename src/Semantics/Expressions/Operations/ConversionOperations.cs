@@ -15,8 +15,6 @@ public enum ConversionKind
     BoolToFloat,
     BoolToNumber,
 
-    NumberToInt,
-    NumberToFloat,
     NumberToChar,
 
     IntToFloat,
@@ -51,8 +49,6 @@ public class ConversionOperation
             (TypeID.Boolean, TypeID.Integer) => ConversionKind.BoolToInt,     // bool -> int
             (TypeID.Boolean, TypeID.Float)   => ConversionKind.BoolToFloat,   // bool -> float
 
-            (TypeID.Number, TypeID.Integer)  => ConversionKind.NumberToInt,   // number -> int
-            (TypeID.Number, TypeID.Float)    => ConversionKind.NumberToFloat, // number -> float
             (TypeID.Number, TypeID.Char)     => ConversionKind.NumberToChar,  // number -> char
 
             (TypeID.Integer, TypeID.Char)    => ConversionKind.IntToChar,     // int -> char
