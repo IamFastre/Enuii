@@ -10,7 +10,7 @@ public class RangeValue(NumberValue? start, NumberValue? end, NumberValue? step)
 
     public NumberValue? Start { get; } = start;
     public NumberValue? End   { get; } = end;
-    public NumberValue  Step  { get; } = step ?? new IntValue((double) (start?.Value ?? 0) > (double) (end?.Value ?? 0) ? -1 : 1);
+    public NumberValue  Step  { get; } = step ?? new IntValue((double) (start?.Value ?? 0d) > (double) (end?.Value ?? 0d) ? -1d : 1d);
 
     public override int GetHashCode()
         => HashCode.Combine(Start, End, Step);
