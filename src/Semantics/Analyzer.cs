@@ -74,8 +74,9 @@ public class Analyzer
         var expr = type is null ? BindExpression(ds.Expression) : BindExpression(ds.Expression, type); // if type is given; expect it
         var name = new NameSymbol(ds.Name.Value, type ?? expr.Type, ds.IsConstant);
 
-        if (!Scope.TryDeclare(ds.Name.Value, name))
-            Reporter.ReportNameAlreadyDeclared(ds.Name.Value, ds.Name.Span);
+        if (type is null || (type is not null && type.HasFlag(expr.Type)))
+            if (!Scope.TryDeclare(ds.Name.Value, name))
+                Reporter.ReportNameAlreadyDeclared(ds.Name.Value, ds.Name.Span);
 
         return new(name, expr, ds.Span);
     }
