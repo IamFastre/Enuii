@@ -4,11 +4,12 @@
 | :----: | :---: | :---------- |
 | … | Values | Runtime values |
 | … | Evaluator | Make an evaluator to handle values and runtime, requires values |
-| … | Scope | Responsible for saving the symbol table, requires evaluator (VALUES AND TYPES) |
-| … | Identifier | Analysis for identifiers, requires scopes |
 | ☐ | For | Add for and for/else statements |
+| ☐ | Declarations | Valueless declarations like `# var:int` or `# name` |
 | ☐ | Assignment | Special assignments such as `+=`, `-=` etc |
 | ☐ | Error Tips | Tips/Suggestions for bad code |
+| ☑ | Scope | Responsible for saving the symbol table, requires evaluator (VALUES AND TYPES) |
+| ☑ | Identifier | Analysis for identifiers, requires scopes |
 | ☑ | Enumerators | Proper enumerators for string/range/list |
 | ☑ | Lists | Add list runtime values |
 | ☑ | Con | Add conversion operations evaluation |
