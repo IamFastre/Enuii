@@ -1,5 +1,5 @@
 using Enuii.General.Positioning;
-using Enuii.Symbols.Typing;
+using Enuii.Symbols.Types;
 
 namespace Enuii.Semantics;
 public sealed class SemanticTernaryExpression(SemanticExpression condition, SemanticExpression trueExpr, SemanticExpression falseExpr, TypeSymbol result, Span span)

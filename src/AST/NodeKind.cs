@@ -13,7 +13,7 @@ public enum NodeKind
     String,
     Range,
     List,
-    Identifier,
+    Name,
 
     // Expressions
     ParenthesizedExpression,

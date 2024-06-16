@@ -1,4 +1,4 @@
-using Enuii.Symbols.Typing;
+using Enuii.Symbols.Types;
 
 namespace Enuii.Semantics;
 

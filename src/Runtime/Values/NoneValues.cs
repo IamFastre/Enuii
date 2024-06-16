@@ -1,5 +1,5 @@
 using Enuii.General.Constants;
-using Enuii.Symbols.Typing;
+using Enuii.Symbols.Types;
 
 namespace Enuii.Runtime.Evaluation;
 

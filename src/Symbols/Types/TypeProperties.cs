@@ -1,4 +1,4 @@
-namespace Enuii.Symbols.Typing;
+namespace Enuii.Symbols.Types;
 
 public class TypeProperties
     (

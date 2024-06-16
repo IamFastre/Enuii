@@ -1,7 +1,7 @@
 using System.Collections.Immutable;
 using Enuii.Runtime.Evaluation;
 using Enuii.Semantics;
-using Enuii.Symbols.Typing;
+using Enuii.Symbols.Types;
 
 namespace Enuii.Runtime.Conversion;
 

@@ -1,19 +1,22 @@
 using System.Collections.Immutable;
 using Enuii.Reports;
 using Enuii.Runtime.Conversion;
+using Enuii.Scoping;
 using Enuii.Semantics;
-using Enuii.Symbols.Typing;
+using Enuii.Symbols.Types;
 
 namespace Enuii.Runtime.Evaluation;
 
 public class Evaluator
 {
     public SemanticTree SemanticTree { get; }
+    public Scope        Scope        { get; }
     public Reporter     Reporter     { get; }
 
-    public Evaluator(SemanticTree tree, Reporter? reporter = null)
+    public Evaluator(SemanticTree tree, Scope scope,Reporter? reporter = null)
     {
         SemanticTree = tree;
+        Scope        = scope;
         Reporter     = reporter ?? new();
     }
 
@@ -109,6 +112,9 @@ public class Evaluator
             case SemanticKind.List:
                 return EvaluateList((SemanticListLiteral) expr);
 
+            case SemanticKind.Name:
+                return EvaluateName((SemanticNameLiteral) expr);
+
             case SemanticKind.ConversionExpression:
                 return EvaluateConversionExpression((SemanticConversionExpression) expr);
 
@@ -182,6 +188,14 @@ public class Evaluator
             exprs.Add(EvaluateExpression(expr));
 
         return new(exprs, ll.Type);
+    }
+
+    private RuntimeValue EvaluateName(SemanticNameLiteral nl)
+    {
+        if (Scope.TryGet(nl.Name, out var value))
+            return value;
+
+        return UnknownValue.Template;
     }
 
     private RuntimeValue EvaluateConversionExpression(SemanticConversionExpression ce)

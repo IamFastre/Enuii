@@ -1,7 +1,7 @@
 using Enuii.General.Constants;
 using Enuii.Syntax.AST;
 
-namespace Enuii.Symbols.Typing;
+namespace Enuii.Symbols.Types;
 
 public class TypeSymbol
     : Symbol

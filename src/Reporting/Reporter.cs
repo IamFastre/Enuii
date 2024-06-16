@@ -1,6 +1,4 @@
-using System.Text;
 using Enuii.General.Positioning;
-using Enuii.Symbols.Typing;
 using Enuii.Syntax.Lexing;
 
 namespace Enuii.Reports;
@@ -20,6 +18,10 @@ public class Reporter(IEnumerable<Error>? errors = null)
         Errors.RemoveAt(Errors.Count - 1);
         return error;
     }
+
+    // Resets the error list
+    public void Flush()
+        => Errors.Clear();
 
     // Make a new error and add it to error list
     private Error Report(ErrorKind kind, string message, Span span)
@@ -90,6 +92,9 @@ public class Reporter(IEnumerable<Error>? errors = null)
 
     internal void ReportUnusableType(string type, Span span)
         => Report(ErrorKind.SymbolError, $"Unusable type '{type}'", span);
+
+    internal void ReportNameNotDefined(string name, Span span)
+        => Report(ErrorKind.SymbolError, $"Name '{name}' is not defined", span);
 
     internal void ReportZeroStepRange(Span span)
         => Report(ErrorKind.MathError, $"Range doesn't step much", span);

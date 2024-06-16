@@ -1,3 +1,5 @@
+*.old
+
 # CREATED BY: https://www.toptal.com/developers/gitignore/
 
 ### Csharp ###

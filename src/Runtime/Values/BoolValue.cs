@@ -1,12 +1,15 @@
 using Enuii.General.Constants;
 using Enuii.General.Utilities;
-using Enuii.Symbols.Typing;
+using Enuii.Symbols.Types;
 
 namespace Enuii.Runtime.Evaluation;
 
 public sealed class BoolValue(bool value)
     : RuntimeValue
 {
+    public static readonly BoolValue False = new(false);
+    public static readonly BoolValue True  = new(true);
+
     public override object     Value { get; } = value;
     public override TypeSymbol Type  { get; } = TypeSymbol.Boolean;
 

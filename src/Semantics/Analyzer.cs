@@ -1,19 +1,22 @@
 using System.Collections.Immutable;
 using Enuii.Reports;
+using Enuii.Scoping;
 using Enuii.Symbols;
-using Enuii.Symbols.Typing;
+using Enuii.Symbols.Types;
 using Enuii.Syntax.AST;
 
 namespace Enuii.Semantics;
 
 public class Analyzer
 {
-    public SyntaxTree SimpleTree { get; }
-    public Reporter   Reporter   { get; }
+    public SyntaxTree    SimpleTree { get; }
+    public SemanticScope Scope      { get; }
+    public Reporter      Reporter   { get; }
 
-    public Analyzer(SyntaxTree tree, Reporter? reporter = null)
+    public Analyzer(SyntaxTree tree, SemanticScope? scope = null, Reporter? reporter = null)
     {
         SimpleTree = tree;
+        Scope      = scope    ?? new();
         Reporter   = reporter ?? new();
     }
 
@@ -165,6 +168,9 @@ public class Analyzer
             case NodeKind.List:
                 return BindList((ListLiteral) expr);
 
+            case NodeKind.Name:
+                return BindName((NameLiteral) expr);
+
             case NodeKind.ParenthesizedExpression:
                 return BindParenthesizedExpression((ParenthesizedExpression) expr);
 
@@ -221,6 +227,15 @@ public class Analyzer
         }
 
         return new(exprs, type ?? TypeSymbol.Any, ll.Span);
+    }
+
+    private SemanticExpression BindName(NameLiteral nl)
+    {
+        if (Scope.TryGet(nl.Value, out var name))
+            return new SemanticNameLiteral(name, nl.Span);
+
+        Reporter.ReportNameNotDefined(nl.Value, nl.Span);
+        return new SemanticFailedExpression(nl.Span);
     }
 
     private SemanticExpression BindParenthesizedExpression(ParenthesizedExpression pe)
