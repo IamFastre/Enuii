@@ -331,7 +331,7 @@ public class Analyzer
         if (!Scope.TryGet(ae.Assignee.Value, out var name))
             Reporter.ReportNameNotDefined(ae.Assignee.Value, ae.Assignee.Span);
 
-        if (!name.Type.HasFlag(expr.Type))
+        else if (!name.Type.HasFlag(expr.Type))
             Reporter.ReportTypesDoNotMatch(name.Type.ToString(), expr.Type.ToString(), ae.Expression.Span);
 
         return new SemanticAssignmentExpression(name, expr, ae.Span);

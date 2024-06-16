@@ -4,7 +4,7 @@ using Enuii.Symbols.Names;
 namespace Enuii.Semantics;
 
 public class SemanticAssignmentExpression(NameSymbol name, SemanticExpression expr, Span span)
-    : SemanticExpression(name.Type)
+    : SemanticExpression(name?.Type ?? expr.Type)
 {
     public NameSymbol         Name       { get; } = name;
     public SemanticExpression Expression { get; } = expr;
