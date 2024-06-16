@@ -18,38 +18,38 @@ public class SemanticScope(SemanticScope? parent = null)
         return dict;
     }
 
-    public bool TryDeclare(string variable, NameSymbol value)
+    public bool TryDeclare(string variable, NameSymbol name)
     {
         if (Names.ContainsKey(variable))
             return false;
 
-        Names.Add(variable, value);
+        Names.Add(variable, name);
         return true;
     }
 
-    public bool TryAssign(string variable, NameSymbol value)
+    public bool TryAssign(string variable, NameSymbol name)
     {
         if (Names.ContainsKey(variable))
         {
-            Names[variable] = value;
+            Names[variable] = name;
             return true;
         }
 
         if (Parent is not null)
-            return Parent.TryAssign(variable, value);
+            return Parent.TryAssign(variable, name);
 
         return false;
     }
 
-    public bool TryGet(string variable, out NameSymbol value)
+    public bool TryGet(string variable, out NameSymbol name)
     {
-        if (Names.TryGetValue(variable, out value!))
+        if (Names.TryGetValue(variable, out name!))
             return true;
 
         if (Parent is not null)
-            return Parent.TryGet(variable, out value);
+            return Parent.TryGet(variable, out name);
 
-        value = null!;
+        name = null!;
         return false;
     }
 

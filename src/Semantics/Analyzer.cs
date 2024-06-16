@@ -132,10 +132,10 @@ public class Analyzer
                     if (t.Properties.ArgSize == paramCount)
                         t.SetParameters([..parameters]);
                     else
-                        Reporter.ReportWrongTypeParametersCount(t.Name, (int) t.Properties.ArgSize, paramCount, tc.Span);
+                        Reporter.ReportWrongTypeParametersCount(t.ToString(), (int) t.Properties.ArgSize, paramCount, tc.Span);
                 }
                 else if (paramCount != 0)
-                    Reporter.ReportTypeNotGeneric(t.Name, tc.Type.Span);
+                    Reporter.ReportTypeNotGeneric(t.ToString(), tc.Type.Span);
 
                 type = t;
                 break;
@@ -201,6 +201,9 @@ public class Analyzer
 
             case NodeKind.TernaryExpression:
                 return BindTernaryExpression((TernaryExpression) expr);
+
+            case NodeKind.AssignmentExpression:
+                return BindAssignmentExpression((AssignmentExpression) expr);
 
             default:
                 throw new Exception($"Unrecognized expression kind while analyzing: {expr.Kind}");
@@ -318,5 +321,18 @@ public class Analyzer
             Reporter.ReportTernaryTypesDoNotMatch(trueExpr.Type.ToString(), falseExpr.Type.ToString(), te.Span);
 
         return new(condition, trueExpr, falseExpr, match ? trueExpr.Type : TypeSymbol.Unknown, condition.Span.To(falseExpr.Span));
+    }
+
+    private SemanticExpression BindAssignmentExpression(AssignmentExpression ae)
+    {
+        var expr = BindExpression(ae.Expression);
+
+        if (!Scope.TryGet(ae.Assignee.Value, out var name))
+            Reporter.ReportNameNotDefined(ae.Assignee.Value, ae.Assignee.Span);
+
+        if (!name.Type.HasFlag(expr.Type))
+            Reporter.ReportTypesDoNotMatch(name.Type.ToString(), expr.Type.ToString(), ae.Expression.Span);
+
+        return new SemanticAssignmentExpression(name, expr, ae.Span);
     }
 }

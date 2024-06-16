@@ -15,6 +15,7 @@ public enum SemanticKind
     UnaryExpression,
     BinaryExpression,
     TernaryExpression,
+    AssignmentExpression,
 
     // Statements
     ExpressionStatement,

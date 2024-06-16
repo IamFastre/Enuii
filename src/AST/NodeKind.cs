@@ -21,6 +21,7 @@ public enum NodeKind
     UnaryExpression,
     BinaryExpression,
     TernaryExpression,
+    AssignmentExpression,
 
     // Clauses
     TypeClause,

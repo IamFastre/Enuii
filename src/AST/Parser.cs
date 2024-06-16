@@ -261,7 +261,28 @@ public class Parser
     /* ====================================================================== */
 
     private Expression GetExpression()
-        => GetSecondary();
+        => GetAssignment();
+
+    private Expression GetAssignment()
+    {
+        var assignee = GetSecondary();
+
+        // TODO: support for compound assignments such as `+=` or `-=`
+        if (IsNextKind(TokenKind.Equal))
+        {
+            var expr = GetExpression();
+
+            if (assignee.Kind is not NodeKind.Name)
+            {
+                Reporter.ReportInvalidAssignee(assignee.Span);
+                return assignee;
+            }
+
+            return new AssignmentExpression((NameLiteral) assignee, expr);
+        }
+
+        return assignee;
+    }
 
     private Expression GetSecondary(int parentPrecedence = 0)
     {

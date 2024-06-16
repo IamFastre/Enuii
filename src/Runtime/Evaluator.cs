@@ -137,6 +137,9 @@ public class Evaluator
             case SemanticKind.BinaryExpression:
                 return EvaluateBinaryExpression((SemanticBinaryExpression) expr);
 
+            case SemanticKind.AssignmentExpression:
+                return EvaluateAssignmentExpression((SemanticAssignmentExpression) expr);
+
             default:
                 throw new Exception($"Unrecognized semantic expression kind while evaluating: {expr.Kind} of type {expr.Type}");
         }
@@ -358,5 +361,16 @@ public class Evaluator
             default:
                 throw new Exception($"Unrecognized binary operation kind while evaluating result: {be.OperationKind}:{be.Type} on '{be.RHS.Type}' and '{be.RHS.Type}'");
         };
+    }
+
+
+    private RuntimeValue EvaluateAssignmentExpression(SemanticAssignmentExpression ae)
+    {
+        var expr = EvaluateExpression(ae.Expression);
+
+        if (Scope.TryAssign(ae.Name.Name, expr))
+            return expr;
+
+        return UnknownValue.Template;
     }
 }

@@ -63,6 +63,9 @@ public class Reporter(IEnumerable<Error>? errors = null)
     internal void ReportExpectedToken(string needed, string given, Span span)
         => Report(ErrorKind.SyntaxError, $"Expected {("euioa".Contains(needed[0]) ? "an" : "a")} '{needed}' got '{given}' instead", span);
 
+    internal void ReportInvalidAssignee(Span span)
+        => Report(ErrorKind.SyntaxError, $"Invalid left-hand side of assignment", span);
+
     internal void ReportInvalidUnaryOperator(string op, string type, Span span)
         => Report(ErrorKind.TypeError, $"Operator '{op}' cannot be applied on operand of type '{type}'", span);
 
