@@ -345,10 +345,7 @@ public class Analyzer
         var bin  = new BinaryExpression(cae.Assignee, cae.Operation, cae.Expression);
         var expr = BindBinaryExpression(bin);
 
-        if (!Scope.TryGet(cae.Assignee.Value, out var name))
-            Reporter.ReportNameNotDefined(cae.Assignee.Value, cae.Assignee.Span);
-
-        else if (!name.Type.HasFlag(expr.Type))
+        if (Scope.TryGet(cae.Assignee.Value, out var name) && !name.Type.HasFlag(expr.Type))
             Reporter.ReportTypesDoNotMatch(name.Type.ToString(), expr.Type.ToString(), cae.Expression.Span);
 
         return new SemanticAssignmentExpression(name, expr, cae.Span);
