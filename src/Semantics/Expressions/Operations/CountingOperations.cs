@@ -12,10 +12,13 @@ public enum CountingKind
 
 public class CountingOperation
 {
+    private static bool CanCount(TypeSymbol type)
+        => type.ID is TypeID.Number or TypeID.Char;
+
     public static (CountingKind, bool) GetOperation(TokenKind kind, TypeSymbol type) => kind switch
     {
-        TokenKind.PlusPlus   => (CountingKind.Increment, TypeSymbol.Number.HasFlag(type)),
-        TokenKind.MinusMinus => (CountingKind.Decrement, TypeSymbol.Number.HasFlag(type)),
-        _                    => (CountingKind.INVALID,   TypeSymbol.Number.HasFlag(type)),
+        TokenKind.PlusPlus   => (CountingKind.Increment, CanCount(type)),
+        TokenKind.MinusMinus => (CountingKind.Decrement, CanCount(type)),
+        _                    => (CountingKind.INVALID,   CanCount(type)),
     };
 }
