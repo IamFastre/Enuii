@@ -94,6 +94,9 @@ public class Parser
 
             case TokenKind.While:
                 return GetWhileStatement();
+
+            case TokenKind.For:
+                return GetForStatement();
         }
     }
 
@@ -123,7 +126,7 @@ public class Parser
     private BlockStatement GetBlockStatement()
     {
         var body = ImmutableArray.CreateBuilder<Statement>();
-        var open  = Eat();
+        var open = Eat();
 
         // Keep on looking for statements unless it's a close bracket
         // or it's end of file
@@ -162,7 +165,7 @@ public class Parser
         ElseClause? elseClause = null;
 
         var whileKeyword = Eat();
-        var condition = GetExpression();
+        var condition    = GetExpression();
         
         if (condition.Kind is NodeKind.Unknown)
         {
@@ -177,6 +180,18 @@ public class Parser
             elseClause = GetElseClause();
 
         return new(whileKeyword, condition, thenStmt, elseClause);
+    }
+
+    private ForStatement GetForStatement()
+    {
+        var forKeyword = Eat();
+        var variable   = Expect(TokenKind.Identifier);
+        Expect(TokenKind.In);
+        var iterable   = GetExpression();
+        Expect(TokenKind.Colon, forKeyword.Span);
+        var statement  = GetStatement();
+
+        return new(forKeyword, variable, iterable, statement);
     }
 
 

@@ -90,6 +90,9 @@ public class Reporter(IEnumerable<Error>? errors = null)
     internal void ReportWrongTypeParametersCount(string type, int needed, int given, Span span)
         => Report(ErrorKind.TypeError, $"Generic type '{type}' takes in <{needed}> parameters, <{given}> were given", span);
 
+    internal void ReportCannotIterate(string type, Span span)
+        => Report(ErrorKind.TypeError, $"Type '{type}' is not iterable", span);
+
     internal void ReportTypeNotGeneric(string type, Span span)
         => Report(ErrorKind.SymbolError, $"Type '{type}' is not generic", span);
 

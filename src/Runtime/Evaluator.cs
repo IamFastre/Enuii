@@ -10,8 +10,8 @@ namespace Enuii.Runtime.Evaluation;
 public class Evaluator
 {
     public SemanticTree SemanticTree { get; }
-    public Scope        Scope        { get; }
     public Reporter     Reporter     { get; }
+    public Scope        Scope        { get; private set; }
 
     public Evaluator(SemanticTree tree, Scope scope,Reporter? reporter = null)
     {
@@ -19,6 +19,14 @@ public class Evaluator
         Scope        = scope;
         Reporter     = reporter ?? new();
     }
+
+    /* =========================== Helper Methods =========================== */
+
+    private void EnterScope()
+        => Scope = new(Scope);
+
+    private void ExitScope()
+        => Scope = Scope.Parent!;
 
     /* ====================================================================== */
 
@@ -52,9 +60,12 @@ public class Evaluator
 
             case SemanticKind.IfStatement:
                 return EvaluateIfStatement((SemanticIfStatement) stmt);
-            
+
             case SemanticKind.WhileStatement:
                 return EvaluateWhileStatement((SemanticWhileStatement) stmt);
+
+            case SemanticKind.ForStatement:
+                return EvaluateForStatement((SemanticForStatement) stmt);
 
             default:
                 throw new Exception($"Unrecognized semantic statement kind while evaluating: {stmt.Kind}");
@@ -103,6 +114,25 @@ public class Evaluator
                 value = EvaluateStatement(ws.Loop);
         else if (ws.Else is not null)
             value = EvaluateStatement(ws.Else);
+
+        return value;
+    }
+
+    private RuntimeValue EvaluateForStatement(SemanticForStatement fs)
+    {
+        RuntimeValue value = VoidValue.Template;
+        var iterable = (IEnumerableValue<RuntimeValue>) EvaluateExpression(fs.Iterable);
+
+        EnterScope();
+        Scope.TryDeclare(fs.Variable.Name, null!);
+
+        for (int i = 0; i < iterable.Length; i++)
+        {
+            Scope.TryAssign(fs.Variable.Name, iterable.ElementAt(i));
+            value = EvaluateStatement(fs.Loop);
+        }
+
+        ExitScope();
 
         return value;
     }

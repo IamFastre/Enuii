@@ -1,4 +1,3 @@
-using Enuii.General.Colors;
 using Enuii.Symbols.Types;
 
 namespace Enuii.Runtime.Evaluation;
@@ -51,8 +50,11 @@ public class RangeValue(NumberValue? start, NumberValue? end, NumberValue? step)
          : NumberValue.GetBest((index+1) * (double) Step.Value + (double) End!.Value);
 
 
-    public bool Contains(NumberValue value)
+    public bool Contains(RuntimeValue value)
     {
+        if (value is not NumberValue)
+            return false;
+
         var start = (double) (Start?.Value ?? double.NegativeInfinity);
         var end   = (double) (End?.Value ?? double.PositiveInfinity);
         var val   = (double) value.Value;

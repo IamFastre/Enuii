@@ -23,4 +23,5 @@ public enum SemanticKind
     BlockStatement,
     IfStatement,
     WhileStatement,
+    ForStatement,
 }

@@ -25,6 +25,6 @@ public sealed class StringValue(string value)
     public CharValue ElementAt(int index)
         => new(((string) Value)[index]);
 
-    public bool Contains(CharValue value)
-        => ((string) Value).Contains((char) value.Value);
+    public bool Contains(RuntimeValue value)
+        => value is CharValue && ((string) Value).Contains((char) value.Value);
 }

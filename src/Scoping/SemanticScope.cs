@@ -18,13 +18,13 @@ public class SemanticScope(SemanticScope? parent = null)
         return dict;
     }
 
-    public bool TryDeclare(string variable, NameSymbol name, bool hasErrors = false)
+    public bool TryDeclare(NameSymbol name, bool hasErrors = false)
     {
-        if (Names.ContainsKey(variable))
+        if (Names.ContainsKey(name.Name))
             return false;
 
         if (!hasErrors)
-            Names.Add(variable, name);
+            Names.Add(name.Name, name);
 
         return true;
     }

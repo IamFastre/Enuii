@@ -35,4 +35,5 @@ public enum NodeKind
     BlockStatement,
     IfStatement,
     WhileStatement,
+    ForStatement,
 }

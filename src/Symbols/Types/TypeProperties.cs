@@ -3,13 +3,13 @@ namespace Enuii.Symbols.Types;
 public class TypeProperties
     (
         uint                                   ArgSize     = 0u,
-        TypeSymbol?                            ElementType = null,
+        TypeSymbol?                            elementType = null,
         TypeSymbol[]?                          Parameters  = null,
         Func<TypeSymbol, string>?              CustomName  = null,
         IEnumerable<(TypeSymbol, TypeSymbol)>? Indexing    = null
     )
 {
-    public TypeSymbol?                           ElementType { get; } = ElementType;
+    public TypeSymbol?                           ElementType { get; } = elementType;
     public TypeSymbol[]                          Parameters  { get; } = Parameters ?? new TypeSymbol[ArgSize];
     public Func<TypeSymbol, string>?             CustomName  { get; } = CustomName;
     public IEnumerable<(TypeSymbol, TypeSymbol)> Indexing    { get; } = Indexing ?? [];
@@ -17,11 +17,11 @@ public class TypeProperties
     public uint                                  ArgSize     => (uint) Parameters.Length;
 
 
-    public static readonly TypeProperties Blank  = new();
+    public static TypeProperties Blank  => new();
 
-    public static readonly TypeProperties String = new
+    public static TypeProperties String => new
     (
-        ElementType: TypeSymbol.Char,
+        elementType: TypeSymbol.Char,
         Indexing:
         [
             (TypeSymbol.Integer, TypeSymbol.Char),
@@ -29,9 +29,9 @@ public class TypeProperties
         ]
     );
 
-    public static readonly TypeProperties Range = new
+    public static TypeProperties Range => new
     (
-        ElementType: TypeSymbol.Number,
+        elementType: TypeSymbol.Number,
         Indexing:
         [
             (TypeSymbol.Number, TypeSymbol.Number),
@@ -39,10 +39,10 @@ public class TypeProperties
         ]
     );
 
-    public static readonly TypeProperties List  = new
+    public static TypeProperties List  => new
     (
         ArgSize: 1,
-        ElementType: TypeSymbol.Any,
+        elementType: TypeSymbol.Any,
         CustomName: symbol => symbol.Properties.ElementType!.ToString() + "[]",
         Indexing:
         [
@@ -53,7 +53,7 @@ public class TypeProperties
 
     public static TypeProperties TypedList(TypeSymbol self, TypeSymbol element) => new
     (
-        ElementType: element,
+        elementType: element,
         Parameters: [element],
         CustomName: symbol => element.ToString() + "[]",
         Indexing:

@@ -11,8 +11,8 @@ namespace Enuii.Semantics;
 public class Analyzer
 {
     public SyntaxTree    SimpleTree { get; }
-    public SemanticScope Scope      { get; }
     public Reporter      Reporter   { get; }
+    public SemanticScope Scope      { get; private set; }
 
     public Analyzer(SyntaxTree tree, SemanticScope? scope = null, Reporter? reporter = null)
     {
@@ -20,6 +20,14 @@ public class Analyzer
         Scope      = scope    ?? new();
         Reporter   = reporter ?? new();
     }
+
+    /* =========================== Helper Methods =========================== */
+
+    private void EnterScope()
+        => Scope = new(Scope);
+
+    private void ExitScope()
+        => Scope = Scope.Parent!;
 
     /* ====================================================================== */
 
@@ -57,6 +65,9 @@ public class Analyzer
             case NodeKind.WhileStatement:
                 return BindWhileStatement((WhileStatement) stmt);
 
+            case NodeKind.ForStatement:
+                return BindForStatement((ForStatement) stmt);
+
             default:
                 throw new Exception($"Unrecognized statement kind while analyzing: {stmt.Kind}");
         }
@@ -75,7 +86,7 @@ public class Analyzer
         var name = new NameSymbol(ds.Name.Value, type ?? expr.Type, ds.IsConstant);
 
         if (type is null || (type is not null && type.HasFlag(expr.Type)))
-            if (!Scope.TryDeclare(ds.Name.Value, name, Reporter.Errors.Count > 0))
+            if (!Scope.TryDeclare(name, Reporter.Errors.Count > 0))
                 Reporter.ReportNameAlreadyDeclared(ds.Name.Value, ds.Name.Span);
 
         return new(name, expr, ds.Span);
@@ -111,6 +122,26 @@ public class Analyzer
                       : null;
 
         return new(condition, loopStmt, elseStmt, ws.Span);
+    }
+
+    private SemanticForStatement BindForStatement(ForStatement fs)
+    {
+        var iterable = BindExpression(fs.Iterable);
+        var elemType = iterable.Type.Properties.ElementType;
+
+        if (elemType is null)
+            if (iterable.Type.IsKnown)
+                Reporter.ReportCannotIterate(iterable.Type.ToString(), iterable.Span);
+
+        EnterScope();
+
+        var variable = new NameSymbol(fs.Variable.Value, elemType ?? TypeSymbol.Unknown, true);
+        Scope.TryDeclare(variable);
+        var loop = BindStatement(fs.Loop);
+
+        ExitScope();
+
+        return new(variable, iterable, loop, fs.Span);
     }
 
 
