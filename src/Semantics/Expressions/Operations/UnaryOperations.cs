@@ -1,7 +1,7 @@
 using Enuii.Symbols.Types;
 using Enuii.Syntax.Lexing;
 
-namespace Enuii.Semantics;
+namespace Enuii.Semantics.Operations;
 
 public enum UnaryKind
 {

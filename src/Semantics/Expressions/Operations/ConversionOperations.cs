@@ -1,6 +1,6 @@
 using Enuii.Symbols.Types;
 
-namespace Enuii.Semantics;
+namespace Enuii.Semantics.Operations;
 
 public enum ConversionKind
 {

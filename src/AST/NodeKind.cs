@@ -21,6 +21,7 @@ public enum NodeKind
     UnaryExpression,
     BinaryExpression,
     TernaryExpression,
+    CountingExpression,
     AssignmentExpression,
     CompoundAssignmentExpression,
 
@@ -36,4 +37,10 @@ public enum NodeKind
     IfStatement,
     WhileStatement,
     ForStatement,
+}
+
+public static class NodeKindExtension
+{
+    public static bool IsAssignableTo(this NodeKind kind)
+        => kind is NodeKind.Name;
 }

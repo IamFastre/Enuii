@@ -1,6 +1,6 @@
 using System.Collections.Immutable;
 using Enuii.Runtime.Evaluation;
-using Enuii.Semantics;
+using Enuii.Semantics.Operations;
 using Enuii.Symbols.Types;
 
 namespace Enuii.Runtime.Conversion;

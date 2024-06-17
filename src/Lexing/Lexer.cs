@@ -143,7 +143,7 @@ public class Lexer
         if (IsUpcoming("??"))
             return CreateToken(TokenKind.DoubleQuestionMark);
 
-        // Comparison
+        // Comparison:
         if (IsUpcoming("=="))
             return CreateToken(TokenKind.EqualEqual);
 
@@ -156,7 +156,7 @@ public class Lexer
         if (IsUpcoming(">="))
             return CreateToken(TokenKind.GreaterEqual);
 
-        // Assignment
+        // Assignment:
         if (IsUpcoming("+="))
             return CreateToken(TokenKind.PlusEqual);
 
@@ -192,6 +192,13 @@ public class Lexer
 
         if (IsUpcoming("??="))
             return CreateToken(TokenKind.DoubleQuestionMarkEqual);
+
+        // Counting:
+        if (IsUpcoming("++"))
+            return CreateToken(TokenKind.PlusPlus);
+
+        if (IsUpcoming("--"))
+            return CreateToken(TokenKind.MinusMinus);
 
         // Others:
         if (IsUpcoming("->"))

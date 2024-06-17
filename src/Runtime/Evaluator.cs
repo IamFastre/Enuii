@@ -3,6 +3,7 @@ using Enuii.Reports;
 using Enuii.Runtime.Conversion;
 using Enuii.Scoping;
 using Enuii.Semantics;
+using Enuii.Semantics.Operations;
 using Enuii.Symbols.Types;
 
 namespace Enuii.Runtime.Evaluation;
@@ -166,6 +167,9 @@ public class Evaluator
 
             case SemanticKind.BinaryExpression:
                 return EvaluateBinaryExpression((SemanticBinaryExpression) expr);
+
+            case SemanticKind.CountingExpression:
+                return EvaluateCountingExpression((SemanticCountingExpression) expr);
 
             case SemanticKind.AssignmentExpression:
                 return EvaluateAssignmentExpression((SemanticAssignmentExpression) expr);
@@ -389,10 +393,26 @@ public class Evaluator
                 return new BoolValue(((string) right.Value).Contains(left.Value!.ToString()!)); // TODO: Change this piece of shit
                                                                                                 // c'mon it's pretty (I might have dissociative identity disorder)
             default:
-                throw new Exception($"Unrecognized binary operation kind while evaluating result: {be.OperationKind}:{be.Type} on '{be.RHS.Type}' and '{be.RHS.Type}'");
+                throw new Exception($"Unrecognized binary operation kind while evaluating result: {be.OperationKind}:{be.Type} on '{be.LHS.Type}' and '{be.RHS.Type}'");
         };
     }
 
+    private RuntimeValue EvaluateCountingExpression(SemanticCountingExpression ce)
+    {
+        var operand = EvaluateExpression(ce.Operand);
+        var step    = ce.OperationKind is CountingKind.Increment ? 1 : -1;
+
+        var result = ce.Type.ID switch
+        {
+            TypeID.Integer => new IntValue((double)operand.Value + step),
+            TypeID.Float   => new FloatValue((double)operand.Value + step),
+            TypeID.Char    => new CharValue((char)((char)operand.Value + step)),
+            _              => operand,
+        };
+
+        Scope.TryAssign(ce.Operand.Name, result);
+        return ce.IsBefore ? result : operand;
+    }
 
     private RuntimeValue EvaluateAssignmentExpression(SemanticAssignmentExpression ae)
     {

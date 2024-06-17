@@ -243,7 +243,7 @@ public class Parser
         {
             var elem = getElement();
 
-            if (elem.Kind == NodeKind.Unknown)
+            if (elem.Kind is NodeKind.Unknown)
                 break;
 
             elements.Add(elem);
@@ -287,13 +287,11 @@ public class Parser
         {
             var expr = GetExpression();
 
-            if (assignee.Kind is not NodeKind.Name)
-            {
-                Reporter.ReportInvalidAssignee(assignee.Span);
-                return assignee;
-            }
+            if (assignee.Kind.IsAssignableTo())
+                return new AssignmentExpression((NameLiteral) assignee, expr);
 
-            return new AssignmentExpression((NameLiteral) assignee, expr);
+            Reporter.ReportInvalidAssignee(assignee.Span);
+            return assignee;
         }
         /* ====================== Compound Assignments ====================== */
         else if (Current.Kind.IsAssignment())
@@ -301,13 +299,11 @@ public class Parser
             var op = Eat();
             var expr = GetExpression();
 
-            if (assignee.Kind is not NodeKind.Name)
-            {
-                Reporter.ReportInvalidAssignee(assignee.Span);
-                return assignee;
-            }
+            if (assignee.Kind.IsAssignableTo())
+                return new CompoundAssignmentExpression((NameLiteral) assignee, op, expr);
 
-            return new CompoundAssignmentExpression((NameLiteral) assignee, op, expr);
+            Reporter.ReportInvalidAssignee(assignee.Span);
+            return assignee;
         }
 
         return assignee;
@@ -326,7 +322,7 @@ public class Parser
             var uOp = Eat();
             left    = GetSecondary(unaryPrecedence);
 
-            if (left.Kind == NodeKind.Unknown)
+            if (left.Kind is NodeKind.Unknown)
             {
                 Reporter.Pop();
                 Reporter.ReportExpressionExpectedAfter(uOp.Value, uOp.Span);
@@ -346,7 +342,7 @@ public class Parser
             var biOp  = Eat();
             var right = GetSecondary(binaryPrecedence);
 
-            if (right.Kind == NodeKind.Unknown)
+            if (right.Kind is NodeKind.Unknown)
             {
                 Reporter.Pop();
                 Reporter.ReportExpressionExpectedAfter(biOp.Value, biOp.Span);
@@ -362,7 +358,7 @@ public class Parser
             var qMark     = Eat();
             var trueExpr  = GetSecondary();
 
-            if (trueExpr.Kind == NodeKind.Unknown)
+            if (trueExpr.Kind is NodeKind.Unknown)
             {
                 Reporter.Pop();
                 Reporter.ReportExpressionExpectedAfter(qMark.Value, qMark.Span);
@@ -372,7 +368,7 @@ public class Parser
             var colon     = Expect(TokenKind.Colon);
 
             var falseExpr = GetSecondary();
-            if (falseExpr.Kind == NodeKind.Unknown)
+            if (falseExpr.Kind is NodeKind.Unknown)
             {
                 Reporter.Pop();
                 Reporter.ReportExpressionExpectedAfter(colon.Value, colon.Span);
@@ -409,7 +405,7 @@ public class Parser
                 return GetList();
 
             default:
-                return GetPrimary();
+                return GetCounting();
         }
     }
 
@@ -448,6 +444,35 @@ public class Parser
         var cls   = Expect(TokenKind.CloseSquareBracket);
 
         return new(open, exprs, cls);
+    }
+
+    private Expression GetCounting()
+    {
+        Token? op;
+        void Check()
+            => op = Current.Kind is TokenKind.PlusPlus or TokenKind.MinusMinus ? Eat() : null;
+
+        Check();
+        var prim = GetPrimary();
+
+        if (op is not null)
+        {
+            if (prim.Kind.IsAssignableTo())
+                return new CountingExpression(op, (NameLiteral) prim, true);
+
+            Reporter.ReportInvalidCount(op.Kind, prim.Span);
+        }
+
+        Check();
+        if (op is not null)
+        {
+            if (prim.Kind.IsAssignableTo())
+                return new CountingExpression(op, (NameLiteral) prim, false);
+
+            Reporter.ReportInvalidCount(op.Kind, prim.Span);
+        }
+
+        return prim;
     }
 
     private Expression GetPrimary()

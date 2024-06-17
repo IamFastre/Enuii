@@ -66,11 +66,20 @@ public class Reporter(IEnumerable<Error>? errors = null)
     internal void ReportInvalidAssignee(Span span)
         => Report(ErrorKind.SyntaxError, $"Invalid left-hand side of assignment", span);
 
+    internal void ReportInvalidCount(TokenKind op, Span span)
+        => Report(ErrorKind.SyntaxError, $"Invalid operand of {(op is TokenKind.PlusPlus ? "increment" : "decrement")} operator", span);
+
+    internal void ReportCannotConvert(string type1, string type2, Span span)
+        => Report(ErrorKind.TypeError, $"Cannot convert from '{type1}' to '{type2}'", span);
+
     internal void ReportInvalidUnaryOperator(string op, string type, Span span)
         => Report(ErrorKind.TypeError, $"Operator '{op}' cannot be applied on operand of type '{type}'", span);
 
     internal void ReportInvalidBinaryOperator(string op, string left, string right, Span span)
         => Report(ErrorKind.TypeError, $"Operator '{op}' cannot be applied to operands of type '{left}' and '{right}'", span);
+
+    internal void ReportInvalidCountingOperator(string operate, string type, Span span)
+        => Report(ErrorKind.TypeError, $"Cannot {operate.ToLower()} value of type '{type}'", span);
 
     internal void ReportUnexpectedType(string needed, string given, Span span)
         => Report(ErrorKind.TypeError, $"Expected expression of type '{needed}' got '{given}' instead", span);
@@ -83,9 +92,6 @@ public class Reporter(IEnumerable<Error>? errors = null)
 
     internal void ReportHeteroList(string type1, string type2, Span span)
         => Report(ErrorKind.TypeError, $"Typed list can't have '{type1}' and '{type2}'", span);
-
-    internal void ReportCannotConvert(string type1, string type2, Span span)
-        => Report(ErrorKind.TypeError, $"Cannot convert from '{type1}' to '{type2}'", span);
 
     internal void ReportWrongTypeParametersCount(string type, int needed, int given, Span span)
         => Report(ErrorKind.TypeError, $"Generic type '{type}' takes in <{needed}> parameters, <{given}> were given", span);

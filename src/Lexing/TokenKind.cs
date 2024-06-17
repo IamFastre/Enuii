@@ -67,6 +67,8 @@ public enum TokenKind
     DoublePipEqual,
     DoubleQuestionMarkEqual,
     __ASSIGNMENT_END__,
+    PlusPlus,
+    MinusMinus,
 
     // Comparison
     EqualEqual,

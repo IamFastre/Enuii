@@ -5,6 +5,7 @@ using Enuii.Symbols;
 using Enuii.Symbols.Names;
 using Enuii.Symbols.Types;
 using Enuii.Syntax.AST;
+using Enuii.Semantics.Operations;
 
 namespace Enuii.Semantics;
 
@@ -28,6 +29,17 @@ public class Analyzer
 
     private void ExitScope()
         => Scope = Scope.Parent!;
+
+    private bool TryGet(NameLiteral a, out NameSymbol name)
+    {
+        if (!Scope.TryGet(a.Name, out name))
+        {
+            Reporter.ReportNameNotDefined(a.Name, a.Span);
+            return false;
+        }
+
+        return true;
+    }
 
     /* ====================================================================== */
 
@@ -234,6 +246,9 @@ public class Analyzer
             case NodeKind.TernaryExpression:
                 return BindTernaryExpression((TernaryExpression) expr);
 
+            case NodeKind.CountingExpression:
+                return BindCountingExpression((CountingExpression) expr);
+
             case NodeKind.AssignmentExpression:
                 return BindAssignmentExpression((AssignmentExpression) expr);
 
@@ -285,10 +300,10 @@ public class Analyzer
 
     private SemanticExpression BindName(NameLiteral nl)
     {
-        if (Scope.TryGet(nl.Value, out var name))
+        if (TryGet(nl, out var name))
             return new SemanticNameLiteral(name, nl.Span);
 
-        Reporter.ReportNameNotDefined(nl.Value, nl.Span);
+        Reporter.ReportNameNotDefined(nl.Name, nl.Span);
         return new SemanticFailedExpression(nl.Span);
     }
 
@@ -358,14 +373,27 @@ public class Analyzer
         return new(condition, trueExpr, falseExpr, match ? trueExpr.Type : TypeSymbol.Unknown, condition.Span.To(falseExpr.Span));
     }
 
+    private SemanticExpression BindCountingExpression(CountingExpression ce)
+    {
+        var operand = BindExpression(ce.Operand);
+        var (opKind, canCount) = CountingOperation.GetOperation(ce.Operator.Kind, operand.Type);
+
+        // Successfully found the operation
+        if (opKind is not CountingKind.INVALID)
+            if (canCount)
+                return new SemanticCountingExpression((SemanticNameLiteral) operand, opKind, ce.IsBefore, ce.Span);
+            else
+                // Mismatched type
+                Reporter.ReportInvalidCountingOperator(opKind.ToString(), operand.Type.ToString(), ce.Span);
+
+        return new SemanticFailedOperation(operand);
+    }
+
     private SemanticExpression BindAssignmentExpression(AssignmentExpression ae)
     {
         var expr = BindExpression(ae.Expression);
 
-        if (!Scope.TryGet(ae.Assignee.Value, out var name))
-            Reporter.ReportNameNotDefined(ae.Assignee.Value, ae.Assignee.Span);
-
-        else if (!name.Type.HasFlag(expr.Type))
+        if (TryGet(ae.Assignee, out var name) && !name.Type.HasFlag(expr.Type))
             Reporter.ReportTypesDoNotMatch(name.Type.ToString(), expr.Type.ToString(), ae.Expression.Span);
 
         return new SemanticAssignmentExpression(name, expr, ae.Span);
@@ -376,7 +404,7 @@ public class Analyzer
         var bin  = new BinaryExpression(cae.Assignee, cae.Operation, cae.Expression);
         var expr = BindBinaryExpression(bin);
 
-        if (Scope.TryGet(cae.Assignee.Value, out var name) && !name.Type.HasFlag(expr.Type))
+        if (TryGet(cae.Assignee, out var name) && !name.Type.HasFlag(expr.Type))
             Reporter.ReportTypesDoNotMatch(name.Type.ToString(), expr.Type.ToString(), cae.Expression.Span);
 
         return new SemanticAssignmentExpression(name, expr, cae.Span);
