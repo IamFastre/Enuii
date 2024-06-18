@@ -124,16 +124,21 @@ public class Evaluator
         RuntimeValue value = VoidValue.Template;
         var iterable = (IEnumerableValue<RuntimeValue>) EvaluateExpression(fs.Iterable);
 
-        EnterScope();
-        Scope.TryDeclare(fs.Variable.Name, null!);
-
-        for (int i = 0; i < iterable.Length; i++)
+        if (iterable.Length > 0)
         {
-            Scope.TryAssign(fs.Variable.Name, iterable.ElementAt(i));
-            value = EvaluateStatement(fs.Loop);
-        }
+            EnterScope();
+            Scope.TryDeclare(fs.Variable.Name, null!);
 
-        ExitScope();
+            for (int i = 0; i < iterable.Length; i++)
+            {
+                Scope.TryAssign(fs.Variable.Name, iterable.ElementAt(i));
+                value = EvaluateStatement(fs.Loop);
+            }
+
+            ExitScope();
+        }
+        else if (fs.Else is not null)
+            value = EvaluateStatement(fs.Else);
 
         return value;
     }

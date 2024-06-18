@@ -153,7 +153,11 @@ public class Analyzer
 
         ExitScope();
 
-        return new(variable, iterable, loop, fs.Span);
+        var elseStmt  = fs.ElseClause is not null
+                      ? BindStatement(fs.ElseClause.Body)
+                      : null;
+
+        return new(variable, iterable, loop, elseStmt, fs.Span);
     }
 
 

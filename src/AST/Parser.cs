@@ -184,14 +184,21 @@ public class Parser
 
     private ForStatement GetForStatement()
     {
+        ElseClause? elseClause = null;
+
         var forKeyword = Eat();
+
         var variable   = Expect(TokenKind.Identifier);
         Expect(TokenKind.In);
         var iterable   = GetExpression();
+
         Expect(TokenKind.Colon, forKeyword.Span);
         var statement  = GetStatement();
 
-        return new(forKeyword, variable, iterable, statement);
+        if (Current.Kind == TokenKind.Else)
+            elseClause = GetElseClause();
+
+        return new(forKeyword, variable, iterable, statement, elseClause);
     }
 
 
