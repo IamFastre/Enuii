@@ -1,4 +1,3 @@
-
 namespace Enuii.General.Positioning;
 
 public class Span
