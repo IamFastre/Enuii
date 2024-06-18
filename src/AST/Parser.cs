@@ -390,7 +390,7 @@ public class Parser
 
     private Expression GetConversion()
     {
-        var expr = GetIntermediate();
+        var expr = GetCounting();
 
         while (Current.Kind is TokenKind.SingleArrow)
         {
@@ -399,6 +399,35 @@ public class Parser
         }
 
         return expr;
+    }
+
+    private Expression GetCounting()
+    {
+        Token? op;
+        void Check()
+            => op = Current.Kind is TokenKind.PlusPlus or TokenKind.MinusMinus ? Eat() : null;
+
+        Check();
+        var operand = GetIntermediate();
+
+        if (op is not null)
+        {
+            if (operand.Kind.IsAssignableTo())
+                return new CountingExpression(op, (NameLiteral) operand, true);
+
+            Reporter.ReportInvalidCount(op.Kind, operand.Span);
+        }
+
+        Check();
+        if (op is not null)
+        {
+            if (operand.Kind.IsAssignableTo())
+                return new CountingExpression(op, (NameLiteral) operand, false);
+
+            Reporter.ReportInvalidCount(op.Kind, operand.Span);
+        }
+
+        return operand;
     }
 
     private Expression GetIntermediate()
@@ -412,7 +441,7 @@ public class Parser
                 return GetList();
 
             default:
-                return GetCounting();
+                return GetPrimary();
         }
     }
 
@@ -451,35 +480,6 @@ public class Parser
         var cls   = Expect(TokenKind.CloseSquareBracket);
 
         return new(open, exprs, cls);
-    }
-
-    private Expression GetCounting()
-    {
-        Token? op;
-        void Check()
-            => op = Current.Kind is TokenKind.PlusPlus or TokenKind.MinusMinus ? Eat() : null;
-
-        Check();
-        var prim = GetPrimary();
-
-        if (op is not null)
-        {
-            if (prim.Kind.IsAssignableTo())
-                return new CountingExpression(op, (NameLiteral) prim, true);
-
-            Reporter.ReportInvalidCount(op.Kind, prim.Span);
-        }
-
-        Check();
-        if (op is not null)
-        {
-            if (prim.Kind.IsAssignableTo())
-                return new CountingExpression(op, (NameLiteral) prim, false);
-
-            Reporter.ReportInvalidCount(op.Kind, prim.Span);
-        }
-
-        return prim;
     }
 
     private Expression GetPrimary()
