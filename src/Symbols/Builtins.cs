@@ -21,7 +21,6 @@ public static class Builtins
         TypeSymbol.Char,
         TypeSymbol.String,
         TypeSymbol.Range,
-        TypeSymbol.List,
     ];
 
     public static Dictionary<string, RuntimeValue> GetBuiltins() => new()

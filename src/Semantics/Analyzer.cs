@@ -6,6 +6,7 @@ using Enuii.Symbols.Names;
 using Enuii.Symbols.Types;
 using Enuii.Syntax.AST;
 using Enuii.Semantics.Operations;
+using Enuii.General.Constants;
 
 namespace Enuii.Semantics;
 
@@ -175,14 +176,7 @@ public class Analyzer
         {
             if (t.Name == tc.Type.Value)
             {
-                if (t.IsGeneric)
-                {
-                    if (t.Properties.ArgSize == paramCount)
-                        t.SetParameters([..parameters]);
-                    else
-                        Reporter.ReportWrongTypeParametersCount(t.ToString(), (int) t.Properties.ArgSize, paramCount, tc.Span);
-                }
-                else if (paramCount != 0)
+                if (paramCount != 0)
                     Reporter.ReportTypeNotGeneric(t.ToString(), tc.Type.Span);
 
                 type = t;
@@ -191,10 +185,31 @@ public class Analyzer
         }
 
         if (type is null)
+        {
+            switch (tc.Type.Value)
+            {
+                case CONSTS.LIST:
+                    if (paramCount == 1)
+                        type = TypeSymbol.List(parameters.ElementAt(0));
+                    else
+                        Reporter.ReportWrongTypeParametersCount(CONSTS.LIST, 1, paramCount, tc.Span);
+                    break;
+
+                case CONSTS.FUNCTION:
+                    if (paramCount > 0)
+                        type = TypeSymbol.Function(parameters);
+                    else
+                        Reporter.ReportArgumentlessGenericType(CONSTS.FUNCTION, tc.Span);
+                    break;
+
+                default:
             Reporter.ReportUnusableType(tc.Type.Value, tc.Span);
+                    break;
+            }
+        }
         else
             for (int i = 0; i < tc.ListDimension; i++)
-                type = TypeSymbol.List.SetParameters(type);
+                type = TypeSymbol.List(type);
 
         return type ?? TypeSymbol.Unknown;
     }

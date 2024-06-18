@@ -14,6 +14,7 @@ public enum TypeID
     String   = 1 << 8,
     Range    = 1 << 9,
     List     = 1 << 10,
+    Function = 1 << 11,
 
     Any        = int.MaxValue - Void,
     Nones      = Void    | Unknown | Null,

@@ -3,13 +3,13 @@ namespace Enuii.Symbols.Types;
 public class TypeProperties
     (
         uint                                   ArgSize     = 0u,
-        TypeSymbol?                            elementType = null,
+        TypeSymbol?                            ElementType = null,
         TypeSymbol[]?                          Parameters  = null,
-        Func<TypeSymbol, string>?              CustomName  = null,
-        IEnumerable<(TypeSymbol, TypeSymbol)>? Indexing    = null
+        IEnumerable<(TypeSymbol, TypeSymbol)>? Indexing    = null,
+        Func<TypeSymbol, string>?              CustomName  = null
     )
 {
-    public TypeSymbol?                           ElementType { get; } = elementType;
+    public TypeSymbol?                           ElementType { get; } = ElementType;
     public TypeSymbol[]                          Parameters  { get; } = Parameters ?? new TypeSymbol[ArgSize];
     public Func<TypeSymbol, string>?             CustomName  { get; } = CustomName;
     public IEnumerable<(TypeSymbol, TypeSymbol)> Indexing    { get; } = Indexing ?? [];
@@ -21,7 +21,7 @@ public class TypeProperties
 
     public static TypeProperties String => new
     (
-        elementType: TypeSymbol.Char,
+        ElementType: TypeSymbol.Char,
         Indexing:
         [
             (TypeSymbol.Integer, TypeSymbol.Char),
@@ -31,7 +31,7 @@ public class TypeProperties
 
     public static TypeProperties Range => new
     (
-        elementType: TypeSymbol.Number,
+        ElementType: TypeSymbol.Number,
         Indexing:
         [
             (TypeSymbol.Number, TypeSymbol.Number),
@@ -39,21 +39,15 @@ public class TypeProperties
         ]
     );
 
-    public static TypeProperties List  => new
+    public static TypeProperties Function  => new
     (
-        ArgSize: 1,
-        elementType: TypeSymbol.Any,
-        CustomName: symbol => symbol.Properties.ElementType!.ToString() + "[]",
-        Indexing:
-        [
-            (TypeSymbol.Integer, TypeSymbol.Unknown),
-            (TypeSymbol.Range, TypeSymbol.List),
-        ]
+        ArgSize: 256,
+        CustomName: symbol => $"({string.Join(", ", symbol.Properties.Parameters[1..].Select(e => e.ToString()))}) -> {symbol.Properties.Parameters[0]}"
     );
 
     public static TypeProperties TypedList(TypeSymbol self, TypeSymbol element) => new
     (
-        elementType: element,
+        ElementType: element,
         Parameters: [element],
         CustomName: symbol => element.ToString() + "[]",
         Indexing:

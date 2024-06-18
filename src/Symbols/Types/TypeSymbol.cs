@@ -1,3 +1,4 @@
+using System.Linq.Expressions;
 using Enuii.General.Constants;
 using Enuii.Syntax.AST;
 
@@ -10,9 +11,10 @@ public class TypeSymbol
     public TypeProperties Properties { get; private set; }
 
     // Metadata
-    public bool IsNull    => ID is TypeID.Null;
-    public bool IsKnown   => ID is not TypeID.Unknown;
-    public bool IsGeneric => Properties.ArgSize > 0;
+    public bool IsKnown    => ID is not TypeID.Unknown;
+    public bool IsNull     => ID is TypeID.Null;
+    public bool IsGeneric  => Properties.ArgSize > 0;
+
 
     public TypeSymbol(string name, TypeID id, TypeProperties? props = null, Action<TypeSymbol>? onCreate = null)
         : base(name)
@@ -43,31 +45,6 @@ public class TypeSymbol
         return true;
     }
 
-    public TypeSymbol SetParameters(params TypeSymbol[] paramz)
-    {
-        if (Properties.Parameters is null)
-            throw new Exception("Type is not generic to give parameters");
-
-        if (paramz.Length != Properties.ArgSize)
-            throw new Exception($"Incorrect number of parameters given to generic type. (given: {paramz.Length}) (required: {Properties.ArgSize})");
-
-        switch (ID)
-        {
-            case TypeID.List:
-                var list = new TypeSymbol(Name, ID, Properties);
-                list.Properties = TypeProperties.TypedList(list, paramz[0]);
-                return list;
-
-            default:
-                var self = new TypeSymbol(Name, ID, Properties);
-
-                for (int i = 0; i < paramz.Length; i++)
-                    self.Properties.Parameters[i] = paramz[i];
-
-                return self;
-        }
-    }
-
     public override string ToString()
     {
         if (Properties.CustomName is not null)
@@ -96,19 +73,45 @@ public class TypeSymbol
     /*                                  Types                                 */
     /* ====================================================================== */
 
-    public static readonly TypeSymbol Unknown = new(CONSTS.UNKNOWN, TypeID.Unknown);
-    public static readonly TypeSymbol Void    = new(CONSTS.VOID,    TypeID.Void);
+    public static readonly TypeSymbol Unknown  = new(CONSTS.UNKNOWN,  TypeID.Unknown);
+    public static readonly TypeSymbol Void     = new(CONSTS.VOID,     TypeID.Void);
 
-    public static readonly TypeSymbol Any     = new(CONSTS.ANY,     TypeID.Any);
-    public static readonly TypeSymbol Null    = new(CONSTS.NULL,    TypeID.Null);
-    public static readonly TypeSymbol Boolean = new(CONSTS.BOOLEAN, TypeID.Boolean);
-    public static readonly TypeSymbol Number  = new(CONSTS.NUMBER,  TypeID.Number);
-    public static readonly TypeSymbol Integer = new(CONSTS.INTEGER, TypeID.Integer);
-    public static readonly TypeSymbol Float   = new(CONSTS.FLOAT,   TypeID.Float);
-    public static readonly TypeSymbol Char    = new(CONSTS.CHAR,    TypeID.Char);
-    public static readonly TypeSymbol String  = new(CONSTS.STRING,  TypeID.String, TypeProperties.String);
-    public static readonly TypeSymbol Range   = new(CONSTS.RANGE,   TypeID.Range,  TypeProperties.Range);
-    public static readonly TypeSymbol List    = new(CONSTS.LIST,    TypeID.List,   TypeProperties.List);
+    public static readonly TypeSymbol Any      = new(CONSTS.ANY,      TypeID.Any);
+    public static readonly TypeSymbol Null     = new(CONSTS.NULL,     TypeID.Null);
+    public static readonly TypeSymbol Boolean  = new(CONSTS.BOOLEAN,  TypeID.Boolean);
+    public static readonly TypeSymbol Number   = new(CONSTS.NUMBER,   TypeID.Number);
+    public static readonly TypeSymbol Integer  = new(CONSTS.INTEGER,  TypeID.Integer);
+    public static readonly TypeSymbol Float    = new(CONSTS.FLOAT,    TypeID.Float);
+    public static readonly TypeSymbol Char     = new(CONSTS.CHAR,     TypeID.Char);
+    public static readonly TypeSymbol String   = new(CONSTS.STRING,   TypeID.String,   TypeProperties.String);
+    public static readonly TypeSymbol Range    = new(CONSTS.RANGE,    TypeID.Range,    TypeProperties.Range);
+
+    public static TypeSymbol List(TypeSymbol element)
+    {
+        var list  = new TypeSymbol(CONSTS.LIST, TypeID.List);
+        var props = new TypeProperties(
+            ArgSize:     1u,
+            ElementType: element,
+            Parameters:  [element],
+            Indexing:    [(Integer, element), (Range, list),],
+            CustomName:  symbol => symbol.Properties.ElementType!.ToString() + "[]"
+        );
+
+        list.Properties = props;
+        return list;
+    }
+
+    public static TypeSymbol Function(IEnumerable<TypeSymbol> parameters)
+    {
+        var func  = new TypeSymbol(CONSTS.FUNCTION, TypeID.Function);
+        var props = new TypeProperties(
+            Parameters: [..parameters],
+            CustomName: symbol => $"({string.Join(", ", symbol.Properties.Parameters[1..].Select(e => e.ToString()))}) -> {symbol.Properties.Parameters[0]}"
+        );
+
+        func.Properties = props;
+        return func;
+    }
 
 
     /* ====================================================================== */
