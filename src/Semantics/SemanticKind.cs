@@ -9,6 +9,7 @@ public enum SemanticKind
     Name,
 
     // Expressions
+    CallExpression,
     FailedExpression,
     FailedOperation,
     ConversionExpression,

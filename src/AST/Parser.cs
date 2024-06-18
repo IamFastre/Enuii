@@ -415,7 +415,7 @@ public class Parser
             => op = Current.Kind is TokenKind.PlusPlus or TokenKind.MinusMinus ? Eat() : null;
 
         Check();
-        var operand = GetIntermediate();
+        var operand = GetCall();
 
         if (op is not null)
         {
@@ -435,6 +435,20 @@ public class Parser
         }
 
         return operand;
+    }
+
+    private Expression GetCall()
+    {
+        var callee = GetIntermediate();
+
+        if (IsNextKind(TokenKind.OpenParenthesis))
+        {
+            var args = GetSeparated(GetExpression, TokenKind.CloseParenthesis);
+            var end  = Expect(TokenKind.CloseParenthesis).Span;
+            return new CallExpression(callee, args, end);
+        }
+
+        return callee;
     }
 
     private Expression GetIntermediate()

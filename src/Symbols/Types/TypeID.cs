@@ -20,4 +20,5 @@ public enum TypeID
     Nones      = Void    | Unknown | Null,
     Number     = Integer | Float,
     Enumerable = String  | Range | List,
+    Callable   = Function,
 }

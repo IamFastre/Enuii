@@ -13,6 +13,7 @@ public class TypeSymbol
     // Metadata
     public bool IsKnown    => ID is not TypeID.Unknown;
     public bool IsNull     => ID is TypeID.Null;
+    public bool IsCallable => ID is TypeID.Callable;
     public bool IsGeneric  => Properties.ArgSize > 0;
 
 

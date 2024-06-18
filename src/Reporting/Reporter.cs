@@ -102,6 +102,12 @@ public class Reporter(IEnumerable<Error>? errors = null)
     internal void ReportCannotIterate(string type, Span span)
         => Report(ErrorKind.TypeError, $"Type '{type}' is not iterable", span);
 
+    internal void ReportNotCallable(string type, Span span)
+        => Report(ErrorKind.TypeError, $"Type '{type}' is not callable", span);
+
+    internal void ReportInvalidArgumentCount(string function, int needed, int given, Span span)
+        => Report(ErrorKind.TypeError, $"Function '{function}' takes in ({needed}) arguments, ({given}) were given", span);
+
     internal void ReportTypeNotGeneric(string type, Span span)
         => Report(ErrorKind.SymbolError, $"Type '{type}' is not generic", span);
 

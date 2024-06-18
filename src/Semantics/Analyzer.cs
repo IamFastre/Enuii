@@ -203,7 +203,7 @@ public class Analyzer
                     break;
 
                 default:
-            Reporter.ReportUnusableType(tc.Type.Value, tc.Span);
+                    Reporter.ReportUnusableType(tc.Type.Value, tc.Span);
                     break;
             }
         }
@@ -249,6 +249,9 @@ public class Analyzer
 
             case NodeKind.Name:
                 return BindName((NameLiteral) expr);
+
+            case NodeKind.CallExpression:
+                return BindCallExpression((CallExpression) expr);
 
             case NodeKind.ParenthesizedExpression:
                 return BindParenthesizedExpression((ParenthesizedExpression) expr);
@@ -323,6 +326,43 @@ public class Analyzer
             return new SemanticNameLiteral(name, nl.Span);
 
         return new SemanticFailedExpression(nl.Span);
+    }
+
+    private SemanticExpression BindCallExpression(CallExpression ce)
+    {
+        var callee = BindExpression(ce.Callee);
+        var args = ce.Arguments.Elements.Select(BindExpression);
+
+        if (callee.Type.IsCallable)
+        {
+            if (callee.Type.Properties.Parameters.Length - 1 != args.Count())
+            {
+                Reporter.ReportInvalidArgumentCount(callee.Type.ToString(), callee.Type.Properties.Parameters.Length, args.Count(), ce.Span);
+                return new SemanticFailedExpression(ce.Span);
+            }
+
+            var faulty = false;
+            for (int i = 0; i < args.Count(); i++)
+            {
+                var paramType = callee.Type.Properties.Parameters[i];
+                var argType   = args.ElementAt(i).Type;
+
+                if (!paramType.HasFlag(argType))
+                {
+                    if (argType.IsKnown)
+                        Reporter.ReportTypesDoNotMatch(paramType.ToString(), argType.ToString(), args.ElementAt(i).Span);
+                    faulty = true;
+                }
+            }
+
+            if (faulty)
+                return new SemanticFailedExpression(ce.Span);
+            return new SemanticCallExpression(callee, callee.Type.Properties.Parameters[0], args, ce.Span);
+        }
+
+        if (callee.Type.IsKnown)
+            Reporter.ReportNotCallable(callee.Type.ToString(), ce.Callee.Span);
+        return new SemanticFailedExpression(ce.Span);
     }
 
     private SemanticExpression BindParenthesizedExpression(ParenthesizedExpression pe)
