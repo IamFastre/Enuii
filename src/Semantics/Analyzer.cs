@@ -337,14 +337,14 @@ public class Analyzer
         {
             if (callee.Type.Properties.Parameters.Length - 1 != args.Count())
             {
-                Reporter.ReportInvalidArgumentCount(callee.Type.ToString(), callee.Type.Properties.Parameters.Length, args.Count(), ce.Span);
+                Reporter.ReportInvalidArgumentCount(callee.Type.ToString(), callee.Type.Properties.Parameters.Length - 1, args.Count(), ce.Span);
                 return new SemanticFailedExpression(ce.Span);
             }
 
             var faulty = false;
             for (int i = 0; i < args.Count(); i++)
             {
-                var paramType = callee.Type.Properties.Parameters[i];
+                var paramType = callee.Type.Properties.Parameters[i+1];
                 var argType   = args.ElementAt(i).Type;
 
                 if (!paramType.HasFlag(argType))
