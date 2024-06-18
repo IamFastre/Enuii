@@ -5,10 +5,10 @@
 | … | Values | Runtime values |
 | … | Evaluator | Make an evaluator to handle values and runtime, requires values |
 | … | Proper REPL | A proper REPL |
-| … | For | Add for and for/else statements |
 | ☐ | Declarations | Valueless declarations like `# var:int` or `# name` |
 | ☐ | Error Tips | Tips/Suggestions for bad code |
 | ☐ | Constants | Add them `#* const = 3.14f` |
+| ☑ | For | Add for and for/else statements |
 | ☑ | String Representations | Fix runtime values' string representations |
 | ☑ | Assignment | Special assignments such as `+=`, `-=` etc |
 | ☑ | Scope | Responsible for saving the symbol table, requires evaluator (VALUES AND TYPES) |

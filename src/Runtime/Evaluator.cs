@@ -12,13 +12,15 @@ public class Evaluator
 {
     public SemanticTree SemanticTree { get; }
     public Reporter     Reporter     { get; }
-    public Scope        Scope        { get; private set; }
+    public Scope        Scope        { get; private  set; }
+    public State        State        { get; internal set; }
 
     public Evaluator(SemanticTree tree, Scope scope,Reporter? reporter = null)
     {
         SemanticTree = tree;
-        Scope        = scope;
         Reporter     = reporter ?? new();
+        Scope        = scope;
+        State        = State.None;
     }
 
     /* =========================== Helper Methods =========================== */
@@ -164,6 +166,9 @@ public class Evaluator
             case SemanticKind.Name:
                 return EvaluateName((SemanticNameLiteral) expr);
 
+            case SemanticKind.CallExpression:
+                return EvaluateCallExpression((SemanticCallExpression) expr);
+
             case SemanticKind.ConversionExpression:
                 return EvaluateConversionExpression((SemanticConversionExpression) expr);
 
@@ -251,6 +256,18 @@ public class Evaluator
             return value;
 
         return UnknownValue.Template;
+    }
+
+    private RuntimeValue EvaluateCallExpression(SemanticCallExpression ce)
+    {
+        var callee = (ICallable) EvaluateExpression(ce.Callee);
+        var args   = ce.Arguments.Select(EvaluateExpression);
+
+        EnterScope();
+        var value = callee.Call(this, [..args]);
+        ExitScope();
+
+        return value;
     }
 
     private RuntimeValue EvaluateConversionExpression(SemanticConversionExpression ce)

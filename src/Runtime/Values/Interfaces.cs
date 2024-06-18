@@ -7,3 +7,8 @@ public interface IEnumerableValue<out E>
     public E ElementAt(int index);
     public bool Contains(RuntimeValue value);
 }
+
+public interface ICallable
+{
+    public RuntimeValue Call(Evaluator evaluator, RuntimeValue[] arguments);
+}
