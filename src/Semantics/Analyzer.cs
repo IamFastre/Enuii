@@ -322,7 +322,6 @@ public class Analyzer
         if (TryGet(nl, out var name))
             return new SemanticNameLiteral(name, nl.Span);
 
-        Reporter.ReportNameNotDefined(nl.Name, nl.Span);
         return new SemanticFailedExpression(nl.Span);
     }
 
