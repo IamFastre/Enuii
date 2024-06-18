@@ -5,9 +5,10 @@
 | … | Values | Runtime values |
 | … | Evaluator | Make an evaluator to handle values and runtime, requires values |
 | … | Proper REPL | A proper REPL |
-| ☐ | Declarations | Valueless declarations like `# var:int` or `# name` |
-| ☐ | Error Tips | Tips/Suggestions for bad code |
 | ☐ | Constants | Add them `#* const = 3.14f` |
+| ☐ | Declarations | Valueless declarations like `# var:int` or `# name` |
+| ☐ | Closure | Function environment closure and shit |
+| ☐ | Error Tips | Tips/Suggestions for bad code |
 | ☑ | For | Add for and for/else statements |
 | ☑ | String Representations | Fix runtime values' string representations |
 | ☑ | Assignment | Special assignments such as `+=`, `-=` etc |
