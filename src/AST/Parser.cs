@@ -37,7 +37,14 @@ public class Parser
     }
 
     private bool IsNextKind(TokenKind kind)
-        => Optional(kind)?.Kind == kind;
+    {
+        if (Current.Kind == kind)
+        {
+            Eat();
+            return true;
+        }
+        return false;
+    }
 
     private Token? Optional(TokenKind kind)
     {
