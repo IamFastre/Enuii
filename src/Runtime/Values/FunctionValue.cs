@@ -61,7 +61,7 @@ public class FunctionValue(string name, TypeSymbol type, IEnumerable<ParameterSy
             }
 
         var value = IsBuiltin
-                  ? Builtins.Call(Name, arguments)
+                  ? Builtins.CallBuiltin(Name, arguments)
                   : evaluator.EvaluateStatement(Body);
 
         evaluator.State = before;

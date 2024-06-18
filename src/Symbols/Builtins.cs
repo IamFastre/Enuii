@@ -61,7 +61,7 @@ public static class Builtins
     private static StringValue READ_FUNC()
         => new (Console.ReadLine() ?? "");
 
-    internal static RuntimeValue Call(string name, RuntimeValue?[] arguments)
+    internal static RuntimeValue CallBuiltin(string name, RuntimeValue?[] arguments)
     => name == PRINT_NAME.Name
      ? PRINT_FUNC(arguments[0]!)
      : name == READ_NAME.Name
