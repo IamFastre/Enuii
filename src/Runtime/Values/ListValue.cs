@@ -28,9 +28,6 @@ public sealed class ListValue(IEnumerable<RuntimeValue> values, TypeSymbol type,
         return false;
     }
 
-    public override string Repr()
-        => "[" + string.Join(", ", Values.Select(e => e.Repr())) + "]";
-
     public override string ToString()
     {
         var str = "[";
@@ -46,6 +43,9 @@ public sealed class ListValue(IEnumerable<RuntimeValue> values, TypeSymbol type,
 
         return str;
     }
+
+    public override string Repr()
+        => "[" + string.Join(", ", Values.Select(e => e.Repr())) + "]";
 
     /* ============================ Enumerability =========================== */
 

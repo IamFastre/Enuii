@@ -24,15 +24,4 @@ public abstract class RuntimeValue
 
     //* merge with properties when classes are there
     public abstract string Repr();
-    public static string Representation(RuntimeValue value) => value switch
-    {
-        CharValue        => $"'{value}'",
-        StringValue      => $"\"{value}\"",
-        RangeValue range => $"|{(range.Start is null ? "" : Representation(range.Start)
-                            )}:{(range.End   is null ? "" : Representation(range.End)
-                            )}:{Representation(range.Step)}|",
-        ListValue  list  => $"[{string.Join(", ", list.Values.Select(Representation))}]",
-
-        _                => value.ToString(),
-    };
 }
