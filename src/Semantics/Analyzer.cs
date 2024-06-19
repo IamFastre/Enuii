@@ -451,19 +451,31 @@ public class Analyzer
     {
         var expr = BindExpression(ae.Expression);
 
-        if (TryGet(ae.Assignee, out var name) && !name.Type.HasFlag(expr.Type))
-            Reporter.ReportTypesDoNotMatch(name.Type.ToString(), expr.Type.ToString(), ae.Expression.Span);
+        if (TryGet(ae.Assignee, out var name))
+        {
+            if (name.IsConstant)
+                Reporter.ReportCannotAssignToConst(name.Name, ae.Assignee.Span);
+
+            if (!name.Type.HasFlag(expr.Type))
+                Reporter.ReportTypesDoNotMatch(name.Type.ToString(), expr.Type.ToString(), ae.Expression.Span);
+        }
 
         return new SemanticAssignmentExpression(name, expr, ae.Span);
     }
 
-    private SemanticExpression BindCompoundAssignmentExpression(CompoundAssignmentExpression cae)
+    private SemanticExpression BindCompoundAssignmentExpression(CompoundAssignmentExpression cae) // TODO: combine with `BindAssignmentExpression`
     {
         var bin  = new BinaryExpression(cae.Assignee, cae.Operation, cae.Expression);
         var expr = BindBinaryExpression(bin);
 
-        if (TryGet(cae.Assignee, out var name) && !name.Type.HasFlag(expr.Type))
-            Reporter.ReportTypesDoNotMatch(name.Type.ToString(), expr.Type.ToString(), cae.Expression.Span);
+        if (TryGet(cae.Assignee, out var name))
+        {
+            if (name.IsConstant)
+                Reporter.ReportCannotAssignToConst(name.Name, cae.Assignee.Span);
+
+            if (!name.Type.HasFlag(expr.Type))
+                Reporter.ReportTypesDoNotMatch(name.Type.ToString(), expr.Type.ToString(), cae.Expression.Span);
+        }
 
         return new SemanticAssignmentExpression(name, expr, cae.Span);
     }

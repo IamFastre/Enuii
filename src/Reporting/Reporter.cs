@@ -120,6 +120,9 @@ public class Reporter(IEnumerable<Error>? errors = null)
     internal void ReportNameAlreadyDeclared(string name, Span span)
         => Report(ErrorKind.SymbolError, $"Name '{name}' is already defined", span);
 
+    internal void ReportCannotAssignToConst(string constant, Span span)
+        => Report(ErrorKind.SymbolError, $"Cannot assign to constant '{constant}'", span);
+
     internal void ReportZeroStepRange(Span span)
         => Report(ErrorKind.MathError, $"Range doesn't step much", span);
 
