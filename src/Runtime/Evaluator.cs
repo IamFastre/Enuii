@@ -426,9 +426,10 @@ public class Evaluator
 
         var result = ce.Type.ID switch
         {
+            TypeID.Char    => new CharValue((char)((char)operand.Value + step)),
             TypeID.Integer => new IntValue((double)operand.Value + step),
             TypeID.Float   => new FloatValue((double)operand.Value + step),
-            TypeID.Char    => new CharValue((char)((char)operand.Value + step)),
+            TypeID.Number  => NumberValue.GetBest((double)operand.Value + step),
             _              => operand,
         };
 

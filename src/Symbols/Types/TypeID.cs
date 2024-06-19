@@ -19,6 +19,7 @@ public enum TypeID
     Any        = int.MaxValue - Void,
     Nones      = Void    | Unknown | Null,
     Number     = Integer | Float,
+    Numable    = Number  | Char,
     Enumerable = String  | Range | List,
     Callable   = Function,
 }
