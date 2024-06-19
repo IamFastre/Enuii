@@ -46,6 +46,8 @@ public enum TokenKind
     Ampersand,
     Pipe,
     Caret,
+    LessLess,
+    GreaterGreater,
     // Boolean
     DoubleAmpersand,
     DoublePipe,
@@ -109,7 +111,7 @@ internal static class TokenKindExtension
         TokenKind.Plus      or
         TokenKind.Minus     or
         TokenKind.Tilde     or
-        TokenKind.BangMark => 6,
+        TokenKind.BangMark => 8,
 
         _ => 0,
     };
@@ -118,9 +120,12 @@ internal static class TokenKindExtension
     {
         // Multiplicative
         TokenKind.Asterisk or TokenKind.ForwardSlash or TokenKind.Percent or TokenKind.Power
-            => 6,
+            => 7,
         // Additive
         TokenKind.Plus or TokenKind.Minus
+            => 6,
+        // Shifts
+        TokenKind.GreaterGreater or TokenKind.LessLess
             => 5,
         // Comparative
         TokenKind.EqualEqual or TokenKind.NotEqual or TokenKind.Less or TokenKind.Greater or TokenKind.LessEqual or TokenKind.GreaterEqual or TokenKind.In

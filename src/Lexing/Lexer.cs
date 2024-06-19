@@ -134,6 +134,12 @@ public class Lexer
         if (IsUpcoming("**"))
             return CreateToken(TokenKind.Power);
 
+        if (IsUpcoming("<<"))
+            return CreateToken(TokenKind.LessLess);
+
+        if (IsUpcoming(">>"))
+            return CreateToken(TokenKind.GreaterGreater);
+
         if (IsUpcoming("&&"))
             return CreateToken(TokenKind.DoubleAmpersand);
 

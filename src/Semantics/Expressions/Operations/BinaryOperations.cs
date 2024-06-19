@@ -18,6 +18,8 @@ public enum BinaryKind
     BitwiseAND,
     BitwiseOR,
     BitwiseXOR,
+    LeftShift,
+    RightShift,
 
     Addition,
     Subtraction,
@@ -111,6 +113,9 @@ public class BinaryOperation
         new(TokenKind.Pipe, BinaryKind.BitwiseOR, TypeSymbol.Integer),             // int | int -> int
         new(TokenKind.Caret, BinaryKind.BitwiseXOR, TypeSymbol.Integer),           // int ^ int -> int
 
+        new(TokenKind.LessLess, BinaryKind.LeftShift, TypeSymbol.Integer),         // int << int -> int
+        new(TokenKind.GreaterGreater, BinaryKind.RightShift, TypeSymbol.Integer),  // int >> int -> int
+
         /* ============================== Mathy ============================= */
 
         new(TokenKind.Plus, BinaryKind.Addition, TypeSymbol.Integer),                                // int + int -> int
@@ -137,7 +142,6 @@ public class BinaryOperation
         new(TokenKind.Percent, BinaryKind.Modulo, TypeSymbol.Float),                                 // float % float -> float
         new(TokenKind.Percent, BinaryKind.Modulo, TypeSymbol.Number, TypeSymbol.Float),              // number % number -> float
 
-
         /* =========================== Comparative ========================== */
 
         new(TokenKind.Less, BinaryKind.Less, TypeSymbol.Number, TypeSymbol.Boolean),                 // number < number -> bool
@@ -156,6 +160,7 @@ public class BinaryOperation
         new(TokenKind.Plus, BinaryKind.CharIncrementing, TypeSymbol.Integer, TypeSymbol.Char, TypeSymbol.Char),             // int + char -> char
 
         new(TokenKind.Minus, BinaryKind.CharDecrementing, TypeSymbol.Char, TypeSymbol.Integer, TypeSymbol.Char),            // char - int -> char
+
 
         new(TokenKind.Plus, BinaryKind.StringConcatenation, TypeSymbol.String, TypeSymbol.Any, TypeSymbol.String),          // string + any -> string
         new(TokenKind.Plus, BinaryKind.StringConcatenation, TypeSymbol.Any, TypeSymbol.String, TypeSymbol.String),          // any + string -> string

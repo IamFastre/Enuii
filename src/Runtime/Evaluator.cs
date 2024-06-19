@@ -342,13 +342,19 @@ public class Evaluator
                 return new BoolValue(((bool) left.Value) ^  ((bool) right.Value));
             
             case BinaryKind.BitwiseAND when be.Type.ID is TypeID.Integer:
-                return new IntValue(((int) left.Value) & ((int) right.Value));
+                return new IntValue(((int)(double) left.Value) & ((int)(double) right.Value));
 
             case BinaryKind.BitwiseOR  when be.Type.ID is TypeID.Integer:
-                return new IntValue(((int) left.Value) | ((int) right.Value));
+                return new IntValue(((int)(double) left.Value) | ((int)(double) right.Value));
 
             case BinaryKind.BitwiseXOR when be.Type.ID is TypeID.Integer:
-                return new IntValue(((int) left.Value) ^ ((int) right.Value));
+                return new IntValue(((int)(double) left.Value) ^ ((int)(double) right.Value));
+
+            case BinaryKind.LeftShift when be.Type.ID is TypeID.Integer:
+                return new IntValue(((double) left.Value) * Math.Pow(2D, (double) right.Value));
+
+            case BinaryKind.RightShift when be.Type.ID is TypeID.Integer:
+                return new IntValue(((double) left.Value) / Math.Pow(2D, (double) right.Value));
 
             /* ======================== Mathematical ======================== */
 
