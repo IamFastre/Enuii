@@ -1,4 +1,3 @@
-using System.Linq.Expressions;
 using Enuii.General.Constants;
 using Enuii.Syntax.AST;
 
@@ -49,7 +48,7 @@ public class TypeSymbol
     public override string ToString()
     {
         if (Properties.CustomName is not null)
-            return Properties.CustomName.Invoke(this);
+            return Properties.CustomName;
 
         if (!IsGeneric)
             return Name;
@@ -95,7 +94,7 @@ public class TypeSymbol
             ElementType: element,
             Parameters:  [element],
             Indexing:    [(Integer, element), (Range, list),],
-            CustomName:  symbol => symbol.Properties.ElementType!.ToString() + "[]"
+            CustomName:  $"{element}[]"
         );
 
         list.Properties = props;
@@ -107,7 +106,7 @@ public class TypeSymbol
         var func  = new TypeSymbol(CONSTS.FUNCTION, TypeID.Function);
         var props = new TypeProperties(
             Parameters: [..parameters],
-            CustomName: symbol => $"({string.Join(", ", symbol.Properties.Parameters[1..].Select(e => e.ToString()))}) -> {symbol.Properties.Parameters[0]}"
+            CustomName: $"({string.Join(", ", parameters.ToArray()[1..].Select(e => e.ToString()))}) -> {parameters.First()}"
         );
 
         func.Properties = props;
