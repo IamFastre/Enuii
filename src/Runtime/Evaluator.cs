@@ -326,7 +326,7 @@ public class Evaluator
                 return new BoolValue(left != right);
 
             case BinaryKind.NullishCoalescence:
-                return left.Type.IsNull ? right : left;
+                return left is NullValue ? right : left;
 
             /* =========================== Boolean ========================== */
 
