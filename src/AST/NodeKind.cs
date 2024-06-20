@@ -28,8 +28,9 @@ public enum NodeKind
 
     // Clauses
     TypeClause,
-    SeparatedClause,
     ElseClause,
+    SeparatedClause,
+    ParameterClause,
 
     // Statements
     ExpressionStatement,
@@ -38,6 +39,7 @@ public enum NodeKind
     IfStatement,
     WhileStatement,
     ForStatement,
+    FunctionStatement,
 }
 
 public static class NodeKindExtension

@@ -1,3 +1,5 @@
+using Enuii.Scoping;
+
 namespace Enuii.Runtime.Evaluation;
 
 public interface IEnumerableValue<out E>
@@ -10,5 +12,6 @@ public interface IEnumerableValue<out E>
 
 public interface ICallable
 {
+    public Scope Scope { get; }
     public RuntimeValue Call(Evaluator evaluator, RuntimeValue[] arguments);
 }

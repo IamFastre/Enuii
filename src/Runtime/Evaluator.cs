@@ -70,6 +70,9 @@ public class Evaluator
             case SemanticKind.ForStatement:
                 return EvaluateForStatement((SemanticForStatement) stmt);
 
+            case SemanticKind.FunctionStatement:
+                return EvaluateFunctionStatement((SemanticFunctionStatement) stmt);
+
             default:
                 throw new Exception($"Unrecognized semantic statement kind while evaluating: {stmt.Kind}");
         }
@@ -92,8 +95,10 @@ public class Evaluator
     {
         RuntimeValue value = VoidValue.Template;
 
+        EnterScope();
         foreach (var stmt in bs.Body)
             value = EvaluateStatement(stmt);
+        ExitScope();
 
         return value;
     }
@@ -145,12 +150,20 @@ public class Evaluator
         return value;
     }
 
+    private VoidValue EvaluateFunctionStatement(SemanticFunctionStatement ss)
+    {
+        var function = new FunctionValue(ss.Function.Name, ss.Function.Type, ss.Function.Parameters, ss.Body, Scope);
+        Scope.TryDeclare(ss.Function.Name, function);
+
+        return VoidValue.Template;
+    }
+
 
     /* ====================================================================== */
     /*                               Expressions                              */
     /* ====================================================================== */
 
-    private RuntimeValue EvaluateExpression(SemanticExpression expr)
+    public RuntimeValue EvaluateExpression(SemanticExpression expr)
     {
         switch(expr.Kind)
         {
@@ -260,12 +273,13 @@ public class Evaluator
 
     private RuntimeValue EvaluateCallExpression(SemanticCallExpression ce)
     {
-        var callee = (ICallable) EvaluateExpression(ce.Callee);
-        var args   = ce.Arguments.Select(EvaluateExpression);
+        var callee   = (ICallable) EvaluateExpression(ce.Callee);
+        var args     = ce.Arguments.Select(EvaluateExpression).ToArray();
+        var oldScope = Scope;
 
-        EnterScope();
+        Scope = callee.Scope ?? Scope;
         var value = callee.Call(this, [..args]);
-        ExitScope();
+        Scope = oldScope;
 
         return value;
     }

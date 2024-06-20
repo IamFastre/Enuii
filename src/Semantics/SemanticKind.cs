@@ -26,4 +26,5 @@ public enum SemanticKind
     IfStatement,
     WhileStatement,
     ForStatement,
+    FunctionStatement,
 }

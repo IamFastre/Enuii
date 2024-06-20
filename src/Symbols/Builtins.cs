@@ -7,15 +7,15 @@ namespace Enuii.Symbols;
 
 public static class Builtins
 {
-    private static readonly NameSymbol PRINT_NAME = new("print", TypeSymbol.Function([TypeSymbol.Void, TypeSymbol.Any]), true);
-    private static readonly NameSymbol READ_NAME  = new("read", TypeSymbol.Function([TypeSymbol.String]), true);
+    private static readonly FunctionSymbol PRINT_SYMBOL = new("print", [new("value", TypeSymbol.Any)], TypeSymbol.Void,   true);
+    private static readonly FunctionSymbol READ_SYMBOL  = new("read",  [],                             TypeSymbol.String, true);
 
     /* ====================================================================== */
     /*                                  Types                                 */
     /* ====================================================================== */
 
 
-    public static readonly TypeSymbol[] USABLE_TYPES =
+    public static readonly TypeSymbol[] VALUE_TYPES =
     [
         TypeSymbol.Any,
         TypeSymbol.Null,
@@ -28,14 +28,21 @@ public static class Builtins
         TypeSymbol.Range,
     ];
 
+   public static readonly TypeSymbol[] ALL_TYPES =
+   [
+        ..VALUE_TYPES,
+        TypeSymbol.Void,
+        TypeSymbol.Unknown,
+   ];
+
     public static Dictionary<string, RuntimeValue> GetBuiltins() => new()
     {
         { CONSTS.NULL,  NullValue.Template },
         { CONSTS.TRUE,  BoolValue.True     },
         { CONSTS.FALSE, BoolValue.False    },
 
-        { PRINT_NAME.Name, new BuiltinFunctionValue(PRINT_NAME.Name, PRINT_NAME.Type, [new("value", TypeSymbol.Any, new StringValue("SEX"))]) },
-        { READ_NAME.Name,  new BuiltinFunctionValue(READ_NAME.Name,  READ_NAME.Type,  []) },
+        { PRINT_SYMBOL.Name, new BuiltinFunctionValue(PRINT_SYMBOL) },
+        { READ_SYMBOL.Name,  new BuiltinFunctionValue(READ_SYMBOL) },
     };
 
     public static NameSymbol[] GetBuiltinSemantics() =>
@@ -44,8 +51,8 @@ public static class Builtins
         new(CONSTS.TRUE,  TypeSymbol.Boolean, true),
         new(CONSTS.FALSE, TypeSymbol.Boolean, true),
 
-        PRINT_NAME,
-        READ_NAME,
+        PRINT_SYMBOL,
+        READ_SYMBOL,
     ];
 
     /* ====================================================================== */
@@ -62,9 +69,9 @@ public static class Builtins
         => new (Console.ReadLine() ?? "");
 
     internal static RuntimeValue CallBuiltin(string name, RuntimeValue?[] arguments)
-    => name == PRINT_NAME.Name
+    => name == PRINT_SYMBOL.Name
      ? PRINT_FUNC(arguments[0]!)
-     : name == READ_NAME.Name
+     : name == READ_SYMBOL.Name
      ? READ_FUNC()
      : throw new Exception($"Builtin function '{name}' was not found");
 }

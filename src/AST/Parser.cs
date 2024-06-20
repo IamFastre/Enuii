@@ -104,6 +104,9 @@ public class Parser
 
             case TokenKind.For:
                 return GetForStatement();
+
+            case TokenKind.GreaterGreater:
+                return GetFunctionStatement();
         }
     }
 
@@ -208,6 +211,36 @@ public class Parser
         return new(forKeyword, variable, iterable, statement, elseClause);
     }
 
+    private FunctionStatement GetFunctionStatement()
+    {
+        TypeClause? returnType = null;
+
+        var funcSym = Eat();
+        var isConst = IsNextKind(TokenKind.Asterisk);
+        var name    = Expect(TokenKind.Identifier);
+
+        Expect(TokenKind.OpenParenthesis);
+        var parameters = GetSeparated(GetParameterClause, TokenKind.CloseParenthesis);
+        Expect(TokenKind.CloseParenthesis);
+
+        if (IsNextKind(TokenKind.DashArrow))
+            returnType = GetTypeClause();
+
+        Expect(TokenKind.Colon);
+        var statement = GetFunctionBodyStatement();
+
+
+        return new(funcSym, isConst, name, parameters, returnType, statement);
+    }
+
+    private Statement GetFunctionBodyStatement()
+    {
+        if (Current.Kind == TokenKind.OpenCurlyBracket)
+            return GetBlockStatement();
+
+        return GetExpressionStatement();
+    }
+
 
     /* ====================================================================== */
     /*                                 Clauses                                */
@@ -245,6 +278,18 @@ public class Parser
         return new(type, parameters, listDim, span);
     }
 
+    private ElseClause GetElseClause()
+    {
+        var elseKeyword = Eat();
+
+        if (Current.Kind is not (TokenKind.If or TokenKind.While))
+            Expect(TokenKind.Colon);
+
+        var statement   = GetStatement();
+
+        return new(elseKeyword, statement);
+    }
+
     private SeparatedClause<E> GetSeparated<E>(Func<E> getElement, TokenKind endToken) where E : Node
     {
         if (Current.Kind == endToken)
@@ -272,16 +317,17 @@ public class Parser
         return new(elements, separators);
     }
 
-    private ElseClause GetElseClause()
+    private ParameterClause GetParameterClause()
     {
-        var elseKeyword = Eat();
+        Expression? value = null;
+        var name = Expect(TokenKind.Identifier);
+        Expect(TokenKind.Colon);
+        var type = GetTypeClause();
 
-        if (Current.Kind is not (TokenKind.If or TokenKind.While))
-            Expect(TokenKind.Colon);
+        if (IsNextKind(TokenKind.Equal))
+            value = GetExpression();
 
-        var statement   = GetStatement();
-
-        return new(elseKeyword, statement);
+        return new(name, type, value);
     }
 
 
@@ -399,7 +445,7 @@ public class Parser
     {
         var expr = GetCounting();
 
-        while (Current.Kind is TokenKind.SingleArrow)
+        while (Current.Kind is TokenKind.DashArrow)
         {
             Eat();
             expr = new ConversionExpression(expr, GetTypeClause());

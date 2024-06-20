@@ -140,7 +140,7 @@ public class TypeSymbol
         if (type2.HasFlag(type1))
             return type2;
 
-        foreach (var t in Builtins.USABLE_TYPES)
+        foreach (var t in Builtins.VALUE_TYPES)
             if (t.ID != TypeID.Any && t.HasFlag(type1) && t.HasFlag(type2))
                 return t;
 
@@ -161,7 +161,7 @@ public class TypeSymbol
             return true;
         }
 
-        foreach (var t in Builtins.USABLE_TYPES)
+        foreach (var t in Builtins.VALUE_TYPES)
             if (t.ID != TypeID.Any && t.HasFlag(type1) && t.HasFlag(type2))
             {
                 result = t;

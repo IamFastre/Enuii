@@ -7,13 +7,13 @@ using Enuii.Symbols.Types;
 
 namespace Enuii.Runtime.Evaluation;
 
-public class FunctionValue(string name, TypeSymbol type, IEnumerable<ParameterSymbol> parameters, SemanticStatement body, Scope parentScope)
+public class FunctionValue(string name, TypeSymbol type, IEnumerable<ParameterSymbol> parameters, SemanticStatement body, Scope scope)
     : RuntimeValue, ICallable
 {
     public string            Name        { get; } = name;
     public ParameterSymbol[] Parameters  { get; } = [..parameters];
     public SemanticStatement Body        { get; } = body;
-    public Scope             ParentScope { get; } = parentScope;
+    public Scope             Scope       { get; } = scope;
 
     public bool IsBuiltin => this is BuiltinFunctionValue;
 
@@ -57,7 +57,7 @@ public class FunctionValue(string name, TypeSymbol type, IEnumerable<ParameterSy
                 var p = Parameters[i];
                 var a = arguments[i];
 
-                evaluator.Scope.TryDeclare(p.Name, a ?? p.Value!);
+                evaluator.Scope.TryDeclare(p.Name, a ?? evaluator.EvaluateExpression(p.Value!));
             }
 
         var value = IsBuiltin
@@ -70,5 +70,5 @@ public class FunctionValue(string name, TypeSymbol type, IEnumerable<ParameterSy
     }
 }
 
-public sealed class BuiltinFunctionValue(string name, TypeSymbol type, IEnumerable<ParameterSymbol> parameters)
-    : FunctionValue(name, type, parameters, null!, null!);
+public sealed class BuiltinFunctionValue(FunctionSymbol function)
+    : FunctionValue(function.Name, function.Type, function.Parameters, null!, null!);

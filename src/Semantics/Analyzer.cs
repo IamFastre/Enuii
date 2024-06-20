@@ -7,6 +7,7 @@ using Enuii.Symbols.Types;
 using Enuii.Syntax.AST;
 using Enuii.Semantics.Operations;
 using Enuii.General.Constants;
+using Enuii.Syntax.Lexing;
 
 namespace Enuii.Semantics;
 
@@ -40,6 +41,12 @@ public class Analyzer
         }
 
         return true;
+    }
+
+    private void TryDeclare(NameSymbol symbol, Token token)
+    {
+        if (!Scope.TryDeclare(symbol, Reporter.Errors.Count > 0))
+            Reporter.ReportNameAlreadyDeclared(token.Value, token.Span);
     }
 
     /* ====================================================================== */
@@ -81,6 +88,9 @@ public class Analyzer
             case NodeKind.ForStatement:
                 return BindForStatement((ForStatement) stmt);
 
+            case NodeKind.FunctionStatement:
+                return BindFunctionStatement((FunctionStatement) stmt);
+
             default:
                 throw new Exception($"Unrecognized statement kind while analyzing: {stmt.Kind}");
         }
@@ -94,13 +104,11 @@ public class Analyzer
 
     private SemanticDeclarationStatement BindDeclarationStatement(DeclarationStatement ds)
     {
-        var type = ds.TypeClause is not null ? BindTypeClause(ds.TypeClause) : null; // bind type if given
-        var expr = type is null ? BindExpression(ds.Expression) : BindExpression(ds.Expression, type); // if type is given; expect it
-        var name = new NameSymbol(ds.Name.Value, type ?? expr.Type, ds.IsConstant);
+        var hintType = ds.TypeClause is not null ? BindTypeClause(ds.TypeClause) : null;
+        var expr     = hintType is null ? BindExpression(ds.Expression) : BindExpression(ds.Expression, hintType);
+        var name     = new NameSymbol(ds.Name.Value, hintType ?? expr.Type, ds.IsConstant);
 
-        if (type is null || (type is not null && type.HasFlag(expr.Type)))
-            if (!Scope.TryDeclare(name, Reporter.Errors.Count > 0))
-                Reporter.ReportNameAlreadyDeclared(ds.Name.Value, ds.Name.Span);
+        TryDeclare(name, ds.Name);
 
         return new(name, expr, ds.Span);
     }
@@ -109,8 +117,10 @@ public class Analyzer
     {
         var body = ImmutableArray.CreateBuilder<SemanticStatement>();
 
+        EnterScope();
         foreach (var statement in bs.Body)
             body.Add(BindStatement(statement));
+        ExitScope();
 
         return new([..body], bs.Span);
     }
@@ -161,18 +171,42 @@ public class Analyzer
         return new(variable, iterable, loop, elseStmt, fs.Span);
     }
 
+    private SemanticFunctionStatement BindFunctionStatement(FunctionStatement ss)
+    {
+        // TODO: replace with `BindFunction` when implementing `FunctionLiteral`
+        var @params  = BindParameters(ss.Parameters.Elements);
+        var retType  = ss.ReturnType is not null
+                     ? BindTypeClause(ss.ReturnType, true)
+                     : TypeSymbol.Void;
+        var function = new FunctionSymbol(ss.Function.Value, @params, retType, ss.IsConstant);
+
+        TryDeclare(function, ss.Function);
+        EnterScope();
+
+        foreach (var p in @params)
+            Scope.TryDeclare(p);
+
+        var body = BindStatement(ss.Body);
+        ExitScope();
+
+        return new(function, body, ss.Span);
+    }
+
 
     /* ====================================================================== */
     /*                                 Clauses                                */
     /* ====================================================================== */
 
     private TypeSymbol BindTypeClause(TypeClause tc)
+        => BindTypeClause(tc, false);
+
+    private TypeSymbol BindTypeClause(TypeClause tc, bool isFunc)
     {
         TypeSymbol? type = null;
-        var parameters = tc.Parameters?.Select(BindTypeClause) ?? [];
-        var paramCount = parameters.Count();
+        var parameters = tc.Parameters?.Select(BindTypeClause).ToArray() ?? [];
+        var paramCount = parameters.Length;
 
-        foreach (var t in Builtins.USABLE_TYPES)
+        foreach (var t in isFunc ? Builtins.ALL_TYPES : Builtins.VALUE_TYPES)
         {
             if (t.Name == tc.Type.Value)
             {
@@ -190,7 +224,7 @@ public class Analyzer
             {
                 case CONSTS.LIST:
                     if (paramCount == 1)
-                        type = TypeSymbol.List(parameters.ElementAt(0));
+                        type = TypeSymbol.List(parameters[0]);
                     else
                         Reporter.ReportWrongTypeParametersCount(CONSTS.LIST, 1, paramCount, tc.Span);
                     break;
@@ -212,6 +246,33 @@ public class Analyzer
                 type = TypeSymbol.List(type);
 
         return type ?? TypeSymbol.Unknown;
+    }
+
+    private ParameterSymbol[] BindParameters(ParameterClause[] parameters)
+    {
+        var boundParams = ImmutableArray.CreateBuilder<ParameterSymbol>();
+        for (int i = 0; i < parameters.Length; i++)
+        {
+            ParameterClause? param = parameters[i];
+
+            var boundParam = BindParameterClause(param);
+            boundParams.Add(boundParam);
+
+            if (boundParams.Count > 1 && boundParams[i-1].HasDefaultValue && !boundParam.HasDefaultValue)
+                Reporter.ReportDefaultlessParameter(boundParam.Name, param.Span);
+        }
+
+        return [..boundParams];
+    }
+
+    private ParameterSymbol BindParameterClause(ParameterClause parameter)
+    {
+        var type  = BindTypeClause(parameter.Type);
+        var value = parameter.Value is not null
+                  ? BindExpression(parameter.Value, type)
+                  : null;
+
+        return new(parameter.Name.Value, type, value);
     }
 
 
@@ -329,26 +390,27 @@ public class Analyzer
     private SemanticExpression BindCallExpression(CallExpression ce)
     {
         var callee = BindExpression(ce.Callee);
-        var args = ce.Arguments.Elements.Select(BindExpression);
+        var args   = ce.Arguments.Elements.Select(BindExpression).ToArray();
 
         if (callee.Type.IsCallable)
         {
-            if (callee.Type.Properties.Parameters.Length - 1 != args.Count())
+            // TODO: Fix this to work properly with default values
+            if (callee.Type.Properties.Parameters.Length - 1 != args.Length)
             {
-                Reporter.ReportInvalidArgumentCount(callee.Type.ToString(), callee.Type.Properties.Parameters.Length - 1, args.Count(), ce.Span);
+                Reporter.ReportInvalidArgumentCount(callee.Type.ToString(), callee.Type.Properties.Parameters.Length - 1, args.Length, ce.Span);
                 return new SemanticFailedExpression(ce.Span);
             }
 
             var faulty = false;
-            for (int i = 0; i < args.Count(); i++)
+            for (int i = 0; i < args.Length; i++)
             {
                 var paramType = callee.Type.Properties.Parameters[i+1];
-                var argType   = args.ElementAt(i).Type;
+                var argType   = args[i].Type;
 
                 if (!paramType.HasFlag(argType))
                 {
                     if (argType.IsKnown)
-                        Reporter.ReportTypesDoNotMatch(paramType.ToString(), argType.ToString(), args.ElementAt(i).Span);
+                        Reporter.ReportTypesDoNotMatch(paramType.ToString(), argType.ToString(), args[i].Span);
                     faulty = true;
                 }
             }

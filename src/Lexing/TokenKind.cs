@@ -94,7 +94,7 @@ public enum TokenKind
     Comma,
     Colon,
     QuestionMark,
-    SingleArrow,
+    DashArrow,
 }
 
 

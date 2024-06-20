@@ -208,7 +208,7 @@ public class Lexer
 
         // Others:
         if (IsUpcoming("->"))
-            return CreateToken(TokenKind.SingleArrow);
+            return CreateToken(TokenKind.DashArrow);
 
         /* ======================== Single-character ======================== */
         // Matching every single character token
