@@ -3,6 +3,7 @@ using Enuii.Reports;
 using Enuii.Runtime.Evaluation;
 using Enuii.Scoping;
 using Enuii.Semantics;
+using Enuii.Symbols.Types;
 using Enuii.Syntax.AST;
 using Enuii.Syntax.Lexing;
 
@@ -84,7 +85,8 @@ public class REPL
                     var evaluator = new Evaluator(semTree, Scope, Reporter);
                     var value     = evaluator.Start();
 
-                    Console.WriteLine(value.Repr());
+                    if (value.Type.ID is not TypeID.Void)
+                        Console.WriteLine(value.Repr());
                 }
 
                 ReportErrors();
