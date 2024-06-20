@@ -38,22 +38,4 @@ public class TypeProperties
             (TypeSymbol.Range, TypeSymbol.Range),
         ]
     );
-
-    public static TypeProperties Function  => new
-    (
-        ArgSize: 256,
-        CustomName: symbol => $"({string.Join(", ", symbol.Properties.Parameters[1..].Select(e => e.ToString()))}) -> {symbol.Properties.Parameters[0]}"
-    );
-
-    public static TypeProperties TypedList(TypeSymbol self, TypeSymbol element) => new
-    (
-        ElementType: element,
-        Parameters: [element],
-        CustomName: symbol => element.ToString() + "[]",
-        Indexing:
-        [
-            (TypeSymbol.Integer, element),
-            (TypeSymbol.Range, self),
-        ]
-    );
 }
