@@ -36,7 +36,7 @@ public class UnaryOperation
     public static (UnaryKind, TypeSymbol) GetOperation(TokenKind opKind, TypeSymbol operand)
     {
         foreach (var op in operations)
-            if (op.Matches(opKind, operand))
+            if (op.Matches(opKind, operand.NullSafe()))
                 return (op.Kind, op.Result);
 
         return (UnaryKind.INVALID, TypeSymbol.Unknown);

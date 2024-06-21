@@ -14,7 +14,6 @@ public static class Builtins
     /*                                  Types                                 */
     /* ====================================================================== */
 
-
     public static readonly TypeSymbol[] VALUE_TYPES =
     [
         TypeSymbol.Any,
@@ -34,6 +33,8 @@ public static class Builtins
         TypeSymbol.Void,
         TypeSymbol.Unknown,
    ];
+
+    public static readonly Dictionary<TypeID, TypeSymbol> NULLABLES = [];
 
     public static Dictionary<string, RuntimeValue> GetBuiltins() => new()
     {

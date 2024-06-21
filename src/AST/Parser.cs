@@ -253,8 +253,9 @@ public class Parser
         ImmutableArray<TypeClause>.Builder? parameters = null;
         var listDim = 0u;
 
-        var type = Expect(TokenKind.Type);
-        var span = type.Span.Copy();
+        var nullable = false;
+        var type     = Expect(TokenKind.Type);
+        var span     = type.Span.Copy();
 
         // if `<` is met start to think generic until you meet `>`
         if (Current.Kind == TokenKind.Less)
@@ -270,6 +271,9 @@ public class Parser
             span.SetEnd(Expect(TokenKind.Greater).Span);
         }
 
+        if (IsNextKind(TokenKind.QuestionMark))
+            nullable = true;
+
         // if the type is followed by `[]` then eat both tokens and add to the array dimension
         while (Current.Kind == TokenKind.OpenSquareBracket && Next.Kind == TokenKind.CloseSquareBracket)
         {
@@ -277,7 +281,10 @@ public class Parser
             span.SetEnd(Eat(2).Span);
         }
 
-        return new(type, parameters, listDim, span);
+        if (IsNextKind(TokenKind.QuestionMark))
+            nullable = true;
+
+        return new(type, parameters, listDim, nullable, span);
     }
 
     private ElseClause GetElseClause()

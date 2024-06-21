@@ -29,6 +29,9 @@ public class REPL
         foreach (var error in Reporter.Errors)
             Console.WriteLine(error);
 
+        foreach (var warning in Reporter.Warnings)
+            Console.WriteLine(warning);
+
         Reporter.Flush();
     }
 
@@ -97,7 +100,7 @@ public class REPL
             }
             finally
             {
-                if (Reporter.Errors.Count > 0)
+                if (Reporter.HasReports)
                 {
                     SemanticScope.Sync(Scope);
                     ReportErrors();

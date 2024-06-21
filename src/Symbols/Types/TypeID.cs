@@ -23,3 +23,16 @@ public enum TypeID
     Enumerable = String  | Range | List,
     Callable   = Function,
 }
+
+public static class TypeIDExtension
+{
+    public static TypeID Annul(this TypeID id)
+        => id.HasFlag(TypeID.Null)
+         ? id
+         : id | TypeID.Null;
+
+    public static TypeID Denullify(this TypeID id)
+        => id.HasFlag(TypeID.Null) && id is not TypeID.Null
+         ? id ^ TypeID.Null
+         : id;
+}

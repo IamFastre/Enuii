@@ -199,6 +199,12 @@ public class Evaluator
             case SemanticKind.AssignmentExpression:
                 return EvaluateAssignmentExpression((SemanticAssignmentExpression) expr);
 
+            case SemanticKind.FailedExpression:
+                return EvaluateFailedExpression();
+
+            case SemanticKind.FailedOperation:
+                return EvaluateFailedOperation((SemanticFailedOperation) expr);
+
             default:
                 throw new Exception($"Unrecognized semantic expression kind while evaluating: {expr.Kind} of type {expr.Type}");
         }
@@ -310,6 +316,9 @@ public class Evaluator
     {
         var operand = EvaluateExpression(ue.Operand);
 
+        if (operand.Type.IsNull)
+            return NullValue.Template;
+
         return ue.OperationKind switch
         {
             UnaryKind.Identity          => operand,
@@ -330,6 +339,9 @@ public class Evaluator
     {
         var left  = EvaluateExpression(be.LHS);
         var right = EvaluateExpression(be.RHS);
+
+        if (left.Type.IsNull || right.Type.IsNull)
+            return NullValue.Template;
 
         switch(be.OperationKind)
         {
@@ -467,5 +479,16 @@ public class Evaluator
             return expr;
 
         return UnknownValue.Template;
+    }
+
+    private NullValue EvaluateFailedExpression()
+        => NullValue.Template;
+
+    private NullValue EvaluateFailedOperation(SemanticFailedOperation fo)
+    {
+        foreach (var o in fo.Expressions)
+            EvaluateExpression(o);
+
+        return NullValue.Template;
     }
 }

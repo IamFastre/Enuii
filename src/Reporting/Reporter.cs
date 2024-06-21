@@ -10,6 +10,8 @@ public class Reporter(bool inRuntime = false)
     public List<Warning> Warnings  { get; }      = [];
     public bool          InRuntime { get; set; } = inRuntime;
 
+    public bool HasReports => Errors.Count > 0 || Warnings.Count > 0;
+
     // Add new error to error list
     public void Add(Error error)
     {
@@ -31,7 +33,10 @@ public class Reporter(bool inRuntime = false)
 
     // Resets the error list
     public void Flush()
-        => Errors.Clear();
+    {
+        Errors.Clear();
+        Warnings.Clear();
+    }
 
     // Make a new error and add it to error list
     private void Report(ErrorKind kind, string message, Span span)

@@ -17,7 +17,10 @@ public static class Converter
                 return value;
 
             case ConversionKind.Polish:
-                return Convert(value, ConversionOperation.GetConversionKind(value.Type, to), to);
+                kind = ConversionOperation.GetConversionKind(value.Type, to);
+                return kind is not ConversionKind.Polish
+                     ? Convert(value, kind, to)
+                     : value;
 
             case ConversionKind.AnyToString:
                 return new StringValue(value.ToString());

@@ -16,12 +16,12 @@ public class Error(ErrorKind kind = ErrorKind.UnknownError, string message = "An
 
     public override string ToString()
     {
-        string str = $"{C.BOLD}• {C.RED}{Kind}{C.END}: {C.RED2}{Message}.{C.END}";
+        string str = $"{C.BOLD}• {C.RED2}{Kind}{C.END}: {C.RED}{Message}.{C.END}";
 
         if (Kind is not ErrorKind.InternalError)
         {
             str += "\n    ";
-            str += C.YELLOW2 + (Span.IsShort ? "at" : "between") + C.END;
+            str += C.YELLOW + (Span.IsShort ? "at" : "between") + C.END;
             str += $" {Span}";
         }
 
@@ -36,9 +36,9 @@ public class Warning(WarningKind kind = WarningKind.UnknownWarning, string messa
 
     public override string ToString()
     {
-        string str = $"{C.BOLD}• {C.YELLOW}{Kind}{C.END}: {C.YELLOW2}{Message}.{C.END}";
+        string str = $"{C.BOLD}• {C.YELLOW2}{Kind}{C.END}: {C.YELLOW}{Message}.{C.END}";
         str += "\n    ";
-        str += C.YELLOW2 + (Span.IsShort ? "at" : "between") + C.END;
+        str += C.BLACK2 + (Span.IsShort ? "at" : "between") + C.END;
         str += $" {Span}";
 
         return str;

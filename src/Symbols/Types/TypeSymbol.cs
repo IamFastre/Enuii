@@ -12,17 +12,33 @@ public class TypeSymbol
     // Metadata
     public bool IsKnown    => ID is not TypeID.Unknown;
     public bool IsCallable => ID is TypeID.Callable;
+    public bool IsNull     => ID is TypeID.Null;
+    public bool IsNullable => ID is not TypeID.Null && ID.HasFlag(TypeID.Null);
     public bool IsGeneric  => Properties.ArgSize > 0;
 
 
-    public TypeSymbol(string name, TypeID id, TypeProperties? props = null, Action<TypeSymbol>? onCreate = null)
+    public TypeSymbol(string name, TypeID id, TypeProperties? props = null)
         : base(name)
     {
         ID         = id;
         Properties = props ?? TypeProperties.Blank;
-
-        onCreate?.Invoke(this);
     }
+
+    public TypeSymbol Annul()
+    {
+        if (Builtins.NULLABLES.TryGetValue(ID, out TypeSymbol? type))
+            return type;
+
+        type = new(Name, ID.Annul(), Properties);
+        return type;
+    }
+
+    public TypeSymbol Denullify()
+        => new(Name, ID.Denullify(), Properties);
+
+    // !! TODO: THIS NEEDS TO BE REWORKED
+    public TypeSymbol NullSafe()
+        => IsNullable ? Denullify() : this;
 
     public bool HasFlag(TypeSymbol other)
     {
@@ -46,26 +62,25 @@ public class TypeSymbol
 
     public override string ToString()
     {
-        if (Properties.CustomName is not null)
-            return Properties.CustomName;
-
-        if (!IsGeneric)
-            return Name;
-
         var str = Name;
 
-        str += '<';
-        for (int i = 0; i < Properties.Parameters?.Length; i++)
+        if (Properties.CustomName is not null)
+            str = Properties.CustomName;
+        else if (IsGeneric)
         {
-            var p = Properties.Parameters[i];
-            if (i == Properties.Parameters.Length - 1)
-                str += $"{p}";
-            else
-                str += $"{p}, ";
+            str += '<';
+            for (int i = 0; i < Properties.Parameters?.Length; i++)
+            {
+                var p = Properties.Parameters[i];
+                if (i == Properties.Parameters.Length - 1)
+                    str += $"{p}";
+                else
+                    str += $"{p}, ";
+            }
+            str += '>';
         }
-        str += '>';
 
-        return str.ToString();
+        return str + (IsNullable ? "?" : "");
     }
 
     /* ====================================================================== */
@@ -147,7 +162,7 @@ public class TypeSymbol
         return null;
     }
 
-    internal static bool GetCommonType(TypeSymbol type1, TypeSymbol type2, ref TypeSymbol result)
+    internal static bool GetCommonType(TypeSymbol type1, TypeSymbol type2, out TypeSymbol result)
     {
         if (type1.HasFlag(type2))
         {
@@ -168,6 +183,7 @@ public class TypeSymbol
                 return true;
             }
 
+        result = null!;
         return false;
     }
 }

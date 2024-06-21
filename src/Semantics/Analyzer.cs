@@ -8,6 +8,7 @@ using Enuii.Syntax.AST;
 using Enuii.Semantics.Operations;
 using Enuii.General.Constants;
 using Enuii.Syntax.Lexing;
+using Enuii.General.Positioning;
 
 namespace Enuii.Semantics;
 
@@ -49,6 +50,12 @@ public class Analyzer
     {
         if (!Scope.TryDeclare(symbol))
             Reporter.ReportNameAlreadyDeclared(token.Value, token.Span);
+    }
+
+    public void WarnNullable(TypeSymbol type, Span span)
+    {
+        if (type.IsNullable)
+            Reporter.ReportUseOfNullable(span);
     }
 
     /* ====================================================================== */
@@ -247,6 +254,9 @@ public class Analyzer
             for (int i = 0; i < tc.ListDimension; i++)
                 type = TypeSymbol.List(type);
 
+        if (tc.IsNullable)
+            type = type?.Annul();
+
         return type ?? TypeSymbol.Unknown;
     }
 
@@ -371,7 +381,9 @@ public class Analyzer
                 type ??= expr.Type;
             else if (!type.HasFlag(expr.Type) && type.IsKnown && expr.Type.IsKnown)
             {
-                if(!TypeSymbol.GetCommonType(type, expr.Type, ref type))
+                if(TypeSymbol.GetCommonType(type, expr.Type, out var common))
+                    type = common;
+                else
                     Reporter.ReportHeteroList(type.ToString(), expr.Type.ToString(), ll.Span);
             }
 
@@ -452,7 +464,9 @@ public class Analyzer
         var operand = BindExpression(ue.Operand);
         var (opKind, resultType) = UnaryOperation.GetOperation(ue.Operator.Kind, operand.Type);
 
+
         // Successfully found the operation
+        WarnNullable(operand.Type, ue.Operand.Span);
         if (opKind is not UnaryKind.INVALID)
             return new SemanticUnaryExpression(operand, opKind, resultType, ue.Span);
 
@@ -470,6 +484,8 @@ public class Analyzer
         var (opKind, resultType) = BinaryOperation.GetOperation(left.Type, be.Operator.Kind, right.Type);
 
         // Successfully found the operation
+        WarnNullable(left.Type, be.LHS.Span);
+        WarnNullable(right.Type, be.RHS.Span);
         if (opKind is not BinaryKind.INVALID)
             return new SemanticBinaryExpression(left, right, opKind, resultType, be.Span);
 
