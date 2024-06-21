@@ -9,3 +9,9 @@ public enum ErrorKind
     SymbolError,
     MathError,
 }
+
+public enum WarningKind
+{
+    UnknownWarning,
+    TypeWarning,
+}

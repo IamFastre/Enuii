@@ -159,7 +159,7 @@ public class Parser
         
         if (condition.Kind is NodeKind.Unknown)
         {
-            Reporter.Pop();
+            Reporter.PopError();
             Reporter.ReportExpressionExpectedAfter(ifKeyword.Value, ifKeyword.Span);
         }
 
@@ -181,7 +181,7 @@ public class Parser
         
         if (condition.Kind is NodeKind.Unknown)
         {
-            Reporter.Pop();
+            Reporter.PopError();
             Reporter.ReportExpressionExpectedAfter(whileKeyword.Value, whileKeyword.Span);
         }
 
@@ -386,7 +386,7 @@ public class Parser
 
             if (left.Kind is NodeKind.Unknown)
             {
-                Reporter.Pop();
+                Reporter.PopError();
                 Reporter.ReportExpressionExpectedAfter(uOp.Value, uOp.Span);
                 return ConstantLiteral.Fabricate(uOp.Span);
             }
@@ -406,7 +406,7 @@ public class Parser
 
             if (right.Kind is NodeKind.Unknown)
             {
-                Reporter.Pop();
+                Reporter.PopError();
                 Reporter.ReportExpressionExpectedAfter(biOp.Value, biOp.Span);
                 return ConstantLiteral.Fabricate(left.Span.To(biOp.Span));
             }
@@ -422,7 +422,7 @@ public class Parser
 
             if (trueExpr.Kind is NodeKind.Unknown)
             {
-                Reporter.Pop();
+                Reporter.PopError();
                 Reporter.ReportExpressionExpectedAfter(qMark.Value, qMark.Span);
                 return ConstantLiteral.Fabricate(left.Span.To(qMark.Span));
             }
@@ -432,7 +432,7 @@ public class Parser
             var falseExpr = GetSecondary();
             if (falseExpr.Kind is NodeKind.Unknown)
             {
-                Reporter.Pop();
+                Reporter.PopError();
                 Reporter.ReportExpressionExpectedAfter(colon.Value, colon.Span);
                 return trueExpr;
             }

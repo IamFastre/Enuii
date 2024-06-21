@@ -4,10 +4,11 @@ using Enuii.Syntax.Lexing;
 
 namespace Enuii.Reports;
 
-public class Reporter(IEnumerable<Error>? errors = null, bool inRuntime = false)
+public class Reporter(bool inRuntime = false)
 {
-    public List<Error> Errors    { get; }      = errors?.ToList() ?? [];
-    public bool        InRuntime { get; set; } = inRuntime;
+    public List<Error>   Errors    { get; }      = [];
+    public List<Warning> Warnings  { get; }      = [];
+    public bool          InRuntime { get; set; } = inRuntime;
 
     // Add new error to error list
     public void Add(Error error)
@@ -17,9 +18,11 @@ public class Reporter(IEnumerable<Error>? errors = null, bool inRuntime = false)
         if (InRuntime)
             throw new EnuiiRuntimeException();
     }
+    public void Add(Warning warning)
+        => Warnings.Add(warning);
 
     // Remove last error from error list
-    public Error? Pop()
+    public Error? PopError()
     {
         var error = Errors.LastOrDefault();
         Errors.RemoveAt(Errors.Count - 1);
@@ -31,14 +34,18 @@ public class Reporter(IEnumerable<Error>? errors = null, bool inRuntime = false)
         => Errors.Clear();
 
     // Make a new error and add it to error list
-    private Error Report(ErrorKind kind, string message, Span span)
-    {
-        var error = new Error(kind, message, span);
-        Add(error);
-        return error;
-    }
+    private void Report(ErrorKind kind, string message, Span span)
+        => Add(new Error(kind, message, span));
 
-    /* =========================== Report Methods =========================== */
+    // Make a new warning and add it to warning list
+    private void Report(WarningKind kind, string message, Span span)
+        => Add(new Warning(kind, message, span));
+
+    /* ====================================================================== */
+    /*                             Report Methods                             */
+    /* ====================================================================== */
+
+    /* =============================== Errors =============================== */
 
     internal void ReportUnterminatedQuote(TokenKind kind, Span span)
         => Report(ErrorKind.SyntaxError, $"Unterminated {kind.ToString().ToLower()} literal", span);
@@ -144,4 +151,9 @@ public class Reporter(IEnumerable<Error>? errors = null, bool inRuntime = false)
 
     internal void ReportInternalParsingError(string value, string type, Span span)
         => Report(ErrorKind.InternalError, $"An internal error has occurred trying to parse: <{value}> (allegedly) of type '{type}'", span);
+
+    /* ============================== Warnings ============================== */
+
+    internal void ReportUseOfNullable(Span span)
+        => Report(WarningKind.TypeWarning, $"Possibly a null reference", span);
 }
