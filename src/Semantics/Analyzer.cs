@@ -22,6 +22,8 @@ public class Analyzer
         SimpleTree = tree;
         Scope      = scope    ?? new();
         Reporter   = reporter ?? new();
+
+        Reporter.InRuntime = false;
     }
 
     /* =========================== Helper Methods =========================== */

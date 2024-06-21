@@ -24,6 +24,8 @@ public class Lexer
     {
         Source   = source.Replace("\r", "");
         Reporter = reporter ?? new();
+
+        Reporter.InRuntime = false;
     }
 
     /* =========================== Helper Methods =========================== */

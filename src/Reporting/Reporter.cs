@@ -1,15 +1,22 @@
+using Enuii.General.Exceptions;
 using Enuii.General.Positioning;
 using Enuii.Syntax.Lexing;
 
 namespace Enuii.Reports;
 
-public class Reporter(IEnumerable<Error>? errors = null)
+public class Reporter(IEnumerable<Error>? errors = null, bool inRuntime = false)
 {
-    public List<Error> Errors { get; } = errors?.ToList() ?? [];
+    public List<Error> Errors    { get; }      = errors?.ToList() ?? [];
+    public bool        InRuntime { get; set; } = inRuntime;
 
     // Add new error to error list
     public void Add(Error error)
-        => Errors.Add(error);
+    {
+        Errors.Add(error);
+
+        if (InRuntime)
+            throw new EnuiiRuntimeException();
+    }
 
     // Remove last error from error list
     public Error? Pop()

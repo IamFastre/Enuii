@@ -19,6 +19,8 @@ public class Parser
     {
         Tokens   = tokens.Where(e => !e.Kind.IsParserIgnorable()).ToList();
         Reporter = reporter ?? new();
+
+        Reporter.InRuntime = false;
     }
 
     /* =========================== Helper Methods =========================== */

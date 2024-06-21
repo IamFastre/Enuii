@@ -15,12 +15,14 @@ public class Evaluator
     public Scope        Scope        { get; private  set; }
     public State        State        { get; internal set; }
 
-    public Evaluator(SemanticTree tree, Scope scope,Reporter? reporter = null)
+    public Evaluator(SemanticTree tree, Scope scope, Reporter? reporter = null)
     {
         SemanticTree = tree;
         Reporter     = reporter ?? new();
         Scope        = scope;
         State        = State.None;
+
+        Reporter.InRuntime = true;
     }
 
     /* =========================== Helper Methods =========================== */

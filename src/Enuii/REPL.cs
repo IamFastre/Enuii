@@ -1,4 +1,5 @@
 using Enuii.General.Colors;
+using Enuii.General.Exceptions;
 using Enuii.Reports;
 using Enuii.Runtime.Evaluation;
 using Enuii.Scoping;
@@ -88,12 +89,15 @@ public class REPL
                     if (value.Type.ID is not TypeID.Void)
                         Console.WriteLine(value.Repr());
                 }
-
-                ReportErrors();
             }
+            catch (EnuiiRuntimeException) { }
             catch (Exception e)
             {
                 HandleInternalError(e);
+            }
+            finally
+            {
+                ReportErrors();
             }
         }
     }
