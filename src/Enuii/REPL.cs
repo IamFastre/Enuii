@@ -97,7 +97,11 @@ public class REPL
             }
             finally
             {
-                ReportErrors();
+                if (Reporter.Errors.Count > 0)
+                {
+                    SemanticScope.Sync(Scope);
+                    ReportErrors();
+                }
             }
         }
     }

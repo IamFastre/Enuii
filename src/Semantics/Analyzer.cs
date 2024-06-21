@@ -47,7 +47,7 @@ public class Analyzer
 
     private void TryDeclare(NameSymbol symbol, Token token)
     {
-        if (!Scope.TryDeclare(symbol, Reporter.Errors.Count > 0))
+        if (!Scope.TryDeclare(symbol))
             Reporter.ReportNameAlreadyDeclared(token.Value, token.Span);
     }
 

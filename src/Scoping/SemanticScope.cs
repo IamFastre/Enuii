@@ -5,10 +5,10 @@ namespace Enuii.Scoping;
 
 public class SemanticScope(SemanticScope? parent = null)
 {
-    public SemanticScope?                 Parent { get; }              = parent;
-    public Dictionary<string, NameSymbol> Names  { get; private set; } = parent is null ? DeclareBuiltins() : [];
+    public SemanticScope?                 Parent    { get; }              = parent;
+    public Dictionary<string, NameSymbol> Variables { get; private set; } = parent is null ? DeclareBuiltins() : [];
 
-    public NameSymbol this[string variable] => Names[variable];
+    public NameSymbol this[string variable] => Variables[variable];
 
     public static Dictionary<string, NameSymbol> DeclareBuiltins()
     {
@@ -18,20 +18,18 @@ public class SemanticScope(SemanticScope? parent = null)
         return dict;
     }
 
-    public bool TryDeclare(NameSymbol name, bool hasErrors = false)
+    public bool TryDeclare(NameSymbol variable)
     {
-        if (Names.ContainsKey(name.Name))
+        if (Variables.ContainsKey(variable.Name))
             return false;
 
-        if (!hasErrors)
-            Names.Add(name.Name, name);
-
+        Variables.Add(variable.Name, variable);
         return true;
     }
 
     public bool TryGet(string variable, out NameSymbol name)
     {
-        if (Names.TryGetValue(variable, out name!))
+        if (Variables.TryGetValue(variable, out name!))
             return true;
 
         if (Parent is not null)
@@ -42,13 +40,23 @@ public class SemanticScope(SemanticScope? parent = null)
     }
 
     public bool Contains(string variable)
-        => Names.ContainsKey(variable);
+        => Variables.ContainsKey(variable);
 
     public void Flush()
     {
         if (Parent is null)
-            Names = DeclareBuiltins();
+            Variables = DeclareBuiltins();
         else
-            Names.Clear();
+            Variables.Clear();
+    }
+
+    internal void Sync(Scope scope)
+    {
+        if (scope.Variables.Count != Variables.Count)
+        {
+            foreach (var (name, _) in Variables)
+                if (!scope.Contains(name))
+                    Variables.Remove(name);
+        }
     }
 }
