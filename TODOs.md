@@ -5,12 +5,12 @@
 | … | Values | Runtime values |
 | … | Evaluator | Make an evaluator to handle values and runtime, requires Values |
 | … | Proper REPL | A proper REPL |
-| ☐ | Constants | Add them `#* const = 3.14f` |
 | ☐ | Declarations | Valueless declarations like `# var:int` or `# name` |
 | ☐ | Error Tips | Tips/Suggestions for bad code |
 | ☐ | Nullability | requires a lot of coffee |
 | ☐ | Default Parameters | Add support for them, requires Nullability |
 | ☐ | Return | add support for `return` statements |
+| ☑ | Constants | Add them `#* const = 3.14f` |
 | ☑ | Closure | Function environment closure and shit |
 | ☑ | For | Add for and for/else statements |
 | ☑ | String Representations | Fix runtime values' string representations |

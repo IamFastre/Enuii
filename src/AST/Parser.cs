@@ -118,10 +118,12 @@ public class Parser
         return new(expr);
     }
 
-    private Statement GetDeclarationStatement()
+    private DeclarationStatement GetDeclarationStatement()
     {
         // TODO: allow valueless declarations
         TypeClause? type = null;
+        Expression expr;
+
         var hash    = Eat();
         var isConst = IsNextKind(TokenKind.Asterisk);
         var name    = Expect(TokenKind.Identifier);
@@ -129,10 +131,14 @@ public class Parser
         if (IsNextKind(TokenKind.Colon))
             type = GetTypeClause();
 
-        Expect(TokenKind.Equal);
-        var expr = GetExpression();
+        if (IsNextKind(TokenKind.Equal))
+            expr = GetExpression();
+        else {
+            Reporter.ReportValueMissing(isConst, Current.Span);
+            expr = ConstantLiteral.Fabricate(Current.Span);
+        }
 
-        return new DeclarationStatement(hash, isConst, name, type, expr);
+        return new(hash, isConst, name, type, expr);
     }
 
     private BlockStatement GetBlockStatement()

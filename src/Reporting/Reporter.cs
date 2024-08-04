@@ -85,6 +85,9 @@ public class Reporter(bool inRuntime = false)
     internal void ReportInvalidAssignee(Span span)
         => Report(ErrorKind.SyntaxError, $"Invalid left-hand side of assignment", span);
 
+    internal void ReportValueMissing(bool isConst, Span span)
+        => Report(ErrorKind.SyntaxError, $"Initializer expression missing{(isConst ? " from const declaration" : "")}", span);
+
     internal void ReportInvalidCount(TokenKind op, Span span)
         => Report(ErrorKind.SyntaxError, $"Invalid operand of {(op is TokenKind.PlusPlus ? "increment" : "decrement")} operator", span);
 
