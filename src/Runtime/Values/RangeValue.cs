@@ -42,7 +42,7 @@ public class RangeValue(NumberValue? start, NumberValue? end, NumberValue? step)
 
     public double Length => Start is null || End is null
                           ? double.PositiveInfinity
-                          : (int) Math.Floor(((double) End.Value - (double) Start.Value) / (double) Step.Value) + 1;
+                          : (int) Math.Floor(((double) End.Value - (double) Start.Value) / (double) Step.Value);
 
     public NumberValue ElementAt(int index)
         => double.IsPositive(index)
@@ -56,7 +56,7 @@ public class RangeValue(NumberValue? start, NumberValue? end, NumberValue? step)
             return false;
 
         var start = (double) (Start?.Value ?? double.NegativeInfinity);
-        var end   = (double) (End?.Value ?? double.PositiveInfinity);
+        var end   = (double) (End?.Value ?? double.PositiveInfinity) - 1;
         var val   = (double) value.Value;
 
         var bigger  = start > end
