@@ -95,7 +95,7 @@ public class Reporter(bool inRuntime = false)
         => Report(ErrorKind.SyntaxError, $"Parameter '{name}' has no default following one that does", span);
 
     internal void ReportInvalidArgumentCount(string function, int needed, int given, Span span)
-        => Report(ErrorKind.SyntaxError, $"Function '{function}' takes in ({needed}) arguments, ({given}) were given", span);
+        => Report(ErrorKind.SyntaxError, $"Function '{function}' takes in at least ({needed}) arguments, ({given}) were given", span);
 
     internal void ReportCannotConvert(string type1, string type2, Span span)
         => Report(ErrorKind.TypeError, $"Cannot convert from '{type1}' to '{type2}'", span);

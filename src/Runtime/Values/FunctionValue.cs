@@ -56,8 +56,9 @@ public class FunctionValue(string name, TypeSymbol type, IEnumerable<ParameterSy
             {
                 var p = Parameters[i];
                 var a = arguments.Length > i ? arguments[i] : null;
+                var v = a ?? (p.Value is not null ? evaluator.EvaluateExpression(p.Value) : NullValue.Template);
 
-                evaluator.Scope.TryDeclare(p.Name, a ?? evaluator.EvaluateExpression(p.Value!));
+                evaluator.Scope.TryDeclare(p.Name, v);
             }
 
         var value = IsBuiltin

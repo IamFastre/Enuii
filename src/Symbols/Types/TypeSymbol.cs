@@ -110,7 +110,7 @@ public class TypeSymbol
             ArgSize:     1u,
             ElementType: element,
             Parameters:  [element],
-            Indexing:    [(Integer, element), (Range, list),],
+            Indexing:    [(Integer, element), (Range, list)],
             CustomName:  $"{element}[]"
         );
 
@@ -120,10 +120,20 @@ public class TypeSymbol
 
     public static TypeSymbol Function(IEnumerable<TypeSymbol> parameters)
     {
+        var requiredLength = parameters.Count() - 1;
+
+        // Count nullable parameters on the end
+        foreach (var p in parameters.Reverse())
+            if (p.IsNullable)
+                requiredLength--;
+            else
+                break;
+
         var func  = new TypeSymbol(CONSTS.FUNCTION, TypeID.Function);
         var props = new TypeProperties(
             Parameters: [..parameters],
-            CustomName: $"({string.Join(", ", parameters.ToArray()[1..].Select(e => e.ToString()))}) -> {parameters.First()}"
+            CustomName: $"({string.Join(", ", parameters.ToArray()[1..].Select(e => e.ToString()))}) -> {parameters.First()}",
+            Extras: new() { { "Required", requiredLength } }
         );
 
         func.Properties = props;

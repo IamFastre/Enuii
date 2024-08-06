@@ -6,13 +6,15 @@ public class TypeProperties
         TypeSymbol?                            ElementType = null,
         TypeSymbol[]?                          Parameters  = null,
         IEnumerable<(TypeSymbol, TypeSymbol)>? Indexing    = null,
-        string?                                CustomName  = null
+        string?                                CustomName  = null,
+        Dictionary<string, object>?            Extras      = null
     )
 {
     public TypeSymbol?                           ElementType { get; } = ElementType;
     public TypeSymbol[]                          Parameters  { get; } = Parameters ?? new TypeSymbol[ArgSize];
     public string?                               CustomName  { get; } = CustomName;
     public IEnumerable<(TypeSymbol, TypeSymbol)> Indexing    { get; } = Indexing ?? [];
+    public Dictionary<string, object>?           Extras      { get; } = Extras;
 
     public uint                                  ArgSize     => (uint) Parameters.Length;
 

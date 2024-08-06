@@ -422,19 +422,12 @@ public class Analyzer
 
         if (callee.Type.IsCallable)
         {
-            var trueLength = callee.Type.Properties.Parameters.Length - 1;
-
-            // Count nullable parameters on the back
-            foreach (var p in callee.Type.Properties.Parameters.Reverse())
-                if (p.IsNullable)
-                    trueLength--;
-                else
-                    break;
+            var required = callee.Type.Properties.Extras?["Required"] as int? ?? 0;
 
             // TODO: Fix this to work properly with default values
-            if (trueLength > args.Length)
+            if (required > args.Length)
             {
-                Reporter.ReportInvalidArgumentCount(callee.Type.ToString(), trueLength, args.Length, ce.Span);
+                Reporter.ReportInvalidArgumentCount(callee.Type.ToString(), required, args.Length, ce.Span);
                 return new SemanticFailedExpression(ce.Span);
             }
 
