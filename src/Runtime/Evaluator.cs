@@ -90,7 +90,7 @@ public class Evaluator
     {
         var expr = EvaluateExpression(ds.Expression);
 
-        if (Scope.TryDeclare(ds.Symbol.Name, expr))
+        if (Scope.TryDeclare(ds.Name, expr))
             return expr;
 
         return UnknownValue.Template;
@@ -139,11 +139,11 @@ public class Evaluator
         if (iterable.Length > 0)
         {
             EnterScope();
-            Scope.TryDeclare(fs.Variable.Name, null!);
+            Scope.TryDeclare(fs.Variable, null!);
 
             for (int i = 0; i < iterable.Length; i++)
             {
-                Scope.TryAssign(fs.Variable.Name, iterable.ElementAt(i));
+                Scope.TryAssign(fs.Variable, iterable.ElementAt(i));
                 value = EvaluateStatement(fs.Loop);
             }
 
@@ -490,7 +490,7 @@ public class Evaluator
     {
         var expr = EvaluateExpression(ae.Expression);
 
-        if (Scope.TryAssign(ae.Name.Name, expr))
+        if (Scope.TryAssign(ae.Name, expr))
             return expr;
 
         return UnknownValue.Template;

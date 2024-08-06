@@ -122,7 +122,7 @@ public class Analyzer
 
         TryDeclare(name, ds.Name);
 
-        return new(name, expr, ds.Span);
+        return new(name.Name, expr, ds.Span);
     }
 
     private SemanticBlockStatement BindBlockStatement(BlockStatement bs)
@@ -180,7 +180,7 @@ public class Analyzer
                       ? BindStatement(fs.ElseClause.Body)
                       : null;
 
-        return new(variable, iterable, loop, elseStmt, fs.Span);
+        return new(variable.Name, iterable, loop, elseStmt, fs.Span);
     }
 
     private SemanticDeleteStatement BindDeleteStatement(DeleteStatement ds)
@@ -410,7 +410,7 @@ public class Analyzer
     private SemanticExpression BindName(NameLiteral nl)
     {
         if (TryGet(nl, out var name))
-            return new SemanticNameLiteral(name, nl.Span);
+            return new SemanticNameLiteral(name.Name, name.Type, nl.Span);
 
         return new SemanticFailedExpression(nl.Span);
     }
@@ -565,6 +565,6 @@ public class Analyzer
                 Reporter.ReportTypesDoNotMatch(name.Type.ToString(), expr.Type.ToString(), ae.Expression.Span);
         }
 
-        return new(name, expr, ae.Span);
+        return new(name.Name, expr, name.Type, ae.Span);
     }
 }

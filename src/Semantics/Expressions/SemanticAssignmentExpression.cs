@@ -1,12 +1,12 @@
 using Enuii.General.Positioning;
-using Enuii.Symbols.Names;
+using Enuii.Symbols.Types;
 
 namespace Enuii.Semantics;
 
-public class SemanticAssignmentExpression(NameSymbol name, SemanticExpression expr, Span span)
-    : SemanticExpression(name?.Type ?? expr.Type)
+public class SemanticAssignmentExpression(string name, SemanticExpression expr, TypeSymbol type, Span span)
+    : SemanticExpression(type)
 {
-    public NameSymbol         Name       { get; } = name;
+    public string             Name       { get; } = name;
     public SemanticExpression Expression { get; } = expr;
 
     public override SemanticKind Kind { get; } = SemanticKind.AssignmentExpression;
