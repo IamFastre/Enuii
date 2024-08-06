@@ -295,8 +295,6 @@ public class Analyzer
                   ? BindExpression(parameter.Value, type)
                   : null;
 
-        type = value is null ? type : type.Nullify();
-
         return new(parameter.Name.Value, type, value);
     }
 
@@ -424,10 +422,19 @@ public class Analyzer
 
         if (callee.Type.IsCallable)
         {
+            var trueLength = callee.Type.Properties.Parameters.Length - 1;
+
+            // Count nullable parameters on the back
+            foreach (var p in callee.Type.Properties.Parameters.Reverse())
+                if (p.IsNullable)
+                    trueLength--;
+                else
+                    break;
+
             // TODO: Fix this to work properly with default values
-            if (callee.Type.Properties.Parameters.Length - 1 != args.Length)
+            if (trueLength > args.Length)
             {
-                Reporter.ReportInvalidArgumentCount(callee.Type.ToString(), callee.Type.Properties.Parameters.Length - 1, args.Length, ce.Span);
+                Reporter.ReportInvalidArgumentCount(callee.Type.ToString(), trueLength, args.Length, ce.Span);
                 return new SemanticFailedExpression(ce.Span);
             }
 

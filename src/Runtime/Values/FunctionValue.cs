@@ -29,7 +29,7 @@ public class FunctionValue(string name, TypeSymbol type, IEnumerable<ParameterSy
 
         for (int i = 0; i < Parameters.Length; i++)
         {
-            var name = Parameters[i].ToString();
+            var name = Parameters[i].ToString() + (Parameters[i].HasDefaultValue ? "?" : "");
             var type = Parameters[i].Type.ToString();
 
             str += $"{name}:{type}";
@@ -55,7 +55,7 @@ public class FunctionValue(string name, TypeSymbol type, IEnumerable<ParameterSy
             for (int i = 0; i < Parameters.Length; i++)
             {
                 var p = Parameters[i];
-                var a = arguments[i];
+                var a = arguments.Length > i ? arguments[i] : null;
 
                 evaluator.Scope.TryDeclare(p.Name, a ?? evaluator.EvaluateExpression(p.Value!));
             }
