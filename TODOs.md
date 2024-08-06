@@ -7,9 +7,9 @@
 | … | Proper REPL | A proper REPL |
 | ☐ | Declarations | Valueless declarations like `# var:int` or `# name` |
 | ☐ | Error Tips | Tips/Suggestions for bad code |
-| ☐ | Nullability | requires a lot of coffee |
 | ☐ | Default Parameters | Add support for them, requires Nullability |
 | ☐ | Return | add support for `return` statements |
+| ☑ | Nullability | requires a lot of coffee |
 | ☑ | Constants | Add them `#* const = 3.14f` |
 | ☑ | Closure | Function environment closure and shit |
 | ☑ | For | Add for and for/else statements |

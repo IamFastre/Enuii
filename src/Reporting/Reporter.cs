@@ -162,6 +162,9 @@ public class Reporter(bool inRuntime = false)
 
     /* ============================== Warnings ============================== */
 
+    internal void ReportValueNotNullable(Span span)
+        => Report(WarningKind.TypeWarning, $"Redundant null-forgiving; value can never be null", span);
+
     internal void ReportUseOfNullable(Span span)
         => Report(WarningKind.TypeWarning, $"Possibly a null reference", span);
 }

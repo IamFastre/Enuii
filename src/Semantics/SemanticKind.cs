@@ -12,6 +12,7 @@ public enum SemanticKind
     CallExpression,
     FailedExpression,
     FailedOperation,
+    NullForgivingExpression,
     ConversionExpression,
     UnaryExpression,
     BinaryExpression,

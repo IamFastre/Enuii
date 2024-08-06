@@ -500,7 +500,7 @@ public class Parser
 
     private Expression GetCall()
     {
-        var callee = GetIntermediate();
+        var callee = GetNullForgiving();
 
         if (IsNextKind(TokenKind.OpenParenthesis))
         {
@@ -510,6 +510,16 @@ public class Parser
         }
 
         return callee;
+    }
+
+    private Expression GetNullForgiving()
+    {
+        var expr = GetIntermediate();
+
+        if (Current.Kind is TokenKind.BangMark)
+            return new NullForgivingExpression(expr, Eat().Span);
+
+        return expr;
     }
 
     private Expression GetIntermediate()

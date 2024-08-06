@@ -24,12 +24,15 @@ public class TypeSymbol
         Properties = props ?? TypeProperties.Blank;
     }
 
-    public TypeSymbol Annul()
+    public TypeSymbol Nullify()
     {
+        if (IsNullable)
+            return this;
+
         if (Builtins.NULLABLES.TryGetValue(ID, out TypeSymbol? type))
             return type;
 
-        type = new(Name, ID.Annul(), Properties);
+        type = new(Name, ID.Nullify(), Properties);
         return type;
     }
 

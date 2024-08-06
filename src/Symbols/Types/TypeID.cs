@@ -26,7 +26,7 @@ public enum TypeID
 
 public static class TypeIDExtension
 {
-    public static TypeID Annul(this TypeID id)
+    public static TypeID Nullify(this TypeID id)
         => id.HasFlag(TypeID.Null)
          ? id
          : id | TypeID.Null;

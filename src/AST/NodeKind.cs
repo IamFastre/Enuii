@@ -18,6 +18,7 @@ public enum NodeKind
     // Expressions
     CallExpression,
     ParenthesizedExpression,
+    NullForgivingExpression,
     ConversionExpression,
     UnaryExpression,
     BinaryExpression,

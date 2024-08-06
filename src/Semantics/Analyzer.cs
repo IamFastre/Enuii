@@ -255,7 +255,7 @@ public class Analyzer
                 type = TypeSymbol.List(type);
 
         if (tc.IsNullable)
-            type = type?.Annul();
+            type = type?.Nullify();
 
         return type ?? TypeSymbol.Unknown;
     }
@@ -328,6 +328,9 @@ public class Analyzer
 
             case NodeKind.ParenthesizedExpression:
                 return BindParenthesizedExpression((ParenthesizedExpression) expr);
+
+            case NodeKind.NullForgivingExpression:
+                return BindNullForgivingExpression((NullForgivingExpression) expr);
 
             case NodeKind.ConversionExpression:
                 return BindConversionExpression((ConversionExpression) expr);
@@ -441,6 +444,17 @@ public class Analyzer
 
     private SemanticExpression BindParenthesizedExpression(ParenthesizedExpression pe)
         => BindExpression(pe.Expression);
+
+    private SemanticNullForgivingExpression BindNullForgivingExpression(NullForgivingExpression nfe)
+    {
+        var expr = BindExpression(nfe.Expression);
+        var type = expr.Type.NullSafe();
+
+        if (type.HasFlag(expr.Type))
+            Reporter.ReportValueNotNullable(nfe.Span);
+
+        return new(expr, type, nfe.Span);
+    }
 
     private SemanticExpression BindConversionExpression(ConversionExpression ce)
     {

@@ -13,7 +13,7 @@ public enum CountingKind
 public class CountingOperation
 {
     private static bool CanCount(TypeSymbol type)
-        => TypeID.Numable.Annul().HasFlag(type.ID);
+        => TypeID.Numable.Nullify().HasFlag(type.ID);
 
     public static (CountingKind, bool) GetOperation(TokenKind kind, TypeSymbol type) => kind switch
     {

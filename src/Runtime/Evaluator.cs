@@ -184,6 +184,9 @@ public class Evaluator
             case SemanticKind.CallExpression:
                 return EvaluateCallExpression((SemanticCallExpression) expr);
 
+            case SemanticKind.NullForgivingExpression:
+                return EvaluateNullForgivingExpression((SemanticNullForgivingExpression) expr);
+
             case SemanticKind.ConversionExpression:
                 return EvaluateConversionExpression((SemanticConversionExpression) expr);
 
@@ -291,6 +294,9 @@ public class Evaluator
 
         return value;
     }
+
+    private RuntimeValue EvaluateNullForgivingExpression(SemanticNullForgivingExpression nfe)
+        => EvaluateExpression(nfe.Expression);
 
     private RuntimeValue EvaluateConversionExpression(SemanticConversionExpression ce)
     {
