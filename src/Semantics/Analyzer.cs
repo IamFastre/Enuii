@@ -295,6 +295,8 @@ public class Analyzer
                   ? BindExpression(parameter.Value, type)
                   : null;
 
+        type = value is null ? type : type.Nullify();
+
         return new(parameter.Name.Value, type, value);
     }
 

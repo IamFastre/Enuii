@@ -284,12 +284,7 @@ public class Evaluator
     }
 
     private RuntimeValue EvaluateName(SemanticNameLiteral nl)
-    {
-        if (Scope.TryGet(nl.Name, out var value))
-            return value;
-
-        return UnknownValue.Template;
-    }
+        => Scope.Get(nl.Name) ?? UnknownValue.Template;
 
     private RuntimeValue EvaluateCallExpression(SemanticCallExpression ce)
     {
@@ -297,7 +292,7 @@ public class Evaluator
         var args     = ce.Arguments.Select(EvaluateExpression).ToArray();
         var oldScope = Scope;
 
-        Scope = callee.Scope ?? Scope;
+        Scope = new(callee.Scope ?? Scope);
         var value = callee.Call(this, [..args]);
         Scope = oldScope;
 

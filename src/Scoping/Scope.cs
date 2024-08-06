@@ -33,16 +33,15 @@ public class Scope(Scope? parent = null)
         return false;
     }
 
-    public bool TryGet(string variable, out RuntimeValue value)
+    public RuntimeValue? Get(string variable)
     {
-        if (Variables.TryGetValue(variable, out value!))
-            return true;
+        if (Variables.TryGetValue(variable, out var value))
+            return value;
 
         if (Parent is not null)
-            return Parent.TryGet(variable, out value);
+            return Parent.Get(variable);
 
-        value = null!;
-        return false;
+        return null;
     }
 
     public bool Delete(string variable)
