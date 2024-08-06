@@ -72,6 +72,9 @@ public class Evaluator
             case SemanticKind.ForStatement:
                 return EvaluateForStatement((SemanticForStatement) stmt);
 
+            case SemanticKind.DeleteStatement:
+                return EvaluateDeleteStatement((SemanticDeleteStatement) stmt);
+
             case SemanticKind.FunctionStatement:
                 return EvaluateFunctionStatement((SemanticFunctionStatement) stmt);
 
@@ -150,6 +153,12 @@ public class Evaluator
             value = EvaluateStatement(fs.Else);
 
         return value;
+    }
+
+    private VoidValue EvaluateDeleteStatement(SemanticDeleteStatement ds)
+    {
+        Scope.Delete(ds.Name);
+        return VoidValue.Template;
     }
 
     private VoidValue EvaluateFunctionStatement(SemanticFunctionStatement ss)

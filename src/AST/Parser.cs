@@ -107,6 +107,9 @@ public class Parser
             case TokenKind.For:
                 return GetForStatement();
 
+            case TokenKind.Delete:
+                return GetDeleteStatement();
+
             case TokenKind.GreaterGreater:
                 return GetFunctionStatement();
         }
@@ -217,6 +220,14 @@ public class Parser
             elseClause = GetElseClause();
 
         return new(forKeyword, variable, iterable, statement, elseClause);
+    }
+
+    private Statement GetDeleteStatement()
+    {
+        var delKeyword = Eat();
+        var variable   = Expect(TokenKind.Identifier);
+
+        return new DeleteStatement(delKeyword, variable);
     }
 
     private FunctionStatement GetFunctionStatement()

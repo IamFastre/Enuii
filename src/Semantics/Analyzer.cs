@@ -97,6 +97,9 @@ public class Analyzer
             case NodeKind.ForStatement:
                 return BindForStatement((ForStatement) stmt);
 
+            case NodeKind.DeleteStatement:
+                return BindDeleteStatement((DeleteStatement) stmt);
+
             case NodeKind.FunctionStatement:
                 return BindFunctionStatement((FunctionStatement) stmt);
 
@@ -178,6 +181,14 @@ public class Analyzer
                       : null;
 
         return new(variable, iterable, loop, elseStmt, fs.Span);
+    }
+
+    private SemanticDeleteStatement BindDeleteStatement(DeleteStatement ds)
+    {
+        if (!Scope.TryDelete(ds.Name.Value) && !ds.Name.IsFabricated)
+            Reporter.ReportNameNotDefined(ds.Name.Value, ds.Name.Span);
+
+        return new(ds.Name.Value, ds.Span);
     }
 
     private SemanticFunctionStatement BindFunctionStatement(FunctionStatement ss)

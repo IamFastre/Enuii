@@ -45,6 +45,17 @@ public class Scope(Scope? parent = null)
         return false;
     }
 
+    public bool Delete(string variable)
+    {
+        if (Variables.Remove(variable))
+            return true;
+
+        if (Parent is not null)
+            return Parent.Delete(variable);
+
+        return false;
+    }
+
     public bool Contains(string variable)
         => Variables.ContainsKey(variable);
 

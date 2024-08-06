@@ -30,6 +30,7 @@ public enum TokenKind
     Else,
     While,
     For,
+    Delete,
 
     // Operators
     // Nots

@@ -40,6 +40,7 @@ public enum NodeKind
     IfStatement,
     WhileStatement,
     ForStatement,
+    DeleteStatement,
     FunctionStatement,
 }
 

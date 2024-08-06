@@ -39,6 +39,17 @@ public class SemanticScope(SemanticScope? parent = null)
         return false;
     }
 
+    public bool TryDelete(string variable)
+    {
+        if (Variables.Remove(variable))
+            return true;
+
+        if (Parent is not null)
+            return Parent.TryDelete(variable);
+
+        return false;
+    }
+
     public bool Contains(string variable)
         => Variables.ContainsKey(variable);
 
