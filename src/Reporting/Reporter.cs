@@ -12,16 +12,29 @@ public class Reporter(bool inRuntime = false)
 
     public bool HasReports => Errors.Count > 0 || Warnings.Count > 0;
 
-    // Add new error to error list
-    public void Add(Error error)
+    public void Add(Report report)
     {
-        Errors.Add(error);
 
-        if (InRuntime)
-            throw new EnuiiRuntimeException();
+        switch (report)
+        {
+            case Warning warning:
+                var lastWarning = Warnings.LastOrDefault();
+
+                if (lastWarning is null || lastWarning.Message != warning.Message && lastWarning.Span != warning.Span)
+                Warnings.Add(warning);
+                break;
+
+            case Error error:
+                var lastError = Errors.LastOrDefault();
+
+                if (lastError is null || lastError.Message != error.Message && lastError.Span != error.Span)
+                    Errors.Add(error);
+
+                if (InRuntime)
+                    throw new EnuiiRuntimeException();
+                break;
+        }
     }
-    public void Add(Warning warning)
-        => Warnings.Add(warning);
 
     // Remove last error from error list
     public Error? PopError()
@@ -71,7 +84,10 @@ public class Reporter(bool inRuntime = false)
         => Report(ErrorKind.SyntaxError, $"Unrecognized character '{value}'", span);
 
     internal void ReportInvalidSyntax(string value, Span span)
-        => Report(ErrorKind.SyntaxError, $"Invalid syntax {(value.Length > 0 ? $"'{value}'" : "")}", span);
+        => Report(ErrorKind.SyntaxError, $"Invalid syntax{(value.Length > 0 ? $" '{value}'" : "")}", span);
+
+    internal void ReportInvalidClassMember(string value, Span span)
+        => Report(ErrorKind.SyntaxError, $"Invalid syntax{(value.Length > 0 ? $" '{value}'" : "")} in class member declaration", span);
 
     internal void ReportEndOfFile(Span span)
         => Report(ErrorKind.SyntaxError, $"Unexpected end of input", span);

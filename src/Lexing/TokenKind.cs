@@ -96,6 +96,7 @@ public enum TokenKind
     Colon,
     QuestionMark,
     DashArrow,
+    HashGreater,
 }
 
 

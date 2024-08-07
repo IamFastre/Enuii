@@ -112,6 +112,9 @@ public class Parser
 
             case TokenKind.GreaterGreater:
                 return GetFunctionStatement();
+
+            case TokenKind.HashGreater:
+                return GetClassStatement();
         }
     }
 
@@ -258,6 +261,52 @@ public class Parser
             return GetBlockStatement();
 
         return GetExpressionStatement();
+    }
+
+    private ClassStatement GetClassStatement()
+    {
+        var clsSym = Eat();
+        var name   = Expect(TokenKind.Identifier);
+
+        Expect(TokenKind.OpenParenthesis);
+        var parameters = GetSeparated(GetParameterClause, TokenKind.CloseParenthesis);
+        Expect(TokenKind.CloseParenthesis);
+
+        Expect(TokenKind.Colon);
+        var body = GetClassBodyClause();
+
+        return new(clsSym, name, parameters, body);
+    }
+
+    private ClassBodyClause GetClassBodyClause()
+    {
+        var open = Expect(TokenKind.OpenCurlyBracket);
+        var statements = ImmutableArray.CreateBuilder<Statement>();
+
+        // TODO: Support for static members as follows:
+        // • [#]* STATIC_CONSTANT = {x}
+        // • [>>] StaticMethod(): {...}
+        while (Current.Kind is not TokenKind.CloseCurlyBracket && !EOF)
+        {
+            switch (Current.Kind)
+            {
+                case TokenKind.Hash:
+                    statements.Add(GetDeclarationStatement());
+                    break;
+                case TokenKind.GreaterGreater:
+                    statements.Add(GetFunctionStatement());
+                    break;
+                case TokenKind.HashGreater:
+                    statements.Add(GetClassStatement());
+                    break;
+                default:
+                    Reporter.ReportInvalidClassMember(Current.Value, Current.Span);
+                    Eat();
+                    break;
+            }
+        }
+
+        return new(open, statements, Expect(TokenKind.CloseCurlyBracket));
     }
 
 

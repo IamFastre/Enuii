@@ -103,6 +103,9 @@ public class Analyzer
             case NodeKind.FunctionStatement:
                 return BindFunctionStatement((FunctionStatement) stmt);
 
+            case NodeKind.ClassStatement:
+                return BindClassStatement((ClassStatement) stmt);
+
             default:
                 throw new Exception($"Unrecognized statement kind while analyzing: {stmt.Kind}");
         }
@@ -198,9 +201,9 @@ public class Analyzer
         var retType  = ss.ReturnType is not null
                      ? BindTypeClause(ss.ReturnType, true)
                      : TypeSymbol.Void;
-        var function = new FunctionSymbol(ss.Function.Value, @params, retType, ss.IsConstant);
+        var function = new FunctionSymbol(ss.Name.Value, @params, retType, ss.IsConstant);
 
-        TryDeclare(function, ss.Function);
+        TryDeclare(function, ss.Name);
         EnterScope();
 
         foreach (var p in @params)
@@ -211,6 +214,9 @@ public class Analyzer
 
         return new(function, body, ss.Span);
     }
+
+    private SemanticStatement BindClassStatement(ClassStatement cs)
+        => new SemanticBlockStatement([], cs.Span);
 
 
     /* ====================================================================== */

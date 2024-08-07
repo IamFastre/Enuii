@@ -212,6 +212,9 @@ public class Lexer
         if (IsUpcoming("->"))
             return CreateToken(TokenKind.DashArrow);
 
+        if (IsUpcoming("#>"))
+            return CreateToken(TokenKind.HashGreater);
+
         /* ======================== Single-character ======================== */
         // Matching every single character token
         switch (Current)

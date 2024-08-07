@@ -7,6 +7,10 @@ public sealed class FunctionSymbol(string name, IEnumerable<ParameterSymbol> par
 {
     public ParameterSymbol[] Parameters { get; } = [..parameters];
     public TypeSymbol        ReturnType { get; } = returnType;
+}
 
-    public int OptionalArgument => Parameters.Count(e => e.HasDefaultValue);
+public sealed class ClassSymbol(string name, IEnumerable<ParameterSymbol> parameters, TypeSymbol type)
+    : NameSymbol(name, type, true)
+{
+    public ParameterSymbol[] Parameters { get; } = [..parameters];
 }

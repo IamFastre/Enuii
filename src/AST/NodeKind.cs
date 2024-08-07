@@ -32,6 +32,7 @@ public enum NodeKind
     ElseClause,
     SeparatedClause,
     ParameterClause,
+    ClassBodyClause,
 
     // Statements
     ExpressionStatement,
@@ -42,6 +43,7 @@ public enum NodeKind
     ForStatement,
     DeleteStatement,
     FunctionStatement,
+    ClassStatement,
 }
 
 public static class NodeKindExtension
