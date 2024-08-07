@@ -8,9 +8,3 @@ public sealed class FunctionSymbol(string name, IEnumerable<ParameterSymbol> par
     public ParameterSymbol[] Parameters { get; } = [..parameters];
     public TypeSymbol        ReturnType { get; } = returnType;
 }
-
-public sealed class ClassSymbol(string name, IEnumerable<ParameterSymbol> parameters, TypeSymbol type)
-    : NameSymbol(name, type, true)
-{
-    public ParameterSymbol[] Parameters { get; } = [..parameters];
-}

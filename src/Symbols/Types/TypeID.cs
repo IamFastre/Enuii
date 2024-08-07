@@ -3,6 +3,7 @@ namespace Enuii.Symbols.Types;
 [Flags]
 public enum TypeID
 {
+    Base     = 1 << 0,
     Void     = 1 << 1,
     Unknown  = 1 << 2,
     Null     = 1 << 3,
@@ -15,8 +16,10 @@ public enum TypeID
     Range    = 1 << 9,
     List     = 1 << 10,
     Function = 1 << 11,
+    Class    = 1 << 12,
+    Custom   = 1 << 13,
 
-    Any        = int.MaxValue - Void,
+    Any        = int.MaxValue ^ Void,
     Nones      = Void    | Unknown | Null,
     Number     = Integer | Float,
     Numable    = Number  | Char,

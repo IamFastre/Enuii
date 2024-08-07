@@ -100,8 +100,8 @@ public class TypeSymbol
     public static readonly TypeSymbol Integer  = new(CONSTS.INTEGER,  TypeID.Integer);
     public static readonly TypeSymbol Float    = new(CONSTS.FLOAT,    TypeID.Float);
     public static readonly TypeSymbol Char     = new(CONSTS.CHAR,     TypeID.Char);
-    public static readonly TypeSymbol String   = new(CONSTS.STRING,   TypeID.String,   TypeProperties.String);
-    public static readonly TypeSymbol Range    = new(CONSTS.RANGE,    TypeID.Range,    TypeProperties.Range);
+    public static readonly TypeSymbol String   = new(CONSTS.STRING,   TypeID.String, TypeProperties.String);
+    public static readonly TypeSymbol Range    = new(CONSTS.RANGE,    TypeID.Range,  TypeProperties.Range);
 
     public static TypeSymbol List(TypeSymbol element)
     {
@@ -118,7 +118,7 @@ public class TypeSymbol
         return list;
     }
 
-    public static TypeSymbol Function(IEnumerable<TypeSymbol> parameters)
+    private static TypeSymbol Callable(string name, TypeID id, IEnumerable<TypeSymbol> parameters, string customName)
     {
         var requiredLength = parameters.Count() - 1;
 
@@ -129,16 +129,22 @@ public class TypeSymbol
             else
                 break;
 
-        var func  = new TypeSymbol(CONSTS.FUNCTION, TypeID.Function);
-        var props = new TypeProperties(
+        var callee = new TypeSymbol(name, id);
+        var props  = new TypeProperties(
             Parameters: [..parameters],
-            CustomName: $"({string.Join(", ", parameters.ToArray()[1..].Select(e => e.ToString()))}) -> {parameters.First()}",
+            CustomName: customName,
             Extras: new() { { "Required", requiredLength } }
         );
 
-        func.Properties = props;
-        return func;
+        callee.Properties = props;
+        return callee;
     }
+
+    public static TypeSymbol Function(IEnumerable<TypeSymbol> parameters)
+        => Callable(CONSTS.FUNCTION, TypeID.Function, parameters, $"({string.Join(", ", parameters.ToArray()[1..].Select(e => e.ToString()))}) -> {parameters.First()}");
+
+    public static TypeSymbol Class(IEnumerable<TypeSymbol> parameters)
+        => Callable(CONSTS.CLASS, TypeID.Class, parameters, $"{parameters.First()}({string.Join(", ", parameters.ToArray()[1..].Select(e => e.ToString()))})");
 
 
     /* ====================================================================== */

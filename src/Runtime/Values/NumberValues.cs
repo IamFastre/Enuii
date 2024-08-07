@@ -31,7 +31,7 @@ public abstract class NumberValue
          ? new IntValue(value)
          : id == TypeID.Float
          ? new FloatValue(value)
-         : throw new Exception($"Can only use int for float not: {id}");
+         : throw new Exception($"Can only use int or float not: {id}");
 
     public static NumberValue GetBest(double value)
         => double.IsInteger(value)
